@@ -1,0 +1,321 @@
+<div class="p-grid">
+  <p-toast></p-toast>
+  <div class="p-col-12">
+    <div class="card">
+      <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+          <h1>Crear plantilla de recomendación.</h1>
+        </ng-template>
+        <ng-template pTemplate="right">
+          <button
+            class="p-ml-2"
+            pButton
+            type="button"
+            label="Cargar plantilla"
+            (click)="updateTemplates()"
+          ></button>
+          <button
+            class="p-ml-2"
+            pButton
+            type="button"
+            label="Placeholder Sistema"
+            (click)="dialogPlaceholder()"
+          ></button>
+          <button
+            class="p-ml-2"
+            pButton
+            type="button"
+            label="Placeholder Estándar"
+            (click)="dialogPlaceholderStandard()"
+          ></button>
+        </ng-template>
+      </p-toolbar>
+      <p-toolbar
+        styleClass="p-mb-4"
+        [style]="{ 'justify-content': 'flex-start' }"
+      >
+        <div class="col-12 md:col-12 p-mb-2 lg:col-3">
+          <label for="name">Titulo:</label>
+          <input
+            id="title"
+            type="text"
+            class="input inputfield p-ml-2"
+            pInputText
+            [(ngModel)]="template.title"
+            autocomplete="off"
+            [disabled]="template.inUse ? template.inUse : false"
+          />
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-3">
+          <label for="name">Número de noticias:</label>
+          <input
+            id="numNews"
+            type="number"
+            class="input inputfield p-ml-2"
+            [min]="1"
+            [max]="10"
+            pInputText
+            [(ngModel)]="template.numNews"
+            autocomplete="off"
+            [disabled]="template.inUse ? template.inUse : false"
+          />
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-3">
+          <p-fileUpload
+            #fileUpload
+            mode="basic"
+            name="demo[]"
+            accept="image/*"
+            [maxFileSize]="1000000"
+            (onSelect)="onUpload($event, fileUpload)"
+            [auto]="true"
+            chooseLabel="Cargar preview"
+            [disabled]="template.inUse ? template.inUse : false"
+          ></p-fileUpload>
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-3" *ngIf="template._id">
+          <label for="name">Estado:</label>
+          <p-radioButton
+            class="p-ml-2"
+            id="state"
+            name="state"
+            [value]="true"
+            [(ngModel)]="template.state"
+            [disabled]="template.inUse ? template.inUse : false"
+          ></p-radioButton>
+          <label for="text" class="p-ml-2">Activo</label>
+          <p-radioButton
+            class="p-ml-2"
+            id="state"
+            name="ambit"
+            [value]="false"
+            [(ngModel)]="template.state"
+            [disabled]="template.inUse ? template.inUse : false"
+          ></p-radioButton>
+          <label for="text" class="p-ml-2">Inactivo</label>
+        </div>
+      </p-toolbar>
+      <div style="background-color: #fffdfd" class="field grid">
+        <div class="col-12 md:col-6">
+          <div class="col-12">
+            <angular-editor
+              style="resize: none; width: -webkit-fill-available"
+              id="editor1"
+              [(ngModel)]="this.template.htmlContent"
+              [config]="config1"
+              (ngModelChange)="onChange()"
+            ></angular-editor>
+          </div>
+
+          <div class="col-12 p-mb-3">
+            <textarea
+              #htmlContent
+              style="
+                overflow: scroll;
+                resize: none;
+                width: -webkit-fill-available;
+              "
+              id="htmlContent"
+              rows="8"
+              cols="10"
+              pInputTextarea
+              [(ngModel)]="template.htmlContent"
+              (ngModelChange)="onChange()"
+            ></textarea>
+          </div>
+        </div>
+        <div style="overflow: auto; max-height: 49vh" class="col-12 md:col-6">
+          <app-iframe [htmlTemplate]="htmlContentPlaceholder"></app-iframe>
+        </div>
+      </div>
+
+      <div class="field grid">
+        <button
+          pButton
+          pRipple
+          [label]="template._id ? 'Actualizar' : 'Crear'"
+          icon="pi pi-check"
+          class="p-button"
+          (click)="save()"
+          class="p-mr-2"
+        ></button>
+        <button
+          pButton
+          pRipple
+          label="Limpiar"
+          icon="pi pi-trash"
+          class="p-button-danger"
+          (click)="clean()"
+        ></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- edit or duplicate -->
+<p-dialog
+  [(visible)]="addTempate"
+  [contentStyle]="{ overflow: 'visible' }"
+  [style]="{ 'min-width': '32%', 'min-height': '40vh' }"
+  [modal]="true"
+  [draggable]="false"
+  [maximizable]="true"
+>
+  <ng-template pTemplate="header">
+    <p>Cargar plantillas</p>
+  </ng-template>
+
+  <div class="field grid">
+    <label for="type" class="col-12 md:col-4">Plantillas:</label>
+    <div class="col-12 md:col-8">
+      <p-dropdown
+        [options]="templates"
+        [(ngModel)]="selectedTemplates"
+        optionLabel="title"
+        [filter]="true"
+        filterBy="title"
+        [showClear]="true"
+        placeholder="Seleccione una plantilla"
+      ></p-dropdown>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Editar"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="loadTemplates(true)"
+      [disabled]="false"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Duplicar"
+      icon="pi pi-copy"
+      class="p-button-text"
+      (click)="loadTemplates(false)"
+      [disabled]="false"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<!-- placeholders System  -->
+<p-dialog
+  [(visible)]="addPlaceholder"
+  [contentStyle]="{ overflow: 'visible' }"
+  [style]="{ 'min-width': '32%', 'min-height': '40vh' }"
+  [modal]="true"
+  [draggable]="false"
+  [maximizable]="true"
+>
+  <ng-template pTemplate="header">
+    <p>Cargar placeholders de sistema</p>
+  </ng-template>
+
+  <div class="field grid">
+    <label for="type" class="col-12 md:col-4">Placeholder Sistema: </label>
+    <div class="col-12 md:col-8">
+      <p-dropdown
+        [options]="placeholdersSystem"
+        [(ngModel)]="selectedPlaceholdersSystem"
+        optionLabel="name"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        placeholder="Seleccione un placeholders"
+      ></p-dropdown>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cargar"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="obtenerSelecionado(selectedPlaceholdersSystem, newDefault)"
+      [disabled]="false"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<!-- placeholders Standar  -->
+<p-dialog
+  [(visible)]="addPlaceholderStandard"
+  [contentStyle]="{ overflow: 'visible' }"
+  [style]="{ 'min-width': '32%', 'min-height': '40vh' }"
+  [modal]="true"
+  [draggable]="false"
+  [maximizable]="true"
+>
+  <ng-template pTemplate="header">
+    <p>Cargar placeholders Estándar</p>
+  </ng-template>
+
+  <div class="field grid">
+    <label for="type" class="col-12 md:col-4">Placeholder Estándar: </label>
+    <div class="col-12 md:col-8">
+      <p-dropdown
+        [options]="placeholdersStandard"
+        [(ngModel)]="selectedPlaceholdersStandard"
+        optionLabel="name"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        placeholder="Seleccione un placeholders"
+        (onChange)="changePlaceholders(selectedPlaceholdersStandard)"
+      ></p-dropdown>
+    </div>
+  </div>
+  <div class="field grid">
+    <div class="col-12 md:col-8" *ngIf="viewRadioButton">
+      <label for="name">Utilizar valor por defecto:</label>
+      <p-radioButton
+        class="p-ml-2"
+        id="default"
+        name="default"
+        [value]="false"
+        [(ngModel)]="default"
+      ></p-radioButton>
+      <label for="text" class="p-ml-2">Si</label>
+      <p-radioButton
+        class="p-ml-2"
+        id="default"
+        name="default"
+        [value]="true"
+        [(ngModel)]="default"
+      ></p-radioButton>
+      <label for="text" class="p-ml-2">No</label>
+    </div>
+  </div>
+  <div class="field grid">
+    <div class="col-12 md:col-8" *ngIf="default && viewRadioButton">
+      <input
+        type="text"
+        class="p-ml-2"
+        id="default"
+        name="default"
+        [value]="false"
+        [(ngModel)]="newDefault"
+      />
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cargar"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="obtenerSelecionado(selectedPlaceholdersStandard, newDefault)"
+      [disabled]="false"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{ width: '500px' }"></p-confirmDialog>

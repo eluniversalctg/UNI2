@@ -1,0 +1,36 @@
+//prime
+@import "../node_modules/primeng/resources/primeng.min.css";
+@import "../node_modules/primeicons/primeicons.css";
+
+// free theme
+@import "../node_modules/primeng/resources/themes/saga-blue/theme.css";
+// prime importations
+@import "../../../node_modules/primeflex/primeflex.scss";
+
+@import "abstracts/functions";
+@import "abstracts/mixins";
+@import "abstracts/variables";
+
+@import "components/menu";
+@import "components/tooltip";
+@import "components/topbar";
+@import "components/input";
+@import "components/card";
+@import "components/button";
+@import "components/login";
+@import "components/sidebar";
+@import "components/layout";
+@import "components/multiSelect";
+//@import "components/icons";
+
+@import "base/animations";
+@import "base/base";
+@import "base/typography";
+@import "base/utilities";
+
+@import "layout/grid";
+
+@import "pages/home";
+
+@import "pages/prime";
+@import "pages/primeng";

@@ -1,0 +1,598 @@
+<div class="p-grid">
+  <p-toast></p-toast>
+  <div class="p-col-12">
+    <div class="card">
+      <p-toolbar styleClass="p-mb-4">
+        <div class="col-12 md:col-12 p-mb-2">
+          <p-radioButton
+            class="p-ml-2"
+            id="text"
+            name="groupname"
+            value="text"
+            [(ngModel)]="selectedSearch"
+            (onClick)="changeSelect()"
+          ></p-radioButton>
+          <label for="text" class="p-ml-2">Texto</label>
+          <p-radioButton
+            class="p-ml-4"
+            id="word"
+            name="groupname"
+            value="word"
+            [(ngModel)]="selectedSearch"
+            (onClick)="changeSelect()"
+          ></p-radioButton>
+          <label for="word" class="p-ml-2">Palabra</label>
+          <p-radioButton
+            class="p-ml-4"
+            id="url"
+            name="groupname"
+            value="url"
+            [(ngModel)]="selectedSearch"
+            (onClick)="changeSelect()"
+          ></p-radioButton>
+          <label for="word" class="p-ml-2">URL</label>
+        </div>
+
+        <div class="col-12 md:col-6 lg:col-5">
+          <input
+            [(ngModel)]="wordOrText"
+            class="h-auto w-100"
+            type="text"
+            pInputText
+            placeholder="Ingrese una palabra o un texto para buscar."
+          />
+        </div>
+
+        <div class="col-12 md:col-6 lg:col-4">
+          <p-multiSelect
+            [options]="tags"
+            optionLabel="name"
+            [(ngModel)]="selectedTags"
+            [style]="{ width: '-webkit-fill-available' }"
+            defaultLabel="Seleccione los tags"
+          ></p-multiSelect>
+        </div>
+
+        <div class="col-12 md:col-5 lg:col-3">
+          <p-button
+            label="Fecha"
+            icon="pi pi-calendar"
+            (click)="op.toggle($event)"
+          ></p-button>
+
+          <button
+            class="ml-2"
+            pButton
+            type="button"
+            label="Buscar"
+            (click)="getByText(selectedSearch, wordOrText)"
+          ></button>
+
+          <button
+            class="ml-2"
+            pButton
+            type="button"
+            label="Seleccionados"
+            (click)="showSelect()"
+            [disabled]="selected"
+          ></button>
+        </div>
+      </p-toolbar>
+
+      <div *ngIf="cromaData.length > 0">
+        <p-table
+          #tableArt
+          [value]="cromaData"
+          styleClass="p-datatable-gridlines"
+          responsiveLayout="scroll"
+          [globalFilterFields]="['title', 'similarity']"
+          [(selection)]="selectedRows"
+          (onHeaderCheckboxToggle)="selectRow()"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 3rem">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+              </th>
+              <th pSortableColumn="similarity">
+                Similitud <p-sortIcon field="similarity"></p-sortIcon>
+              </th>
+              <th
+                pSortableColumn="art.matomo[0][Actions.getPageUrls][0].nb_hits"
+              >
+                Páginas Vistas
+                <p-sortIcon
+                  field="art.matomo[0][Actions.getPageUrls][0].nb_hits"
+                ></p-sortIcon>
+              </th>
+              <th
+                pSortableColumn="art.matomo[0][Actions.getPageUrls][0].avg_time_on_page"
+              >
+                Tiempo promedio
+                <p-sortIcon
+                  field="art.matomo[0][Actions.getPageUrls][0].avg_time_on_page"
+                ></p-sortIcon>
+              </th>
+              <th
+                pSortableColumn="art.matomo[0][Actions.getPageUrls][0].entry_bounce_count"
+              >
+                Rebote de entrada
+                <p-sortIcon
+                  field="art.matomo[0][Actions.getPageUrls][0].entry_bounce_count"
+                ></p-sortIcon>
+              </th>
+              <th
+                pSortableColumn="art.matomo[0][Actions.getPageUrls][0].bounce_rate"
+              >
+                % Rebote
+                <p-sortIcon
+                  field="art.matomo[0][Actions.getPageUrls][0].bounce_rate"
+                ></p-sortIcon>
+              </th>
+              <th pSortableColumn="title">
+                Título <p-sortIcon field="title"></p-sortIcon>
+              </th>
+              <th>Artículo</th>
+              <th>Analítica</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-art>
+            <tr class="p-selectable-row">
+              <td style="width: 3rem">
+                <p-tableCheckbox
+                  [value]="art"
+                  (click)="selectRow()"
+                ></p-tableCheckbox>
+              </td>
+
+              <td>{{ art.similarity }}</td>
+
+              <td>{{ art.matomo[0]["Actions.getPageUrls"][0].nb_hits }}</td>
+
+              <td>
+                {{ art.matomo[0]["Actions.getPageUrls"][0].avg_time_on_page }}
+              </td>
+
+              <td>
+                {{ art.matomo[0]["Actions.getPageUrls"][0].entry_bounce_count }}
+              </td>
+
+              <td>{{ art.matomo[0]["Actions.getPageUrls"][0].bounce_rate }}</td>
+              <td>
+                {{ art.title }}
+              </td>
+
+              <td>
+                <button
+                  pButton
+                  pRipple
+                  icon="pi pi-eye"
+                  pTooltip="Ver Artículo"
+                  class="p-button-rounded p-button-success p-mr-2"
+                  (click)="setArticle(art)"
+                ></button>
+              </td>
+              <td>
+                <button
+                  pButton
+                  pRipple
+                  icon="pi pi-chart-line"
+                  pTooltip="Ver analítica"
+                  class="p-button-rounded p-button-success p-mr-2"
+                  (click)="showAnalitics(art)"
+                ></button>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      <div *ngIf="selectedSearch === 'word' && cromaData.length > 0">
+        <ul *ngFor="let similar of cromaData">
+          <li *ngFor="let words of similar.similar_words">
+            <p>
+              Palabra:
+              {{ words.word }}
+              . Similitud:
+              {{ (words.similarity * 100).toFixed(2) }} %
+            </p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- show selected -->
+  <p-dialog
+    header="Artículos seleccionados"
+    [modal]="true"
+    [resizable]="true"
+    [draggable]="false"
+    [maximizable]="true"
+    [(visible)]="openshowArticle"
+    [style]="{ width: '60vw', height: '40vw' }"
+    [closable]="false"
+  >
+    <p-steps
+      [model]="items"
+      [readonly]="true"
+      [(activeIndex)]="stepPage"
+    ></p-steps>
+
+    <div *ngIf="stepPage === 0" class="p-mt-3">
+      <p-table
+        [value]="selectedRows"
+        styleClass="p-datatable-gridlines"
+        responsiveLayout="scroll"
+        [globalFilterFields]="['title']"
+        [reorderableColumns]="true"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3rem"></th>
+            <th pSortableColumn="similarity" pReorderableColumn>
+              Similitud <p-sortIcon field="similarity"></p-sortIcon>
+            </th>
+            <th pSortableColumn="similarity" pReorderableColumn>
+              Páginas Vistas <p-sortIcon field="similarity"></p-sortIcon>
+            </th>
+            <th pSortableColumn="similarity" pReorderableColumn>
+              Tiempo promedio <p-sortIcon field="similarity"></p-sortIcon>
+            </th>
+            <th pSortableColumn="similarity" pReorderableColumn>
+              Rebote de entrada <p-sortIcon field="similarity"></p-sortIcon>
+            </th>
+            <th pSortableColumn="similarity" pReorderableColumn>
+              % Rebote <p-sortIcon field="similarity"></p-sortIcon>
+            </th>
+            <th pSortableColumn="article.title" pReorderableColumn>
+              Título <p-sortIcon field="article.title"></p-sortIcon>
+            </th>
+            <th pSortableColumn="similarity" pReorderableColumn>Artículo</th>
+            <th pSortableColumn="similarity" pReorderableColumn>Analítica</th>
+            <th pSortableColumn="similarity" pReorderableColumn>Eliminar</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-art let-index="rowIndex">
+          <tr [pReorderableRow]="index">
+            <td style="width: 3rem">
+              <span class="pi pi-bars" [pReorderableRowHandle]="index"></span>
+            </td>
+            <td>{{ art.similarity }}</td>
+            <td>{{ art.matomo[0]["Actions.getPageUrls"][0].nb_hits }}</td>
+            <td>
+              {{ art.matomo[0]["Actions.getPageUrls"][0].avg_time_on_page }}
+            </td>
+            <td>
+              {{ art.matomo[0]["Actions.getPageUrls"][0].entry_bounce_count }}
+            </td>
+            <td>{{ art.matomo[0]["Actions.getPageUrls"][0].bounce_rate }}</td>
+            <td>
+              {{ art.title }}
+            </td>
+            <td>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-eye"
+                pTooltip="Ver Artículo"
+                class="p-button-rounded p-button-success p-mr-2"
+                (click)="setArticle(art)"
+              ></button>
+            </td>
+            <td>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-chart-line"
+                pTooltip="Ver analítica"
+                class="p-button-rounded p-button-success p-mr-2"
+                (click)="showAnalitics(art)"
+              ></button>
+            </td>
+            <td>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-trash"
+                pTooltip="Eliminar"
+                class="p-button-rounded p-button-danger p-mr-2"
+                (click)="deleteArt(art)"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <div *ngIf="stepPage > 0" class="p-mt-3">
+      <div class="field grid">
+        <label for="type" class="col-12 md:col-4">Plantillas:</label>
+        <div class="col-12 md:col-8">
+          <p-dropdown
+            [options]="templates"
+            [(ngModel)]="selectedTemplates"
+            optionLabel="title"
+            [filter]="true"
+            filterBy="title"
+            [showClear]="true"
+            placeholder="Seleccione una plantilla"
+            (onChange)="numImages(selectedTemplates)"
+          ></p-dropdown>
+        </div>
+      </div>
+      <div class="field grid" *ngIf="selectedTemplates">
+        <label for="type" class="col-12"
+          >Se deben ingresar {{ index }} imágenes</label
+        >
+        <div class="col-12" *ngIf="index > 0">
+          <p-fileUpload
+            #fileUpload
+            name="demo[]"
+            [customUpload]="true"
+            (uploadHandler)="onUpload($event)"
+            [multiple]="true"
+            accept="image/*"
+            [maxFileSize]="1000000"
+            [showCancelButton]="false"
+            [fileLimit]="index"
+            uploadLabel="Cargar"
+            chooseLabel="Elegir"
+          >
+          </p-fileUpload>
+        </div>
+      </div>
+      <div class="field grid" *ngIf="selectedTemplates">
+        <label for="type" class="col-12">Vista previa de la plantilla</label>
+        <div class="col-12">
+          <p-image
+            [src]="previewTemplate"
+            alt="Image"
+            width="250"
+            [preview]="true"
+          ></p-image>
+        </div>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button
+        icon="pi pi-times"
+        (click)="close()"
+        label="Cerrar"
+        styleClass="p-button-text"
+      ></p-button>
+      <p-button
+        *ngIf="stepPage === 0"
+        styleClass="p-button-text"
+        label="Siguiente"
+        icon="pi pi-check"
+        (click)="nextStep()"
+      ></p-button>
+      <p-button
+        *ngIf="stepPage === 1"
+        styleClass="p-button-text"
+        label="Renderizar"
+        icon="pi pi-check"
+        (click)="render()"
+      ></p-button>
+    </ng-template>
+  </p-dialog>
+  <!-- #END show selected -->
+
+  <!-- show article selected -->
+  <p-dialog
+    header="Artículo"
+    [modal]="true"
+    [resizable]="true"
+    [draggable]="false"
+    [maximizable]="true"
+    [(visible)]="openArticle"
+    [style]="{ width: '50vw' }"
+  >
+    <ng-template pTemplate="header">
+      {{ seeArticle.title }}
+    </ng-template>
+    <!-- summary -->
+    <h3>Resumen:</h3>
+    <td
+      style="min-width: 200px; display: block; max-width: 650px"
+      [innerHTML]="seeArticle.summary"
+    ></td>
+    <!-- #endSummary -->
+    <hr />
+    <!-- body -->
+    <h3>Artículo:</h3>
+    <td
+      style="min-width: 200px; display: block; max-width: 650px"
+      [innerHTML]="seeArticle.text"
+    ></td>
+    <!-- #endBody -->
+    <ng-template pTemplate="footer">
+      <p-button
+        icon="pi pi-times"
+        (click)="openArticle = false"
+        label="Cerrar"
+        styleClass="p-button-text"
+      ></p-button>
+    </ng-template>
+  </p-dialog>
+  <!-- #END show article selected -->
+
+  <!-- ANALITICS POPUP -->
+  <p-dialog
+    header="Analítica"
+    [modal]="true"
+    [resizable]="true"
+    [draggable]="false"
+    [maximizable]="true"
+    [(visible)]="analitics"
+    [style]="{ width: '80vw', 'min-height': '70vh' }"
+  >
+    <ng-template pTemplate="header">
+      <h3>Analítica de matomo</h3>
+    </ng-template>
+    <!-- body -->
+
+    <p-accordion>
+      <p-accordionTab
+        *ngFor="let item of keys; let i = index"
+        [header]="item.header"
+      >
+        <div *ngFor="let anlitic of analiticsData">
+          <div *ngIf="anlitic[item.value]">
+            <p-table
+              [columns]="item.selectedColumns"
+              [value]="anlitic[item.value]"
+              responsiveLayout="scroll"
+              styleClass="p-datatable-gridlines"
+            >
+              <ng-template pTemplate="caption">
+                <p-multiSelect
+                  [options]="item.cols"
+                  [(ngModel)]="item.selectedColumns"
+                  optionLabel="header"
+                  selectedItemsLabel="{0} columns selected"
+                  [style]="{
+                    minWidth: '200px',
+                    'max-width': '-webkit-fill-available'
+                  }"
+                  placeholder="Seleccione las columnas"
+                ></p-multiSelect>
+              </ng-template>
+              <ng-template pTemplate="header" let-columns>
+                <tr>
+                  <th *ngFor="let col of columns">
+                    {{ col.header }}
+                  </th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-rowData let-columns="columns">
+                <tr>
+                  <td *ngFor="let col of columns">
+                    {{ rowData[col.header] }}
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </p-accordionTab>
+    </p-accordion>
+
+    <!-- #END body -->
+    <ng-template pTemplate="footer">
+      <p-button
+        icon="pi pi-times"
+        (click)="analitics = false"
+        label="Cerrar"
+        styleClass="p-button-text"
+      ></p-button>
+    </ng-template>
+  </p-dialog>
+  <!-- #END ANALITICS POPUP -->
+
+  <!-- date picker -->
+  <p-overlayPanel #op [showCloseIcon]="true" [style]="{ width: '450px' }">
+    <ng-template pTemplate>
+      <div class="p-grid">
+        <div class="col-8">
+          <!-- day or week picker -->
+          <p-calendar
+            (onSelect)="formatDate()"
+            *ngIf="periodSelected === 'day' || periodSelected === 'week'"
+            [inline]="true"
+            dateFormat="yyyy-mm-dd"
+            [(ngModel)]="dateSelected"
+          ></p-calendar>
+
+          <!-- month picker -->
+          <p-calendar
+            (onSelect)="formatDate()"
+            *ngIf="periodSelected === 'month'"
+            view="month"
+            [inline]="true"
+            [readonlyInput]="true"
+            dateFormat="yyyy-mm-dd"
+            [(ngModel)]="dateSelected"
+          ></p-calendar>
+
+          <!-- Range picker -->
+          <p-calendar
+            (onSelect)="formatDate()"
+            *ngIf="periodSelected === 'range'"
+            inputId="range"
+            [inline]="true"
+            selectionMode="range"
+            [readonlyInput]="true"
+            dateFormat="yyyy-mm-dd"
+            [(ngModel)]="dateSelected"
+          ></p-calendar>
+
+          <!-- year picker -->
+          <p-calendar
+            (onSelect)="formatDate()"
+            *ngIf="periodSelected === 'year'"
+            view="year"
+            [inline]="true"
+            dateFormat="yy"
+            inputId="yearpicker"
+            [(ngModel)]="dateSelected"
+          ></p-calendar>
+        </div>
+
+        <div class="col-4">
+          <div class="field-radiobutton">
+            <p-radioButton
+              name="day"
+              value="day"
+              inputId="day"
+              [(ngModel)]="periodSelected"
+            ></p-radioButton>
+            <label for="day">Día</label>
+          </div>
+
+          <div class="field-radiobutton">
+            <p-radioButton
+              name="week"
+              value="week"
+              inputId="week"
+              [(ngModel)]="periodSelected"
+            ></p-radioButton>
+            <label for="week">Semana</label>
+          </div>
+
+          <div class="field-radiobutton">
+            <p-radioButton
+              name="month"
+              value="month"
+              inputId="month"
+              [(ngModel)]="periodSelected"
+            ></p-radioButton>
+            <label for="month">Mes</label>
+          </div>
+
+          <div class="field-radiobutton">
+            <p-radioButton
+              name="year"
+              value="year"
+              inputId="year"
+              [(ngModel)]="periodSelected"
+            ></p-radioButton>
+            <label for="year">Año</label>
+          </div>
+
+          <div class="field-radiobutton">
+            <p-radioButton
+              name="range"
+              value="range"
+              inputId="range"
+              [(ngModel)]="periodSelected"
+            ></p-radioButton>
+            <label for="range">Rango fechas</label>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </p-overlayPanel>
+</div>

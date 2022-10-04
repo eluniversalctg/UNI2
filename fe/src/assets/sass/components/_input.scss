@@ -1,0 +1,16 @@
+input {
+  outline: none;
+  font-family: Lato, Helvetica, sans-serif;
+  font-size: 1rem;
+  background: rgba(90, 78, 223, 0.2);
+  padding: 0.75rem 0.75rem;
+  border: 1px solid #d3dbe3;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s,
+    box-shadow 0.2s;
+  appearance: none;
+  border-radius: 25px !important;
+}
+input:focus {
+  border: 1px solid $btn !important;
+  background: #fff !important;
+}

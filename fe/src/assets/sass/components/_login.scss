@@ -1,0 +1,30 @@
+.login-body {
+  height: 100vh;
+}
+
+.login-body .login-panel {
+  min-width: 23rem;
+
+  border-radius: 14px;
+
+  background-color: rgba(255, 255, 255, 0.5);
+
+  box-shadow: 10px 10px 4px rgba(0, 0, 0, 0.3),
+    10px 24px 36px rgba(0, 0, 0, 0.04);
+
+  width: min-content;
+
+  img {
+    height: fit-content;
+
+    width: 100%;
+  }
+}
+
+a {
+  cursor: pointer;
+}
+
+a:hover {
+  color: $btn-over;
+}

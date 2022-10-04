@@ -1,0 +1,397 @@
+<ul class="border-ul">
+  <li
+    class="p-mt-2"
+    *ngFor="let list of recursiveList; let i = index"
+    [ngClass]="list.isChildren ? 'p-ml-4' : 'mg-l-0'"
+  >
+    <div *ngIf="list && list.isChildren">
+      <div style="display: inline-flex">
+        <button
+          pButton
+          icon="pi pi-angle-up"
+          type="button"
+          (click)="moveElement(recursiveList, i, 'up')"
+          [disabled]="i === 0"
+        ></button>
+
+        <p-dropdown
+          [options]="getOperatorsBoolean"
+          [(ngModel)]="list.operator"
+          optionLabel="id"
+          optionValue="value"
+          (onChange)="setOperator(recursiveList, $event)"
+          placeholder="Operator"
+          class="p-ml-5"
+        ></p-dropdown>
+      </div>
+
+      <div style="width: 3%">
+        <button
+          pButton
+          pRipple
+          icon="pi pi-angle-down"
+          type="button"
+          (click)="moveElement(recursiveList, i, 'down')"
+          [disabled]="i === recursiveList.length - 1"
+        ></button>
+      </div>
+    </div>
+
+    <div class="p-grid flex-column" *ngIf="!list.isChildren">
+      <div style="display: inline-flex">
+        <button
+          pButton
+          icon="pi pi-angle-up"
+          type="button"
+          (click)="moveElement(recursiveList, i, 'up')"
+          [disabled]="i === 0"
+        ></button>
+
+        <div *ngIf="i !== 0">
+          <p-dropdown
+            [options]="getOperatorsBoolean"
+            [(ngModel)]="list.operator"
+            optionLabel="id"
+            optionValue="value"
+            (onChange)="setOperator(recursiveList, $event)"
+            placeholder="Operator"
+            class="p-ml-5"
+          ></p-dropdown>
+        </div>
+
+        <p [ngClass]="i !== 0 ? 'p-ml-2' : 'p-ml-7'">
+          {{ list.conditionId }}
+          {{
+            list.variable === "Seleccionar Condición"
+              ? ""
+              : "- " + list.variable
+          }}
+          <b>{{ list.value }}</b>
+        </p>
+      </div>
+
+      <div style="display: inline-flex; margin-top: 0.2rem">
+        <div style="width: 3%">
+          <button
+            pButton
+            pRipple
+            icon="pi pi-angle-down"
+            type="button"
+            (click)="moveElement(recursiveList, i, 'down')"
+            [disabled]="i === recursiveList.length - 1"
+          ></button>
+        </div>
+
+        <div style="margin-left: 5rem; width: 10%" *ngIf="list.hasOperator">
+          <p-dropdown
+            [style]="{
+              width: '-webkit-fill-available'
+            }"
+            [options]="list.posiblesOperators || []"
+            [(ngModel)]="list.operatorCondition"
+            optionLabel="id"
+            optionValue="value"
+            placeholder="Operator"
+            class="p-ml-5"
+          ></p-dropdown>
+        </div>
+
+        <div
+          style="margin: 0 2rem"
+          [ngClass]="list.hasOperator ? 'sevP' : 'eigP'"
+        >
+          <p-dropdown
+            *ngIf="!list.multivalued && list.values && list.values.length > 0"
+            class="p-ml-1"
+            [options]="list.values || []"
+            optionLabel="value"
+            optionValue="value"
+            [(ngModel)]="list.selectedValue"
+            placeholder="Valor a seleccionar"
+            [style]="{
+              width: '-webkit-fill-available'
+            }"
+          ></p-dropdown>
+
+          <p-multiSelect
+            *ngIf="list.multivalued && list.values && list.values.length > 0"
+            [options]="list.values || []"
+            [(ngModel)]="list.selectedValue"
+            optionLabel="value"
+            optionValue="value"
+            placeholder="Valores a seleccionar"
+            [style]="{
+              width: '-webkit-fill-available'
+            }"
+          ></p-multiSelect>
+
+          <input
+            [style]="{
+              width: '-webkit-fill-available'
+            }"
+            [(ngModel)]="list.selectedValue"
+            type="text"
+            *ngIf="
+              list.variableType === 'string' &&
+              (!list.values || list.values.length === 0)
+            "
+          />
+
+          <input
+            [style]="{
+              width: '-webkit-fill-available'
+            }"
+            [(ngModel)]="list.selectedValue"
+            type="number"
+            *ngIf="
+              list.variableType === 'integer' &&
+              (!list.values || list.values.length === 0)
+            "
+          />
+
+          <p-calendar
+            [style]="{
+              width: '-webkit-fill-available'
+            }"
+            [(ngModel)]="list.selectedValue"
+            dateFormat="yy-mm-dd"
+            *ngIf="
+              list.variableType === 'date' &&
+              (!list.values || list.values.length === 0)
+            "
+            [showIcon]="true"
+          ></p-calendar>
+
+          <p-inputSwitch
+            [(ngModel)]="list.selectedValue"
+            *ngIf="
+              list.variableType === 'boolean' &&
+              (!list.values || list.values.length === 0)
+            "
+          ></p-inputSwitch>
+        </div>
+
+        <div style="width: 3%" class="p-mr-4">
+          <button
+            pButton
+            pRipple
+            icon="pi pi-trash"
+            class="p-button-text"
+            type="button"
+            (click)="deleteValue(recursiveList, i)"
+          ></button>
+        </div>
+      </div>
+    </div>
+
+    <br />
+
+    <!-- componente recursive
+    ======================================================================= -->
+
+    <app-recursive
+      [recursiveList]="list.children || []"
+      [unomiConditions]="unomiConditions"
+      [conditionVariables]="conditionVariables"
+    ></app-recursive>
+
+    <!-- #END componente recursive
+    ======================================================================= -->
+
+    <!-- BOTONES PARA AGREGAR LAS COSAS
+    ========================================================================== -->
+    <div *ngIf="!list.isChildren">
+      <button
+        pButton
+        pRipple
+        icon="pi pi-plus"
+        type="button"
+        label="Agregar Criterio"
+        class="p-button-text"
+        (click)="op3.toggle($event)"
+      ></button>
+
+      <button
+        pButton
+        pRipple
+        icon="pi pi-plus"
+        type="button"
+        label="Agregar Grupo de Criterio"
+        class="p-button-text"
+        (click)="op4.toggle($event)"
+      ></button>
+
+      <!-- overlayPanel to show the list of conditions
+      ====================================================================== -->
+      <p-overlayPanel #op3 [showCloseIcon]="true" [dismissable]="true">
+        <div class="p-grid">
+          <!-- conditions
+        ======================================================================= -->
+          <div class="overlayPanel">
+            <p>Condiciones</p>
+
+            <div class="list">
+              <input
+                class="p-ml-2 p-mt-2"
+                pInputText
+                type="text"
+                (keyup)="filterConditions($event)"
+                placeholder="Buscar.."
+              />
+
+              <ul>
+                <li
+                  *ngFor="let condition of unomiConditions"
+                  (click)="filterSelected(condition, 'single')"
+                >
+                  {{ condition.id }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- variables
+      ======================================================================= -->
+          <div
+            *ngIf="conditionsValuesFiltered.length > 0 && conditionSelected"
+            class="overlayPanel"
+          >
+            <p>Variables</p>
+
+            <div class="list">
+              <input
+                class="p-ml-2 p-mt-2"
+                pInputText
+                type="text"
+                (keydown)="filterConditionsValues($event)"
+                placeholder="Buscar.."
+              />
+
+              <ul>
+                <li
+                  *ngFor="let value of conditionsValuesFiltered"
+                  (click)="setValuesOfParameter(value, list)"
+                >
+                  {{ value.id }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- setVariable
+      ======================================================================= -->
+          <div *ngIf="parameterFiltered.length > 0" class="overlayPanel">
+            <p>Elejir el valor</p>
+
+            <div class="list">
+              <input
+                class="p-ml-2 p-mt-2"
+                pInputText
+                type="text"
+                (keydown)="filterConditionsValues($event)"
+                placeholder="Buscar.."
+              />
+
+              <ul>
+                <li
+                  *ngFor="let param of parameterFiltered"
+                  (click)="filterValuesToVariable(param, list)"
+                >
+                  {{ param.value }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </p-overlayPanel>
+
+      <p-overlayPanel #op4 [showCloseIcon]="true" [dismissable]="true">
+        <div class="p-grid">
+          <!-- conditions
+        ======================================================================= -->
+          <div class="overlayPanel">
+            <p>Condiciones</p>
+
+            <div class="list">
+              <input
+                class="p-ml-2 p-mt-2"
+                pInputText
+                type="text"
+                (keyup)="filterConditions($event)"
+                placeholder="Buscar.."
+              />
+
+              <ul>
+                <li
+                  *ngFor="let condition of unomiConditions"
+                  (click)="filterSelected(condition, 'group')"
+                >
+                  {{ condition.id }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- variables
+      ======================================================================= -->
+          <div
+            *ngIf="conditionsValuesFiltered.length > 0 && conditionSelected"
+            class="overlayPanel"
+          >
+            <p>Variables</p>
+
+            <div class="list">
+              <input
+                class="p-ml-2 p-mt-2"
+                pInputText
+                type="text"
+                (keydown)="filterConditionsValues($event)"
+                placeholder="Buscar.."
+              />
+
+              <ul>
+                <li
+                  *ngFor="let value of conditionsValuesFiltered"
+                  (click)="setValuesOfParameter(value, list)"
+                >
+                  {{ value.id }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- setVariable
+      ======================================================================= -->
+          <div *ngIf="parameterFiltered.length > 0" class="overlayPanel">
+            <p>Elejir el valor</p>
+
+            <div class="list">
+              <input
+                class="p-ml-2 p-mt-2"
+                pInputText
+                type="text"
+                (keydown)="filterConditionsValues($event)"
+                placeholder="Buscar.."
+              />
+
+              <ul>
+                <li
+                  *ngFor="let param of parameterFiltered"
+                  (click)="filterValuesToVariable(param, list)"
+                >
+                  {{ param.value }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </p-overlayPanel>
+
+      <!--  #END overlayPanel to show the list of conditions
+          ====================================================================== -->
+    </div>
+
+    <!-- BOTONES PARA AGREGAR LAS COSAS
+    ========================================================================== -->
+  </li>
+</ul>

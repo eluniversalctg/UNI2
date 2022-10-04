@@ -1,0 +1,24 @@
+<div
+  class="layout-wrapper"
+  [ngClass]="{
+    'layout-slim': app.menuMode === 'slim',
+    'layout-static': app.menuMode === 'static',
+    'layout-mobile-active': staticMenuMobileActive,
+    'layout-static-inactive':
+      staticMenuDesktopInactive && app.menuMode === 'static',
+    'p-input-filled': app.inputStyle === 'filled',
+    'p-ripple-disabled': !app.ripple
+  }"
+  (click)="onLayoutClick()"
+>
+  <app-topbar></app-topbar>
+
+  <app-menu></app-menu>
+
+  <div class="layout-content-wrapper">
+    <div class="layout-content">
+      <router-outlet></router-outlet>
+    </div>
+    <app-footer></app-footer>
+  </div>
+</div>

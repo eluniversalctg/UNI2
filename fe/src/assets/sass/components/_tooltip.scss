@@ -1,0 +1,91 @@
+.p-tooltip {
+  .p-tooltip-text {
+    background: linear-gradient(147.38deg, $color-white, #9ec4f7);
+    color: $color-primary;
+    padding: 0.75rem 0.75rem;
+  }
+
+  &.p-tooltip-right {
+    .p-tooltip-arrow {
+      border-right-color: $color-primary;
+    }
+  }
+
+  &.p-tooltip-left {
+    .p-tooltip-arrow {
+      border-left-color: $color-primary;
+    }
+  }
+
+  &.p-tooltip-top {
+    .p-tooltip-arrow {
+      border-top-color: $color-primary;
+    }
+  }
+
+  &.p-tooltip-bottom {
+    .p-tooltip-arrow {
+      border-bottom-color: $color-primary;
+    }
+  }
+}
+
+.layout-tooltip.p-tooltip .p-tooltip-text {
+  background: linear-gradient(147.38deg, $color-white, #9ec4f7);
+  color: $color-primary;
+}
+.layout-tooltip.p-tooltip.p-tooltip-right .p-tooltip-arrow {
+  display: none;
+}
+
+.p-tooltip {
+  position: absolute;
+  display: none;
+  padding: 0.25em 0.5rem;
+  max-width: 12.5rem;
+}
+.p-tooltip.p-tooltip-right,
+.p-tooltip.p-tooltip-left {
+  padding: 0 0.25rem;
+}
+.p-tooltip.p-tooltip-top,
+.p-tooltip.p-tooltip-bottom {
+  padding: 0.25em 0;
+}
+.p-tooltip .p-tooltip-text {
+  white-space: pre-line;
+}
+.p-tooltip-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+}
+.p-tooltip-right .p-tooltip-arrow {
+  top: 50%;
+  left: 0;
+  margin-top: -0.25rem;
+  border-width: 0.25em 0.25em 0.25em 0;
+}
+.p-tooltip-left .p-tooltip-arrow {
+  top: 50%;
+  right: 0;
+  margin-top: -0.25rem;
+  border-width: 0.25em 0 0.25em 0.25rem;
+}
+.p-tooltip.p-tooltip-top {
+  padding: 0.25em 0;
+}
+.p-tooltip-top .p-tooltip-arrow {
+  bottom: 0;
+  left: 50%;
+  margin-left: -0.25rem;
+  border-width: 0.25em 0.25em 0;
+}
+.p-tooltip-bottom .p-tooltip-arrow {
+  top: 0;
+  left: 50%;
+  margin-left: -0.25rem;
+  border-width: 0 0.25em 0.25rem;
+}

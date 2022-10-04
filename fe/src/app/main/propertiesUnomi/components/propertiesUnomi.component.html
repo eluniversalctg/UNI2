@@ -1,0 +1,186 @@
+<div class="p-grid">
+  <p-toast></p-toast>
+  <div class="p-col-12">
+    <div class="card">
+      <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+          <h1>Agregar propiedades.</h1>
+        </ng-template>
+        <ng-template pTemplate="right">
+          <button
+            pButton
+            type="button"
+            label="Agregar propiedad"
+            (click)="createPropertie()"
+          ></button>
+        </ng-template>
+      </p-toolbar>
+      <p-selectButton
+        [options]="options"
+        optionLabel="label"
+        optionValue="value"
+        [(ngModel)]="optionsSelected"
+      ></p-selectButton>
+
+      <p-table
+        #dt
+        [rows]="10"
+        dataKey="id"
+        [paginator]="true"
+        responsiveLayout="scroll"
+        [globalFilterFields]="['label', 'valueDefault']"
+        styleClass="p-datatable-gridlines"
+        responsiveLayout="scroll"
+        [value]="propertiesUnomi"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex">
+            <span class="p-input-icon-left ml-auto">
+              <i class="pi pi-search"></i>
+
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Buscar.."
+              />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="label">
+              Nombre <p-sortIcon field="label"></p-sortIcon>
+            </th>
+            <th pSortableColumn="valueDefault">
+              Valor por defecto <p-sortIcon field="valueDefault"></p-sortIcon>
+            </th>
+            <th>Acciones</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-property>
+          <tr *ngIf="property.isActive === optionsSelected">
+            <td>
+              {{ property.label }}
+            </td>
+            <td>
+              {{ property.valueDefault }}
+            </td>
+            <td>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                pTooltip="Editar propiedad"
+                (click)="openUpdateProperty(property)"
+                class="p-button-rounded p-button-warning p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-times"
+                *ngIf="property.isActive"
+                (click)="changeState(property)"
+                pTooltip="Inactivar propiedad"
+                class="p-button-rounded p-button-danger p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                (click)="changeState(property)"
+                icon="pi pi-check"
+                *ngIf="!property.isActive"
+                pTooltip="Activar propiedad"
+                class="p-button-rounded p-button-success p-mr-2"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<p-dialog
+  [(visible)]="addNew"
+  [contentStyle]="{ overflow: 'visible' }"
+  [style]="{ 'min-width': '32%', 'min-height': '40vh' }"
+  [modal]="true"
+  [draggable]="false"
+  [maximizable]="true"
+>
+  <ng-template pTemplate="header">
+    <p>Crear nueva propiedad.</p>
+  </ng-template>
+  <form [formGroup]="propertiesUnomiForm" class="mt-2">
+    <div class="field grid">
+      <label for="label" class="col-12 md:col-4">Nombre:</label>
+      <div class="col-12 md:col-8">
+        <input
+          id="label"
+          type="text"
+          class="input inputfield"
+          style="width: -webkit-fill-available"
+          pInputText
+          formControlName="label"
+          autocomplete="off"
+        />
+      </div>
+      <p-message
+        *ngIf="
+          propertiesUnomiForm.controls.label.touched &&
+          !propertiesUnomiForm.controls.label.valid
+        "
+        severity="error"
+        text="Nombre requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid">
+      <label for="valueDefault" class="col-12 md:col-4"
+        >Valor por defecto:</label
+      >
+      <div class="col-12 md:col-8">
+        <input
+          id="valueDefault"
+          type="text"
+          class="input inputfield"
+          class="inputfield"
+          style="width: -webkit-fill-available"
+          pInputText
+          formControlName="valueDefault"
+          autocomplete="off"
+        />
+      </div>
+      <p-message
+        *ngIf="
+          propertiesUnomiForm.controls.valueDefault.touched &&
+          !propertiesUnomiForm.controls.valueDefault.valid
+        "
+        severity="error"
+        text="Valor requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="addNew = false"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Guardar"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="register()"
+      [disabled]="!propertiesUnomiForm.valid"
+    ></button>
+  </ng-template>
+</p-dialog>
+<p-confirmDialog [style]="{ width: '500px' }"></p-confirmDialog>

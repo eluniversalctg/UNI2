@@ -1,0 +1,95 @@
+.border-ul {
+  list-style: none;
+  padding-left: 0px;
+  border-left: 5px solid #a1a6f6;
+}
+
+div.p-dropdown.p-component {
+  border-radius: 26px;
+}
+
+:host ::ng-deep {
+  .p-dropdown {
+    border-radius: 26px;
+  }
+}
+
+p {
+  margin-bottom: 0px;
+  margin-top: 10px;
+}
+
+.sevP {
+  width: 70%;
+}
+
+.eigP {
+  width: 80%;
+}
+
+.mg-l-0 {
+  margin-left: 2.5rem;
+}
+
+.list {
+  overflow: auto;
+  max-height: 15rem;
+  width: 15vw;
+}
+
+.list ul {
+  list-style: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+li {
+  margin: 0.5rem 0.2rem;
+}
+.li.active {
+  background-color: aquamarine;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #006dff;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #5a4edf;
+}
+
+.overlayPanel {
+  padding: 0.5rem;
+}
+
+.p-ml-7 {
+  margin-left: 7rem;
+}
+@media screen and (max-width: 576px) {
+  .list {
+    overflow: auto;
+    max-height: 15rem;
+    width: 22vw;
+  }
+
+  .list ul {
+    list-style: none;
+    padding: 0;
+    cursor: pointer;
+  }
+}

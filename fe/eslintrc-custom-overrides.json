@@ -1,0 +1,10 @@
+{
+  "overrides": [
+    {
+      "files": ["*.html"],
+      "rules": {
+        "@angular-eslint/no-host-metadata-property": "off"
+      }
+    }
+  ]
+}

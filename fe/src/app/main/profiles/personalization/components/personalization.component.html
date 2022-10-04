@@ -1,0 +1,227 @@
+<div class="p-grid">
+  <p-toast></p-toast>
+  <div class="p-col-12">
+    <div class="card">
+      <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+          <h1>Administrar reglas de personalización.</h1>
+        </ng-template>
+        <ng-template pTemplate="right">
+          <button
+            pButton
+            type="button"
+            label="Agregar personalización"
+            (click)="createPersonalization()"
+          ></button>
+        </ng-template>
+      </p-toolbar>
+      <p-selectButton
+        [options]="options"
+        optionLabel="name"
+        optionValue="value"
+        [(ngModel)]="optionsSelected"
+      ></p-selectButton>
+
+      <p-table
+        #dt
+        [rows]="10"
+        dataKey="id"
+        [paginator]="true"
+        responsiveLayout="scroll"
+        [globalFilterFields]="['name', 'idDiv', 'template.title']"
+        styleClass="p-datatable-gridlines"
+        responsiveLayout="scroll"
+        [value]="personalizations"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex">
+            <span class="p-input-icon-left ml-auto">
+              <i class="pi pi-search"></i>
+
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Buscar.."
+              />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="name">
+              Nombre <p-sortIcon field="name"></p-sortIcon>
+            </th>
+            <th pSortableColumn="template.title">
+              Plantilla <p-sortIcon field="template.title"></p-sortIcon>
+            </th>
+
+            <th>Acciones</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-personalization>
+          <tr *ngIf="personalization.isActive === optionsSelected">
+            <td>
+              {{ personalization.name }}
+            </td>
+            <td>
+              {{ personalization.template.title }}
+            </td>
+
+            <td>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                pTooltip="Editar regla personalización"
+                (click)="openUpdatePersonalization(personalization, true)"
+                class="p-button-rounded p-button-warning p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-copy"
+                pTooltip="Duplicar regla personalización"
+                (click)="openUpdatePersonalization(personalization, false)"
+                class="p-button-rounded p-button-secondary p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-times"
+                *ngIf="personalization.isActive"
+                (click)="changeState(personalization)"
+                pTooltip="Inactivar regla personalización"
+                class="p-button-rounded p-button-danger p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                (click)="changeState(personalization)"
+                icon="pi pi-check"
+                *ngIf="!personalization.isActive"
+                pTooltip="Activar regla personalización"
+                class="p-button-rounded p-button-success p-mr-2"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+<p-dialog
+  [(visible)]="addNew"
+  [contentStyle]="{ overflow: 'visible' }"
+  [style]="{ overflow: 'auto', 'min-width': '70vw', 'min-height': '70vh' }"
+  [modal]="true"
+  [draggable]="false"
+  [maximizable]="true"
+>
+  <ng-template pTemplate="header">
+    <p>Crear nueva personalización.</p>
+  </ng-template>
+  <form [formGroup]="personalizationForm" class="mt-2">
+    <div class="field grid">
+      <label for="name" class="col-12 md:col-4">Nombre:</label>
+      <div class="col-12 md:col-8">
+        <input
+          id="name"
+          type="text"
+          class="input inputfield"
+          style="width: -webkit-fill-available"
+          pInputText
+          formControlName="name"
+          autocomplete="off"
+        />
+      </div>
+      <p-message
+        *ngIf="
+          personalizationForm.controls.name.touched &&
+          !personalizationForm.controls.name.valid
+        "
+        severity="error"
+        text="Nombre requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid">
+      <label for="template" class="col-12 md:col-4">Plantilla:</label>
+      <div class="col-12 md:col-8">
+        <p-dropdown
+          id="template"
+          [options]="templates"
+          optionLabel="title"
+          optionValue="_id"
+          formControlName="template"
+          placeholder="Seleccione una plantilla"
+        >
+          <ng-template let-template pTemplate="item">
+            <div>
+              <div>
+                {{ template.title }}
+                -
+                {{ template.typeTemplate }}
+              </div>
+            </div>
+          </ng-template></p-dropdown
+        >
+      </div>
+      <p-message
+        *ngIf="
+          personalizationForm.controls.template.touched &&
+          !personalizationForm.controls.template.valid
+        "
+        severity="error"
+        text="Plantilla requerida."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+
+    <div class="field grid">
+      <label for="condition" class="col-12 md:col-4">Condition:</label>
+    </div>
+    <!--parentCondition
+          ====================================================================== -->
+    <div>
+      <app-sharedConditions
+        [schema]="conditionSchema"
+        [unomiConditions]="unomiConditions"
+        [conditionVariables]="conditionVariables"
+        (childEvent)="emmit($event)"
+      ></app-sharedConditions>
+
+      <!-- #END parentCondition
+                  ====================================================================== -->
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label=" Verify Condition"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="verifyCondition()"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="addNew = false"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Guardar"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="register()"
+      [disabled]="!personalizationForm.valid"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{ width: '500px' }"></p-confirmDialog>

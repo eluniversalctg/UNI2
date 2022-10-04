@@ -1,0 +1,300 @@
+<div class="p-grid">
+  <p-toast></p-toast>
+
+  <div class="p-col-12">
+    <div class="card">
+      <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+          <h1>Administrar Condiciones.</h1>
+        </ng-template>
+
+        <ng-template pTemplate="right">
+          <button
+            pButton
+            type="button"
+            label="Crear condición"
+            (click)="addNew()"
+          ></button>
+        </ng-template>
+      </p-toolbar>
+
+      <p-table
+        #dt
+        [rows]="10"
+        dataKey="id"
+        [paginator]="true"
+        [value]="unomiConditions"
+        responsiveLayout="scroll"
+        styleClass="p-datatable-gridlines"
+        [globalFilterFields]="['id', 'name', 'description']"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex">
+            <button
+              pButton
+              type="button"
+              icon="pi pi-refresh"
+              pTooltip="Refrescar información."
+              class="p-button-rounded p-button-success p-mt-1 p-ml-2"
+              (click)="refreshData()"
+            ></button>
+            <span class="p-input-icon-left ml-auto">
+              <i class="pi pi-search"></i>
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Buscar.."
+              />
+            </span>
+          </div>
+        </ng-template>
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="id">
+              Id <p-sortIcon field="id"></p-sortIcon>
+            </th>
+            <th pSortableColumn="name">
+              Nombre <p-sortIcon field="name"></p-sortIcon>
+            </th>
+            <th pSortableColumn="description">
+              Descripción <p-sortIcon field="description"></p-sortIcon>
+            </th>
+            <th>Acciones</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-condition>
+          <tr>
+            <td>
+              {{ condition.id }}
+            </td>
+            <td>
+              {{ condition.name }}
+            </td>
+            <td class="overflow-auto">
+              {{ condition.description }}
+            </td>
+            <td>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                pTooltip="Editar condición"
+                (click)="editCondition(condition); isEditing = true"
+                class="p-button-rounded p-button-warning p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-copy"
+                pTooltip="Duplicar condición"
+                (click)="editCondition(condition); isEditing = false"
+                class="p-button-rounded p-button-success p-mr-2"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<!--  create new condition
+==================================================== -->
+<p-dialog
+  header="Condiciones"
+  [modal]="true"
+  [style]="{
+    overflow: 'auto',
+    'min-width': '70vw',
+    'min-height': '70vh'
+  }"
+  [resizable]="true"
+  [draggable]="false"
+  [maximizable]="true"
+  [(visible)]="createCondition"
+  [contentStyle]="{ overflow: 'visible' }"
+>
+  <ng-template pTemplate="header">
+    <p>Crear nueva condición.</p>
+  </ng-template>
+
+  <!-- Metadata information
+      ===================================================================-->
+  <div class="field grid">
+    <label for="id" class="col-12 md:col-4">Id:</label>
+    <div class="col-12 md:col-8">
+      <input
+        [disabled]="isEditing"
+        [(ngModel)]="condition.metadata.id"
+        onkeypress="return event.charCode != 32"
+        (keyup)="setEvalQuery()"
+        (blur)="setConditionName()"
+        class="input inputfield fill-available"
+        type="text"
+        id="id"
+        pInputText
+      />
+    </div>
+  </div>
+
+  <div class="field grid">
+    <label for="name" class="col-12 md:col-4">Name:</label>
+    <div class="col-12 md:col-8">
+      <input
+        [(ngModel)]="condition.metadata.name"
+        class="input inputfield fill-available"
+        type="text"
+        id="name"
+        pInputText
+      />
+    </div>
+  </div>
+
+  <div class="field grid">
+    <label for="description" class="col-12 md:col-4">Description:</label>
+    <div class="col-12 md:col-8">
+      <input
+        [(ngModel)]="condition.metadata.description"
+        class="fill-available input inputfield"
+        type="text"
+        id="description"
+        pInputText
+      />
+    </div>
+  </div>
+
+  <!-- #END Metadata information
+      ===================================================================-->
+
+  <!-- #End Metadata
+      ===================================================================-->
+
+  <!-- pickList of System tags
+        ===================================================================-->
+
+  <div class="field grid">
+    <label for="systemTags" class="col-12 md:col-4"
+      >Seleccione los systemTags que desea incluir en la condición:</label
+    >
+    <div class="col-12 md:col-8">
+      <p-multiSelect
+        id="systemTags"
+        [options]="systemTags"
+        [(ngModel)]="systemTagsSelected"
+        optionLabel="header"
+        placeholder="Valores a seleccionar"
+        [style]="{
+          width: '-webkit-fill-available',
+          'max-width': '45vw'
+        }"
+      ></p-multiSelect>
+    </div>
+  </div>
+  <!-- #end System tags
+      ===================================================================-->
+
+  <!-- variables
+        ===================================================================-->
+  <div class="field grid">
+    <label for="variables" class="col-12 md:col-4"
+      >Seleccione las variables que desea incluir en la condición:</label
+    >
+    <div class="col-12 md:col-8">
+      <p-multiSelect
+        id="variables"
+        [options]="conditionVariables"
+        [(ngModel)]="selectedVariables"
+        optionLabel="id"
+        placeholder="Valores a seleccionar"
+        [style]="{
+          width: '-webkit-fill-available',
+          'max-width': '45vw'
+        }"
+      ></p-multiSelect>
+    </div>
+  </div>
+  <!-- #end variables
+      ===================================================================-->
+
+  <!-- Switch to select if has parentConditon
+  ================================================== -->
+  <div class="field grid">
+    <label for="parentCondition" class="col-12 md:col-4"
+      >ParentCondition:</label
+    >
+    <div class="col-12 md:col-8">
+      <p-inputSwitch
+        id="parentCondition"
+        [(ngModel)]="createParentCondition"
+      ></p-inputSwitch>
+    </div>
+  </div>
+
+  <!-- optional parameter of condition
+      ====================================================================== -->
+  <div class="field grid" *ngIf="!createParentCondition">
+    <label for="conditionEvaluator" class="col-12 md:col-4"
+      >ConditionEvaluator:</label
+    >
+    <div class="col-12 md:col-8">
+      <input
+        id="conditionEvaluator"
+        [disabled]="true"
+        placeholder="Evaluator"
+        class="fill-available"
+        [(ngModel)]="condition.queryBuilder"
+      />
+    </div>
+  </div>
+  <div class="field grid" *ngIf="!createParentCondition">
+    <label for="querybuilder" class="col-12 md:col-4">QueryBuilder:</label>
+    <div class="col-12 md:col-8">
+      <input
+        id="querybuilder"
+        [disabled]="true"
+        placeholder="ESQueryBuilder"
+        class="fill-available"
+        [(ngModel)]="condition.conditionEvaluator"
+      />
+    </div>
+  </div>
+  <!-- #END optional parameter of condition
+      ====================================================================== -->
+
+  <!--parentCondition
+          ====================================================================== -->
+  <div *ngIf="createParentCondition">
+    <app-sharedConditions
+      [schema]="conditionSchema"
+      [unomiConditions]="unomiConditions"
+      [conditionVariables]="conditionVariables"
+      (childEvent)="emmit($event)"
+    ></app-sharedConditions>
+  </div>
+  <!-- #END parentCondition
+          ====================================================================== -->
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="createCondition = false"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Guardar"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="saveCondition()"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{ width: '500px' }"></p-confirmDialog>

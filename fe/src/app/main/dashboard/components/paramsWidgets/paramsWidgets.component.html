@@ -1,0 +1,206 @@
+<div class="p-grid">
+  <p-toast></p-toast>
+
+  <div class="p-col-12">
+    <div class="card">
+      <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+          <h1>Administrar Parámetros.</h1>
+        </ng-template>
+
+        <ng-template pTemplate="right">
+          <button
+            pButton
+            type="button"
+            label="Agregar parámetro"
+            (click)="createParameter()"
+          ></button>
+        </ng-template>
+      </p-toolbar>
+
+      <!-- load params into table
+      ============================================================ -->
+      <p-table
+        #dt
+        [rows]="10"
+        dataKey="id"
+        [value]="params"
+        [paginator]="true"
+        responsiveLayout="scroll"
+        [globalFilterFields]="['name', 'value']"
+        styleClass="p-datatable-gridlines"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex">
+            <span class="p-input-icon-left ml-auto">
+              <i class="pi pi-search"></i>
+
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Buscar.."
+              />
+            </span>
+          </div>
+        </ng-template>
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="name">
+              Nombre <p-sortIcon field="name"></p-sortIcon>
+            </th>
+
+            <th pSortableColumn="parameter">
+              Parámetro <p-sortIcon field="parameter"></p-sortIcon>
+            </th>
+
+            <th pSortableColumn="value">
+              Valor <p-sortIcon field="value"></p-sortIcon>
+            </th>
+
+            <th>Acciones</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-param>
+          <tr>
+            <td>{{ param.name }}</td>
+
+            <td>{{ param.parameter }}</td>
+
+            <td>{{ param.value }}</td>
+
+            <td>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                pTooltip="Editar parámetro"
+                class="p-button-rounded p-button-warning p-mr-2"
+                (click)="editParameter(param)"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-trash"
+                pTooltip="Eliminar parámetro"
+                class="p-button-rounded p-button-danger"
+                (click)="deleteParameter(param)"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<!-- dialog to create/edit parameter
+      ============================================================ -->
+<p-dialog
+  [(visible)]="addNew"
+  [style]="{ overflow: 'auto', 'min-width': '50vw', 'min-height': '60vh' }"
+  [contentStyle]="{ overflow: 'visible' }"
+  [modal]="true"
+  [draggable]="false"
+  [maximizable]="true"
+>
+  <ng-template pTemplate="header">
+    <p>Crear un nuevo parámetro.</p>
+  </ng-template>
+
+  <form name="paramsForm" [formGroup]="paramsForm" class="mt-2">
+    <div class="field grid">
+      <label for="name" class="col-12 md:col-4">Nombre:</label>
+
+      <div class="col-12 md:col-8">
+        <input
+          style="width: -webkit-fill-available"
+          formControlName="name"
+          class="input inputfield"
+          type="text"
+          id="name"
+          pInputText
+        />
+      </div>
+
+      <p-message
+        *ngIf="
+          paramsForm.controls.name.touched && !paramsForm.controls.name.valid
+        "
+        severity="error"
+        text="Nombre requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+
+    <div class="field grid">
+      <label for="parameter" class="col-12 md:col-4">Parámetro:</label>
+
+      <div class="col-12 md:col-8">
+        <input
+          style="width: -webkit-fill-available"
+          formControlName="parameter"
+          class="input inputfield"
+          type="text"
+          id="parameter"
+          pInputText
+        />
+      </div>
+
+      <p-message
+        *ngIf="
+          paramsForm.controls.parameter.touched &&
+          !paramsForm.controls.parameter.valid
+        "
+        severity="error"
+        text="Parámetro requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid">
+      <label for="value" class="col-12 md:col-4">Valor:</label>
+
+      <div class="col-12 md:col-8">
+        <input
+          style="width: -webkit-fill-available"
+          formControlName="value"
+          class="input inputfield"
+          type="text"
+          id="value"
+          pInputText
+        />
+      </div>
+
+      <p-message
+        *ngIf="
+          paramsForm.controls.value.touched && !paramsForm.controls.value.valid
+        "
+        severity="error"
+        text="Valor requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="resetParameter()"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Guardar"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="saveParameter()"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{ width: '500px' }"></p-confirmDialog>

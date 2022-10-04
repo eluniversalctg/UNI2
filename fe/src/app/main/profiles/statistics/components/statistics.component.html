@@ -1,0 +1,208 @@
+<div class="p-grid">
+  <p-toast></p-toast>
+  <div class="p-col-12">
+    <div class="card">
+      <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+          <h1>Sesiones de usuario.</h1>
+        </ng-template>
+      </p-toolbar>
+      <p-table
+        #dt
+        [rows]="10"
+        dataKey="itemId"
+        [paginator]="true"
+        [value]="statisticsProfiles"
+        [(selection)]="statisticsProfilesSelected"
+        [globalFilterFields]="[
+          'scope',
+          'timeStamp',
+          'duration',
+          'properties.deviceCategory'
+        ]"
+        responsiveLayout="scroll"
+        [showCurrentPageReport]="true"
+        styleClass="p-datatable-gridlines"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords}"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex">
+            <button
+              pButton
+              type="button"
+              label="Búsqueda avanzada"
+              (click)="advancedSearch = true"
+            ></button>
+            <button
+              pButton
+              type="button"
+              icon="pi pi-refresh"
+              pTooltip="Refrescar información."
+              class="p-button-rounded p-button-success p-mt-1 p-ml-2"
+              (click)="getData(undefined)"
+            ></button>
+            <span class="p-input-icon-left ml-auto">
+              <i class="pi pi-search"></i>
+
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Buscar.."
+              />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3rem">
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th pSortableColumn="scope">
+              Sitio <p-sortIcon field="scope"></p-sortIcon>
+            </th>
+            <th pSortableColumn="properties.deviceCategory">
+              Dispositivo
+              <p-sortIcon field="properties.deviceCategory"></p-sortIcon>
+            </th>
+            <th pSortableColumn="timeStamp">
+              Fecha
+              <p-sortIcon field="timeStamp"></p-sortIcon>
+            </th>
+            <th pSortableColumn="duration">
+              Duración
+              <p-sortIcon field="duration"></p-sortIcon>
+            </th>
+            <th>Acciones</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-statistic>
+          <tr>
+            <td>
+              <p-tableCheckbox [value]="statistic"></p-tableCheckbox>
+            </td>
+            <td>
+              {{ statistic.scope }}
+            </td>
+            <td>
+              {{
+                statistic.properties.deviceCategory
+                  ? statistic.properties.deviceCategory
+                  : ""
+              }}
+            </td>
+            <td>
+              {{ statistic.timeStamp | date: "dd/M/yyyy, h:mm:ss a" }}
+            </td>
+            <td>
+              {{ statistic.duration | date: "mm:ss" }}
+            </td>
+            <td>
+              <button
+                pButton
+                type="button"
+                icon="pi pi-chart-bar"
+                pTooltip="Detalle"
+                class="p-button-rounded p-mr-2"
+                (click)="showStatistics(statistic)"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+          <div class="speeddial-tooltip-demo alignSpeedDialog">
+            <p-speedDial
+              showIcon="pi pi-upload"
+              hideIcon="pi pi-times"
+              [model]="exportOptions"
+              className="speeddial-left"
+              direction="left"
+              [buttonStyle]="{
+                width: '3rem',
+                height: '3rem'
+              }"
+            ></p-speedDial>
+          </div>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<!-- advanced Search
+============================================= -->
+<p-dialog
+  [(visible)]="advancedSearch"
+  [contentStyle]="{ overflow: 'visible' }"
+  [style]="{
+    overflow: 'auto',
+    'min-width': '70%',
+    'min-height': '40vh'
+  }"
+  [modal]="true"
+  [draggable]="false"
+  [maximizable]="true"
+>
+  <ng-template pTemplate="header">
+    <p>Búsqueda avanzada.</p>
+  </ng-template>
+
+  <app-sharedConditions
+    [schema]="schema"
+    [unomiConditions]="unomiConditions"
+    [conditionVariables]="conditionVariables"
+    (childEvent)="emmit($event)"
+  ></app-sharedConditions>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="advancedSearch = false"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Guardar"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="executeAdvancedSearch()"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  [(visible)]="showSessions"
+  [contentStyle]="{ overflow: 'visible' }"
+  [style]="{
+    overflow: 'auto',
+    'min-width': '70%',
+    'min-height': '40vh'
+  }"
+  [modal]="true"
+  [draggable]="false"
+  [maximizable]="true"
+>
+  <ng-template pTemplate="header">
+    <p>Búsqueda avanzada.</p>
+  </ng-template>
+
+  <pre>
+    {{ this.sessionSelected | json }}
+  </pre>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="showSessions = false"
+    ></button>
+  </ng-template>
+</p-dialog>

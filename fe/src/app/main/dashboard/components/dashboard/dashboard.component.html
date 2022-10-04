@@ -1,0 +1,167 @@
+<div class="p-grid">
+  <div class="p-col-12 card">
+    <div class="top-bar">
+      <div class="p-grid justify-content-center">
+        <div class="sm:col-12 md:col-6 lg:col-6">
+          <h1 class="text-center">Analítica de Matomo</h1>
+        </div>
+        <div class="sm:col-12 md:col-6 lg:col-6">
+          <p-multiSelect
+            [options]="widgets"
+            [(ngModel)]="selectedWidgets"
+            optionLabel="name"
+            [style]="{
+              width: '-webkit-fill-available',
+              margin: '1rem 2rem 1rem 2rem'
+            }"
+            (onChange)="widgetsSelected()"
+            placeholder="Seleccione los widgets que desea ver"
+          ></p-multiSelect>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-grid">
+      <div
+        *ngFor="let widget of selectedWidgets; let i = index"
+        class="sm:col-12 md:col-6 lg:col-4 xl:col-4"
+        style="padding: 2rem"
+      >
+        <h2
+          class="text-center"
+          tooltipPosition="top"
+          [pTooltip]="widget.description"
+        >
+          {{ widget.name }}
+        </h2>
+        <p-button
+          label="Fecha"
+          icon="pi pi-calendar"
+          (click)="op.toggle($event)"
+        ></p-button>
+        <iframe
+          id="widgetIframe"
+          width="100%"
+          height="500"
+          [src]="widget.url | safe"
+          scrolling="yes"
+          frameborder="0"
+          marginheight="0"
+          marginwidth="0"
+        ></iframe>
+        <!-- date picker -->
+        <p-overlayPanel #op [showCloseIcon]="true" [style]="{ width: '450px' }">
+          <ng-template pTemplate>
+            <div class="p-grid">
+              <div class="col-8">
+                <!-- day or week picker -->
+                <p-calendar
+                  *ngIf="
+                    periodSelectedArray[i] === 'day' ||
+                    periodSelectedArray[i] === 'week'
+                  "
+                  [inline]="true"
+                  dateFormat="yyyy-mm-dd"
+                  [(ngModel)]="dateSelectedArray[i]"
+                ></p-calendar>
+
+                <!-- month picker -->
+                <p-calendar
+                  *ngIf="periodSelectedArray[i] === 'month'"
+                  view="month"
+                  [inline]="true"
+                  [readonlyInput]="true"
+                  dateFormat="yyyy-mm-dd"
+                  [(ngModel)]="dateSelectedArray[i]"
+                ></p-calendar>
+
+                <!-- Range picker -->
+                <p-calendar
+                  *ngIf="periodSelectedArray[i] === 'range'"
+                  inputId="range"
+                  [inline]="true"
+                  selectionMode="range"
+                  [readonlyInput]="true"
+                  dateFormat="yyyy-mm-dd"
+                  [(ngModel)]="dateSelectedArray[i]"
+                ></p-calendar>
+
+                <!-- year picker -->
+                <p-calendar
+                  *ngIf="periodSelectedArray[i] === 'year'"
+                  view="year"
+                  [inline]="true"
+                  dateFormat="yy"
+                  inputId="yearpicker"
+                  [(ngModel)]="dateSelectedArray[i]"
+                ></p-calendar>
+              </div>
+
+              <div class="col-4">
+                <div class="field-radiobutton">
+                  <p-radioButton
+                    name="day"
+                    value="day"
+                    inputId="day"
+                    [(ngModel)]="periodSelectedArray[i]"
+                  ></p-radioButton>
+                  <label for="day">Día</label>
+                </div>
+
+                <div class="field-radiobutton">
+                  <p-radioButton
+                    name="week"
+                    value="week"
+                    inputId="week"
+                    [(ngModel)]="periodSelectedArray[i]"
+                    (onClick)="resetDate(i)"
+                  ></p-radioButton>
+                  <label for="week">Semana</label>
+                </div>
+
+                <div class="field-radiobutton">
+                  <p-radioButton
+                    name="month"
+                    value="month"
+                    inputId="month"
+                    [(ngModel)]="periodSelectedArray[i]"
+                    (onClick)="resetDate(i)"
+                  ></p-radioButton>
+                  <label for="month">Mes</label>
+                </div>
+
+                <div class="field-radiobutton">
+                  <p-radioButton
+                    name="year"
+                    value="year"
+                    inputId="year"
+                    [(ngModel)]="periodSelectedArray[i]"
+                    (onClick)="resetDate(i)"
+                  ></p-radioButton>
+                  <label for="year">Año</label>
+                </div>
+
+                <div class="field-radiobutton">
+                  <p-radioButton
+                    name="range"
+                    value="range"
+                    inputId="range"
+                    [(ngModel)]="periodSelectedArray[i]"
+                  ></p-radioButton>
+                  <label for="range">Rango fechas</label>
+                </div>
+                <p-button
+                  label="Aplicar"
+                  icon="pi pi-search"
+                  (click)="
+                    appliFilter(periodSelectedArray[i], dateSelectedArray[i], i)
+                  "
+                ></p-button>
+              </div>
+            </div>
+          </ng-template>
+        </p-overlayPanel>
+      </div>
+    </div>
+  </div>
+</div>

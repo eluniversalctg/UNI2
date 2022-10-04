@@ -1,0 +1,316 @@
+<div class="p-grid">
+  <p-toast></p-toast>
+  <div class="p-col-12">
+    <div class="card">
+      <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+          <h1>Ponderación.</h1>
+        </ng-template>
+      </p-toolbar>
+      <p-toolbar
+        styleClass="p-mb-4"
+        [style]="{ 'justify-content': 'flex-start', ' width': '28%' }"
+      >
+        <!-- title -->
+        <div class="col-12 md:col-12 p-mb-2 lg:col-1">
+          <label for="name">Titulo:</label>
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-4">
+          <span class="p-float-label">
+            <input
+              id="jsonLD"
+              type="text"
+              class="input inputfield p-ml-2"
+              pInputText
+              [(ngModel)]="weighing.title.jsonLD"
+              autocomplete="off"
+              [style]="{ width: '100%' }"
+            />
+            <label for="inputtext">JSON LD</label>
+          </span>
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-4">
+          <span class="p-float-label">
+            <input
+              id="grapgQL"
+              type="text"
+              class="input inputfield p-ml-2"
+              pInputText
+              [(ngModel)]="weighing.title.grapgQL"
+              autocomplete="off"
+              [style]="{ width: '100%' }"
+            />
+            <label for="inputtext">Grapg QL</label>
+          </span>
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-3">
+          <span class="p-float-label">
+            <input
+              id="luck"
+              type="number"
+              [min]="0"
+              [max]="100"
+              class="input inputfield p-ml-2"
+              pInputText
+              [(ngModel)]="weighing.title.luck"
+              autocomplete="off"
+              [style]="{ width: '100%' }"
+            />
+            <label for="inputtext">Ponderación</label>
+          </span>
+        </div>
+
+        <!-- summary -->
+        <div class="col-12 md:col-12 p-mb-2 lg:col-1">
+          <label for="name">Summary:</label>
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-4">
+          <span class="p-float-label">
+            <input
+              id="jsonLD"
+              type="text"
+              class="input inputfield p-ml-2"
+              pInputText
+              [(ngModel)]="weighing.summary.jsonLD"
+              autocomplete="off"
+              [style]="{ width: '100%' }"
+            />
+            <label for="inputtext">JSON LD</label>
+          </span>
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-4">
+          <span class="p-float-label">
+            <input
+              id="grapgQL"
+              type="text"
+              class="input inputfield p-ml-2"
+              pInputText
+              [(ngModel)]="weighing.summary.grapgQL"
+              autocomplete="off"
+              [style]="{ width: '100%' }"
+            />
+            <label for="inputtext">Grapg QL</label>
+          </span>
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-3">
+          <span class="p-float-label">
+            <input
+              id="luck"
+              type="number"
+              [min]="0"
+              [max]="100"
+              class="input inputfield p-ml-2"
+              pInputText
+              [(ngModel)]="weighing.summary.luck"
+              autocomplete="off"
+              [style]="{ width: '100%' }"
+            />
+            <label for="inputtext">Ponderación</label>
+          </span>
+        </div>
+        <!-- body -->
+        <div class="col-12 md:col-12 p-mb-2 lg:col-1">
+          <label for="name">Cuerpo:</label>
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-4">
+          <span class="p-float-label">
+            <input
+              id="jsonLD"
+              type="text"
+              class="input inputfield p-ml-2"
+              pInputText
+              [(ngModel)]="weighing.body.jsonLD"
+              autocomplete="off"
+              [style]="{ width: '100%' }"
+            />
+            <label for="inputtext">JSON LD</label>
+          </span>
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-4">
+          <span class="p-float-label">
+            <input
+              id="grapgQL"
+              type="text"
+              class="input inputfield p-ml-2"
+              pInputText
+              [(ngModel)]="weighing.body.grapgQL"
+              autocomplete="off"
+              [style]="{ width: '100%' }"
+            />
+            <label for="inputtext">Grapg QL</label>
+          </span>
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-3">
+          <span class="p-float-label">
+            <input
+              id="luck"
+              type="number"
+              [min]="0"
+              [max]="100"
+              class="input inputfield p-ml-2"
+              pInputText
+              [(ngModel)]="weighing.body.luck"
+              autocomplete="off"
+              [style]="{ width: '100%' }"
+            />
+            <label for="inputtext">Ponderación</label>
+          </span>
+        </div>
+        <!-- topic -->
+        <div class="col-12 md:col-12 p-mb-2 lg:col-1">
+          <label for="name">Tema:</label>
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-4">
+          <span class="p-float-label">
+            <input
+              id="jsonLD"
+              type="text"
+              class="input inputfield p-ml-2"
+              pInputText
+              [(ngModel)]="weighing.topic.jsonLD"
+              autocomplete="off"
+              [style]="{ width: '100%' }"
+            />
+            <label for="inputtext">JSON LD</label>
+          </span>
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-4">
+          <span class="p-float-label">
+            <input
+              id="grapgQL"
+              type="text"
+              class="input inputfield p-ml-2"
+              pInputText
+              [(ngModel)]="weighing.topic.grapgQL"
+              autocomplete="off"
+              [style]="{ width: '100%' }"
+            />
+            <label for="inputtext">Grapg QL</label>
+          </span>
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-3">
+          <span class="p-float-label">
+            <input
+              id="luck"
+              type="number"
+              [min]="0"
+              [max]="100"
+              class="input inputfield p-ml-2"
+              pInputText
+              [(ngModel)]="weighing.topic.luck"
+              autocomplete="off"
+              [style]="{ width: '100%' }"
+            />
+            <label for="inputtext">Ponderación</label>
+          </span>
+        </div>
+        <!-- altPhoto -->
+        <div class="col-12 md:col-12 p-mb-2 lg:col-1">
+          <label for="name">Alt Imagen:</label>
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-4">
+          <span class="p-float-label">
+            <input
+              id="jsonLD"
+              type="text"
+              class="input inputfield p-ml-2"
+              pInputText
+              [(ngModel)]="weighing.altPhoto.jsonLD"
+              autocomplete="off"
+              [style]="{ width: '100%' }"
+            />
+            <label for="inputtext">JSON LD</label>
+          </span>
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-4">
+          <span class="p-float-label">
+            <input
+              id="grapgQL"
+              type="text"
+              class="input inputfield p-ml-2"
+              pInputText
+              [(ngModel)]="weighing.altPhoto.grapgQL"
+              autocomplete="off"
+              [style]="{ width: '100%' }"
+            />
+            <label for="inputtext">Grapg QL</label>
+          </span>
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-3">
+          <span class="p-float-label">
+            <input
+              id="luck"
+              type="number"
+              [min]="0"
+              [max]="100"
+              class="input inputfield p-ml-2"
+              pInputText
+              [(ngModel)]="weighing.altPhoto.luck"
+              autocomplete="off"
+              [style]="{ width: '100%' }"
+            />
+            <label for="inputtext">Ponderación</label>
+          </span>
+        </div>
+        <!-- url -->
+        <div class="col-12 md:col-12 p-mb-2 lg:col-1">
+          <label for="name">Url:</label>
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-4">
+          <span class="p-float-label">
+            <input
+              id="jsonLD"
+              type="text"
+              class="input inputfield p-ml-2"
+              pInputText
+              [(ngModel)]="weighing.url.jsonLD"
+              autocomplete="off"
+              [style]="{ width: '100%' }"
+            />
+            <label for="inputtext">JSON LD</label>
+          </span>
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-4">
+          <span class="p-float-label">
+            <input
+              id="grapgQL"
+              type="text"
+              class="input inputfield p-ml-2"
+              pInputText
+              [(ngModel)]="weighing.url.grapgQL"
+              autocomplete="off"
+              [style]="{ width: '100%' }"
+            />
+            <label for="inputtext">Grapg QL</label>
+          </span>
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-3">
+          <span class="p-float-label">
+            <input
+              id="luck"
+              type="number"
+              [min]="0"
+              [max]="100"
+              class="input inputfield p-ml-2"
+              pInputText
+              [(ngModel)]="weighing.url.luck"
+              autocomplete="off"
+              [style]="{ width: '100%' }"
+            />
+            <label for="inputtext">Ponderación</label>
+          </span>
+        </div>
+      </p-toolbar>
+      <div class="field grid">
+        <button
+          pButton
+          pRipple
+          label="Guardar"
+          icon="pi pi-check"
+          class="p-button"
+          (click)="save()"
+        ></button>
+      </div>
+    </div>
+  </div>
+</div>

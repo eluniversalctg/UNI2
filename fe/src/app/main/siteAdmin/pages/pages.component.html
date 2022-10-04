@@ -1,0 +1,769 @@
+<div class="p-grid">
+  <p-toast></p-toast>
+  <div class="p-col-12">
+    <div class="card">
+      <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+          <h1>Agregar Página.</h1>
+        </ng-template>
+        <ng-template pTemplate="right">
+          <button
+            pButton
+            type="button"
+            label="Agregar Página"
+            (click)="createPages()"
+          ></button>
+        </ng-template>
+      </p-toolbar>
+      <p-selectButton
+        [options]="options"
+        optionLabel="name"
+        optionValue="value"
+        [(ngModel)]="optionsSelected"
+      ></p-selectButton>
+
+      <p-table
+        #dt
+        [columns]="cols"
+        [rows]="10"
+        dataKey="_id"
+        [paginator]="true"
+        responsiveLayout="scroll"
+        [globalFilterFields]="['name', 'route', 'typeSection', 'site', 'state']"
+        [(selection)]="selectedRows"
+        styleClass="p-datatable-gridlines"
+        responsiveLayout="scroll"
+        [value]="pages"
+        [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords}"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex">
+            <span class="p-input-icon-left ml-auto">
+              <i class="pi pi-search"></i>
+
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Buscar.."
+              />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3rem"></th>
+            <th pSortableColumn="name">
+              Nombre <p-sortIcon field="name"></p-sortIcon>
+            </th>
+            <th pSortableColumn="route">
+              Ruta <p-sortIcon field="route"></p-sortIcon>
+            </th>
+            <th pSortableColumn="typeSection">
+              Tipo <p-sortIcon field="typeSection"></p-sortIcon>
+            </th>
+            <th pSortableColumn="site">
+              Sitio <p-sortIcon field="site"></p-sortIcon>
+            </th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-page let-expanded="expanded">
+          <tr *ngIf="page.isActive === optionsSelected">
+            <td style="width: 3rem">
+              <button
+                type="button"
+                pButton
+                pRipple
+                [pRowToggler]="page"
+                class="p-button-text p-button-rounded p-button-plain"
+                [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+              ></button>
+            </td>
+            <td>
+              {{ page.name }}
+            </td>
+            <td>
+              {{ page.route }}
+            </td>
+            <td>
+              {{ page.typeSection }}
+            </td>
+            <td>
+              {{ page.site.name }}
+            </td>
+            <td>
+              {{ page.isActive ? "Activo" : "Inactivo" }}
+            </td>
+            <td>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                pTooltip="Editar Página"
+                (click)="openUpdatePages(page)"
+                class="p-button-rounded p-button-warning p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-sitemap"
+                pTooltip="Agregar Hijos"
+                (click)="addSonsPages(page)"
+                class="p-button-rounded p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-table"
+                pTooltip="Agregar Bloque"
+                (click)="addNewBlock(page)"
+                class="p-button-rounded p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-eye"
+                pTooltip="Mostrar Bloques"
+                (click)="viewBlock(page)"
+                class="p-button-rounded p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-copy"
+                pTooltip="Duplicar Página"
+                (click)="duplicatePages(page, undefined)"
+                class="p-button-rounded p-button-secondary p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-times"
+                *ngIf="page.isActive"
+                (click)="changeState(page)"
+                pTooltip="Inactivar Página"
+                class="p-button-rounded p-button-danger p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                (click)="changeState(page)"
+                icon="pi pi-check"
+                *ngIf="!page.isActive"
+                pTooltip="Activar Página"
+                class="p-button-rounded p-button-success p-mr-2"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+        <!-- second level -->
+        <ng-template pTemplate="rowexpansion" let-children1>
+          <tr>
+            <td colspan="7">
+              <div class="p-3">
+                <p-table [value]="children1.children" dataKey="id">
+                  <ng-template pTemplate="header">
+                    <tr *ngIf="children1.isActive === optionsSelected">
+                      <th style="width: 3rem"></th>
+                      <th pSortableColumn="name">
+                        Nombre <p-sortIcon field="name"></p-sortIcon>
+                      </th>
+                      <th pSortableColumn="route">
+                        Ruta <p-sortIcon field="route"></p-sortIcon>
+                      </th>
+                      <th pSortableColumn="typeSection">
+                        Tipo <p-sortIcon field="typeSection"></p-sortIcon>
+                      </th>
+                      <th pSortableColumn="site">
+                        Sitio <p-sortIcon field="site"></p-sortIcon>
+                      </th>
+                      <th>Estado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template
+                    pTemplate="body"
+                    let-children
+                    let-expanded="expanded"
+                  >
+                    <tr *ngIf="children.isActive === optionsSelected">
+                      <td style="width: 3rem">
+                        <button
+                          type="button"
+                          pButton
+                          pRipple
+                          [pRowToggler]="children"
+                          class="p-button-text p-button-rounded p-button-plain"
+                          [icon]="
+                            expanded
+                              ? 'pi pi-chevron-down'
+                              : 'pi pi-chevron-right'
+                          "
+                        ></button>
+                      </td>
+                      <td>
+                        {{ children.name }}
+                      </td>
+                      <td>
+                        {{ children.route }}
+                      </td>
+                      <td>
+                        {{ children.typeSection }}
+                      </td>
+                      <td>
+                        {{ children.site.name }}
+                      </td>
+                      <td>
+                        {{ children.isActive ? "Activo" : "Inactivo" }}
+                      </td>
+                      <td>
+                        <button
+                          pButton
+                          pRipple
+                          icon="pi pi-pencil"
+                          pTooltip="Editar Página"
+                          (click)="openUpdatePages(children)"
+                          class="p-button-rounded p-button-warning p-mr-2"
+                        ></button>
+                        <button
+                          pButton
+                          pRipple
+                          icon="pi pi-sitemap"
+                          pTooltip="Agregar Hijos"
+                          (click)="addSonsPages(children)"
+                          class="p-button-rounded p-mr-2"
+                        ></button>
+                        <button
+                          pButton
+                          pRipple
+                          icon="pi pi-table"
+                          pTooltip="Agregar Bloque"
+                          (click)="addNewBlock(children)"
+                          class="p-button-rounded p-mr-2"
+                        ></button>
+                        <button
+                          pButton
+                          pRipple
+                          icon="pi pi-eye"
+                          pTooltip="Mostrar Bloques"
+                          (click)="viewBlock(children)"
+                          class="p-button-rounded p-mr-2"
+                        ></button>
+                        <button
+                          pButton
+                          pRipple
+                          icon="pi pi-copy"
+                          pTooltip="Duplicar Página"
+                          (click)="duplicatePages(children, children1)"
+                          class="p-button-rounded p-button-secondary p-mr-2"
+                        ></button>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="7">
+                        No tiene hijos asignados por el momento.
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="rowexpansion" let-children2>
+                    <tr>
+                      <td colspan="7">
+                        <div class="p-3">
+                          <p-table [value]="children2.children" dataKey="name">
+                            <ng-template pTemplate="header">
+                              <tr
+                                *ngIf="children2.isActive === optionsSelected"
+                              >
+                                <th style="width: 3rem"></th>
+                                <th pSortableColumn="name">
+                                  Nombre <p-sortIcon field="name"></p-sortIcon>
+                                </th>
+                                <th pSortableColumn="route">
+                                  Ruta <p-sortIcon field="route"></p-sortIcon>
+                                </th>
+                                <th pSortableColumn="typeSection">
+                                  Tipo
+                                  <p-sortIcon field="typeSection"></p-sortIcon>
+                                </th>
+                                <th pSortableColumn="site">
+                                  Sitio <p-sortIcon field="site"></p-sortIcon>
+                                </th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                              </tr>
+                            </ng-template>
+                            <ng-template
+                              pTemplate="body"
+                              let-children
+                              let-expanded="expanded"
+                            >
+                              <tr *ngIf="children.isActive === optionsSelected">
+                                <td style="width: 3rem">
+                                  <button
+                                    type="button"
+                                    pButton
+                                    pRipple
+                                    [pRowToggler]="children"
+                                    class="p-button-text p-button-rounded p-button-plain"
+                                    [icon]="
+                                      expanded
+                                        ? 'pi pi-chevron-down'
+                                        : 'pi pi-chevron-right'
+                                    "
+                                  ></button>
+                                </td>
+                                <td>
+                                  {{ children.name }}
+                                </td>
+                                <td>
+                                  {{ children.route }}
+                                </td>
+                                <td>
+                                  {{ children.typeSection }}
+                                </td>
+                                <td>
+                                  {{ children.site.name }}
+                                </td>
+                                <td>
+                                  {{
+                                    children.isActive ? "Activo" : "Inactivo"
+                                  }}
+                                </td>
+                                <td>
+                                  <button
+                                    pButton
+                                    pRipple
+                                    icon="pi pi-pencil"
+                                    pTooltip="Editar Página"
+                                    (click)="openUpdatePages(children)"
+                                    class="p-button-rounded p-button-warning p-mr-2"
+                                  ></button>
+                                  <button
+                                    pButton
+                                    pRipple
+                                    icon="pi pi-sitemap"
+                                    pTooltip="Agregar Hijos"
+                                    (click)="addSonsPages(children)"
+                                    class="p-button-rounded p-mr-2"
+                                  ></button>
+                                  <button
+                                    pButton
+                                    pRipple
+                                    icon="pi pi-table"
+                                    pTooltip="Agregar Bloque"
+                                    (click)="addNewBlock(children)"
+                                    class="p-button-rounded p-mr-2"
+                                  ></button>
+                                  <button
+                                    pButton
+                                    pRipple
+                                    icon="pi pi-eye"
+                                    pTooltip="Mostrar Bloques"
+                                    (click)="viewBlock(children)"
+                                    class="p-button-rounded p-mr-2"
+                                  ></button>
+                                  <button
+                                    pButton
+                                    pRipple
+                                    icon="pi pi-copy"
+                                    pTooltip="Duplicar Página"
+                                    (click)="
+                                      duplicatePages(children, children2)
+                                    "
+                                    class="p-button-rounded p-button-secondary p-mr-2"
+                                  ></button>
+                                </td>
+                              </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                              <tr>
+                                <td colspan="7">
+                                  No tiene hijos asignados por el momento.
+                                </td>
+                              </tr>
+                            </ng-template>
+                            <ng-template pTemplate="rowexpansion" let-children3>
+                              <tr>
+                                <td colspan="7">
+                                  <div class="p-3">
+                                    <p-table
+                                      [value]="children3.children"
+                                      dataKey="name"
+                                    >
+                                      <ng-template pTemplate="header">
+                                        <tr
+                                          *ngIf="
+                                            children3.isActive ===
+                                            optionsSelected
+                                          "
+                                        >
+                                          <th pSortableColumn="name">
+                                            Nombre
+                                            <p-sortIcon
+                                              field="name"
+                                            ></p-sortIcon>
+                                          </th>
+                                          <th pSortableColumn="route">
+                                            Ruta
+                                            <p-sortIcon
+                                              field="route"
+                                            ></p-sortIcon>
+                                          </th>
+                                          <th pSortableColumn="typeSection">
+                                            Tipo
+                                            <p-sortIcon
+                                              field="typeSection"
+                                            ></p-sortIcon>
+                                          </th>
+                                          <th pSortableColumn="site">
+                                            Sitio
+                                            <p-sortIcon
+                                              field="site"
+                                            ></p-sortIcon>
+                                          </th>
+                                          <th>Estado</th>
+                                          <th>Acciones</th>
+                                        </tr>
+                                      </ng-template>
+                                      <ng-template
+                                        pTemplate="body"
+                                        let-children
+                                      >
+                                        <tr
+                                          *ngIf="
+                                            children.isActive ===
+                                            optionsSelected
+                                          "
+                                        >
+                                          <td>
+                                            {{ children.name }}
+                                          </td>
+                                          <td>
+                                            {{ children.route }}
+                                          </td>
+                                          <td>
+                                            {{ children.typeSection }}
+                                          </td>
+                                          <td>
+                                            {{ children.site.name }}
+                                          </td>
+                                          <td>
+                                            {{
+                                              children.isActive
+                                                ? "Activo"
+                                                : "Inactivo"
+                                            }}
+                                          </td>
+                                          <td>
+                                            <button
+                                              pButton
+                                              pRipple
+                                              icon="pi pi-pencil"
+                                              pTooltip="Editar Página"
+                                              (click)="
+                                                openUpdatePages(children)
+                                              "
+                                              class="p-button-rounded p-button-warning p-mr-2"
+                                            ></button>
+                                            <button
+                                              pButton
+                                              pRipple
+                                              icon="pi pi-table"
+                                              pTooltip="Agregar Bloque"
+                                              (click)="addNewBlock(children)"
+                                              class="p-button-rounded p-mr-2"
+                                            ></button>
+                                            <button
+                                              pButton
+                                              pRipple
+                                              icon="pi pi-eye"
+                                              pTooltip="Mostrar Bloques"
+                                              (click)="viewBlock(children)"
+                                              class="p-button-rounded p-mr-2"
+                                            ></button>
+                                            <button
+                                              pButton
+                                              pRipple
+                                              icon="pi pi-copy"
+                                              pTooltip="Duplicar Página"
+                                              (click)="
+                                                duplicatePages(
+                                                  children,
+                                                  children3
+                                                )
+                                              "
+                                              class="p-button-rounded p-button-secondary p-mr-2"
+                                            ></button>
+                                          </td>
+                                        </tr>
+                                      </ng-template>
+                                      <ng-template pTemplate="emptymessage">
+                                        <tr>
+                                          <td colspan="7">
+                                            No tiene hijos asignados por el
+                                            momento.
+                                          </td>
+                                        </tr>
+                                      </ng-template>
+                                    </p-table>
+                                  </div>
+                                </td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+                        </div>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+          <div class="speeddial-tooltip-demo alignSpeedDialog">
+            <p-speedDial
+              showIcon="pi pi-upload"
+              hideIcon="pi pi-times"
+              [model]="items"
+              className="speeddial-left"
+              direction="left"
+              [buttonStyle]="{
+                width: '3rem',
+                height: '3rem'
+              }"
+            ></p-speedDial>
+          </div>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<p-dialog
+  [(visible)]="addNew"
+  [contentStyle]="{ overflow: 'visible' }"
+  [style]="{ overflow: 'auto', 'min-width': '32%', 'min-height': '40vh' }"
+  [modal]="true"
+  [draggable]="false"
+  [maximizable]="true"
+>
+  <ng-template pTemplate="header">
+    <p>Crear nueva Página.</p>
+  </ng-template>
+  <form [formGroup]="pagesForm" class="mt-2">
+    <div class="field grid">
+      <label for="name" class="col-12 md:col-4">Nombre:</label>
+      <div class="col-12 md:col-8">
+        <input
+          id="name"
+          type="text"
+          class="input inputfield"
+          style="width: -webkit-fill-available"
+          pInputText
+          formControlName="name"
+          autocomplete="off"
+          (ngModelChange)="createRoute()"
+        />
+      </div>
+      <p-message
+        *ngIf="
+          pagesForm.controls.name.touched && !pagesForm.controls.name.valid
+        "
+        severity="error"
+        text="Nombre requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid">
+      <label for="type" class="col-12 md:col-4">Tipo:</label>
+      <div class="col-12 md:col-8">
+        <p-dropdown
+          [options]="sections"
+          formControlName="typeSection"
+          optionLabel="name"
+          optionValue="value"
+          [filter]="true"
+          filterBy="name"
+          [showClear]="true"
+          placeholder="Seleccione un valor"
+        ></p-dropdown>
+      </div>
+      <p-message
+        *ngIf="
+          pagesForm.controls.typeSection.touched &&
+          !pagesForm.controls.typeSection.valid
+        "
+        severity="error"
+        text="Tipo requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid">
+      <label for="type" class="col-12 md:col-4">Estado:</label>
+      <div class="col-12 md:col-8">
+        <p-checkbox
+          class="p-ml-2"
+          [binary]="true"
+          inputId="binary"
+          formControlName="isActive"
+        ></p-checkbox>
+      </div>
+      <p-message
+        *ngIf="
+          pagesForm.controls.isActive.touched &&
+          !pagesForm.controls.isActive.valid
+        "
+        severity="error"
+        text="Estado requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid">
+      <label for="type" class="col-12 md:col-4">Sitio:</label>
+      <div class="col-12 md:col-8">
+        <p-dropdown
+          [options]="domains"
+          formControlName="site"
+          optionLabel="name"
+          [filter]="true"
+          filterBy="name"
+          [showClear]="true"
+          placeholder="Seleccione un valor"
+        ></p-dropdown>
+      </div>
+      <p-message
+        *ngIf="
+          pagesForm.controls.site.touched && !pagesForm.controls.site.valid
+        "
+        severity="error"
+        text="Sitio es requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+  </form>
+  <div class="field grid">
+    <label for="valueDefault" class="col-12 md:col-4">Ruta:</label>
+    <div class="col-12 md:col-8">
+      <input
+        type="text"
+        pInputText
+        [(ngModel)]="route"
+        style="width: -webkit-fill-available"
+      />
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="addNew = false"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Guardar"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="register()"
+      [disabled]="!pagesForm.valid"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{ width: '500px' }"></p-confirmDialog>
+
+<!-- add new block  -->
+<p-dialog
+  [(visible)]="addBlock"
+  [contentStyle]="{ overflow: 'visible' }"
+  [style]="{ 'min-width': '60%', 'min-height': '50vh' }"
+  [modal]="true"
+  [draggable]="false"
+  [maximizable]="true"
+  [closable]="false"
+  [closeOnEscape]="false"
+>
+  <app-website-structure
+    [pageAddBlock]="pageWithBlock"
+    [editBlock]="selectEditBlock"
+    (childEvent)="emmit($event)"
+  ></app-website-structure>
+</p-dialog>
+<!-- end add new block  -->
+
+<!-- view blocks  -->
+<p-dialog
+  [(visible)]="viewBlockDialog"
+  [contentStyle]="{ overflow: 'visible' }"
+  [style]="{ 'min-width': '60%', 'min-height': '50vh' }"
+  [modal]="true"
+  [draggable]="false"
+  [maximizable]="true"
+>
+  <p-table
+    #tableBlocks
+    [rows]="10"
+    dataKey="id"
+    [paginator]="true"
+    responsiveLayout="scroll"
+    [globalFilterFields]="[
+      'block.name'
+    ]"
+    styleClass="p-datatable-gridlines"
+    responsiveLayout="scroll"
+    [value]="selectPageViewBlock"
+  >
+    <ng-template pTemplate="caption">
+      <div class="flex">
+        <span class="p-input-icon-left ml-auto">
+          <i class="pi pi-search"></i>
+
+          <input
+            pInputText
+            type="text"
+            (input)="tableBlocks.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Buscar.."
+          />
+        </span>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="block.name">
+          Nombre <p-sortIcon field="block.name"></p-sortIcon>
+        </th>
+        <th>Acciones</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-wizardModel>
+      <tr>
+        <td>
+          {{ wizardModel.block.name }}
+        </td>
+        <td>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-pencil"
+            (click)="editBlock(wizardModel.block)"
+            pTooltip="Editar bloque"
+            class="p-button-rounded p-button-warning p-mr-2"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>
+
+<!-- end view blocks  -->
+

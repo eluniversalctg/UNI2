@@ -1,0 +1,239 @@
+<div class="p-grid">
+  <p-toast></p-toast>
+  <div class="p-col-12">
+    <div class="card">
+      <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+          <h1>Agregar Bloque.</h1>
+        </ng-template>
+        <ng-template pTemplate="right">
+          <button
+            pButton
+            type="button"
+            label="Agregar Bloques"
+            (click)="createBlock()"
+          ></button>
+        </ng-template>
+      </p-toolbar>
+      <p-selectButton
+        [options]="options"
+        optionLabel="name"
+        optionValue="value"
+        [(ngModel)]="optionsSelected"
+      ></p-selectButton>
+
+      <p-table
+        #dt
+        [columns]="cols"
+        [rows]="10"
+        [paginator]="true"
+        responsiveLayout="scroll"
+        [globalFilterFields]="[
+          'name',
+          'sizes'
+        ]"
+        styleClass="p-datatable-gridlines"
+        responsiveLayout="scroll"
+        [value]="blocks"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords}"
+        [(selection)]="selectedRows"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex">
+            <span class="p-input-icon-left ml-auto">
+              <i class="pi pi-search"></i>
+
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Buscar.."
+              />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3rem">
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th pSortableColumn="name">
+              Nombre <p-sortIcon field="name"></p-sortIcon>
+            </th>
+            <th pSortableColumn="sizes">
+              Tamaños <p-sortIcon field="sizes"></p-sortIcon>
+            </th>
+            <th >
+              Estado
+            </th>
+            <th>Acciones</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-block>
+          <tr *ngIf="block.isActive === optionsSelected">
+            <td style="width: 3rem">
+              <p-tableCheckbox [value]="block"></p-tableCheckbox>
+            </td>
+            <td>
+              {{ block.name }}
+            </td>
+            <td style="max-width: 10vw; overflow: auto">
+              {{ block.sizes | replace }}
+            </td>
+            <td>
+              {{ block.isActive ? "Activo" : "Inactivo" }}
+            </td>
+            <td>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                pTooltip="Editar Bloques"
+                (click)="openUpdateBlock(block)"
+                class="p-button-rounded p-button-warning p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-copy"
+                pTooltip="Duplicar Bloques"
+                (click)="duplicateBlock(block)"
+                class="p-button-rounded p-button-secondary p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-times"
+                *ngIf="block.isActive"
+                (click)="changeState(block)"
+                pTooltip="Inactivar Bloques"
+                class="p-button-rounded p-button-danger p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                (click)="changeState(block)"
+                icon="pi pi-check"
+                *ngIf="!block.isActive"
+                pTooltip="Activar Bloques"
+                class="p-button-rounded p-button-success p-mr-2"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+          <div class="speeddial-tooltip-demo alignSpeedDialog">
+            <p-speedDial
+              showIcon="pi pi-upload"
+              hideIcon="pi pi-times"
+              [model]="items"
+              className="speeddial-left"
+              direction="left"
+              [buttonStyle]="{
+                width: '3rem',
+                height: '3rem'
+              }"
+            ></p-speedDial>
+          </div>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<p-dialog
+  [(visible)]="addNew"
+  [contentStyle]="{ overflow: 'visible' }"
+  [style]="{ overflow: 'auto', 'min-width': '32%', 'min-height': '40vh' }"
+  [modal]="true"
+  [draggable]="false"
+  [maximizable]="true"
+>
+  <ng-template pTemplate="header">
+    <p>Crear nueva Bloques.</p>
+  </ng-template>
+  <form [formGroup]="blocksForm" class="mt-2">
+    <div class="field grid">
+      <label for="name" class="col-12 md:col-4">Nombre:</label>
+      <div class="col-12 md:col-8">
+        <input
+          id="name"
+          type="text"
+          class="input inputfield"
+          style="width: -webkit-fill-available"
+          pInputText
+          formControlName="name"
+          autocomplete="off"
+        />
+      </div>
+      <p-message
+        *ngIf="
+          blocksForm.controls.name.touched && !blocksForm.controls.name.valid
+        "
+        severity="error"
+        text="Nombre requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid">
+      <label for="sizes" class="col-12 md:col-4">Tamaño:</label>
+      <div class="col-12 md:col-8">
+        <p-chips
+          id="sizes"
+          separator=","
+          class="input inputfield"
+          formControlName="sizes"
+        ></p-chips>
+      </div>
+      <p-message
+        *ngIf="
+          blocksForm.controls.sizes.touched && !blocksForm.controls.sizes.valid
+        "
+        severity="error"
+        text="Tamaño requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid">
+      <label for="type" class="col-12 md:col-4">Estado:</label>
+      <div class="col-12 md:col-8">
+        <p-checkbox
+          class="p-ml-2"
+          [binary]="true"
+          inputId="binary"
+          formControlName="isActive"
+        ></p-checkbox>
+      </div>
+      <p-message
+        *ngIf="
+          blocksForm.controls.isActive.touched &&
+          !blocksForm.controls.isActive.valid
+        "
+        severity="error"
+        text="Estado requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="addNew = false"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Guardar"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="register()"
+      [disabled]="!blocksForm.valid"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{ width: '500px' }"></p-confirmDialog>

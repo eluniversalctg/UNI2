@@ -1,0 +1,362 @@
+<div class="p-grid">
+  <p-toast></p-toast>
+  <div class="p-col-12">
+    <div class="card">
+      <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+          <h1>Agregar variable.</h1>
+        </ng-template>
+        <ng-template pTemplate="right">
+          <button
+            pButton
+            type="button"
+            label="Agregar variable"
+            (click)="createVariable()"
+          ></button>
+        </ng-template>
+      </p-toolbar>
+      <p-selectButton
+        [options]="options"
+        optionLabel="name"
+        optionValue="value"
+        [(ngModel)]="optionsSelected"
+        (click)="filterTable()"
+      ></p-selectButton>
+
+      <p-table
+        #dt
+        [value]="variablesBck"
+        [rows]="10"
+        dataKey="id"
+        [paginator]="true"
+        responsiveLayout="scroll"
+        [globalFilterFields]="['id', 'type', 'multivalued', 'defaultValue']"
+        responsiveLayout="scroll"
+        styleClass="p-datatable-gridlines"
+        [paginator]="true"
+        [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords}"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex">
+            <span class="p-input-icon-left ml-auto">
+              <i class="pi pi-search"></i>
+
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Buscar.."
+              />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="id">Id<p-sortIcon field="id"></p-sortIcon></th>
+            <th pSortableColumn="type">
+              Tipo de dato<p-sortIcon field="type"></p-sortIcon>
+            </th>
+            <th pSortableColumn="multivalued">
+              Multivalor <p-sortIcon field="multivalued"></p-sortIcon>
+            </th>
+            <th pSortableColumn="defaultValue">
+              Valor por defecto <p-sortIcon field="defaultValue"></p-sortIcon>
+            </th>
+            <th>Acciones</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-variable>
+          <tr>
+            <td>
+              {{ variable.id }}
+            </td>
+            <td>
+              {{ variable.type }}
+            </td>
+            <td>
+              {{ variable.multivalued }}
+            </td>
+            <td>
+              {{ variable.defaultValue ? variable.defaultValue : "null" }}
+            </td>
+            <td>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                pTooltip="Editar variable"
+                (click)="openUpdatevariable(variable)"
+                class="p-button-rounded p-button-warning p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-copy"
+                pTooltip="Duplicar variable"
+                (click)="duplicateVariable(variable)"
+                class="p-button-rounded p-button-success p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-times"
+                *ngIf="variable.isActive"
+                (click)="changeState(variable)"
+                pTooltip="Inactivar variable"
+                class="p-button-rounded p-button-danger p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                (click)="changeState(variable)"
+                icon="pi pi-check"
+                *ngIf="!variable.isActive"
+                pTooltip="Activar variable"
+                class="p-button-rounded p-button-success p-mr-2"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<p-dialog
+  [(visible)]="addNew"
+  [contentStyle]="{ overflow: 'visible' }"
+  [style]="{
+    overflow: 'auto',
+    'min-width': '32%',
+    'min-height': '40vh'
+  }"
+  [modal]="true"
+  [draggable]="false"
+  [maximizable]="true"
+>
+  <ng-template pTemplate="header">
+    <p>Crear nueva variable.</p>
+  </ng-template>
+  <form [formGroup]="variablesForm" class="mt-2">
+    <div class="field grid">
+      <label for="type" class="col-12 md:col-4">Tipo:</label>
+      <div class="col-12 md:col-8">
+        <p-dropdown
+          id="type"
+          [options]="typeOfData"
+          formControlName="type"
+          [autoDisplayFirst]="false"
+          (onChange)="changeType()"
+        ></p-dropdown>
+      </div>
+      <p-message
+        *ngIf="
+          variablesForm.controls.type.touched &&
+          !variablesForm.controls.type.valid
+        "
+        severity="error"
+        text="Tipo requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid">
+      <label for="id" class="col-12 md:col-4">Id:</label>
+      <div class="col-12 md:col-8">
+        <input
+          onkeypress="return event.charCode != 32"
+          id="id"
+          type="text"
+          class="input inputfield"
+          class="inputfield"
+          style="width: -webkit-fill-available"
+          pInputText
+          formControlName="id"
+          autocomplete="off"
+        />
+      </div>
+      <p-message
+        *ngIf="
+          variablesForm.controls.id.touched && !variablesForm.controls.id.valid
+        "
+        severity="error"
+        text="Id requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid">
+      <label for="multivalued" class="col-12 md:col-4">Multivalued:</label>
+      <div class="col-12 md:col-8">
+        <p-radioButton
+          class="p-ml-2"
+          id="multivalued"
+          name="multivalued"
+          [value]="false"
+          formControlName="multivalued"
+        ></p-radioButton>
+        <label for="text" class="p-ml-2">False</label>
+        <p-radioButton
+          class="p-ml-4"
+          id="multivalued"
+          name="multivalued"
+          [value]="true"
+          formControlName="multivalued"
+        ></p-radioButton>
+        <label for="text" class="p-ml-2">True</label>
+      </div>
+      <p-message
+        *ngIf="
+          variablesForm.controls.multivalued.touched &&
+          !variablesForm.controls.multivalued.valid
+        "
+        severity="error"
+        text="Ámbito requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid">
+      <label class="col-12 md:col-4">Estado:</label>
+      <div class="col-12 md:col-8">
+        <p-radioButton
+          class="p-ml-2"
+          id="active"
+          name="isActive"
+          [value]="true"
+          formControlName="isActive"
+        ></p-radioButton>
+        <label for="active" class="p-ml-2">Activo</label>
+        <p-radioButton
+          class="p-ml-4"
+          id="inactive"
+          name="isActive"
+          [value]="false"
+          formControlName="isActive"
+        ></p-radioButton>
+        <label for="inactive" class="p-ml-2">Inactivo</label>
+      </div>
+      <p-message
+        *ngIf="
+          variablesForm.controls.isActive.touched &&
+          !variablesForm.controls.isActive.valid
+        "
+        severity="error"
+        text="Estado requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid" *ngIf="validDefault">
+      <label for="defaultValue" class="col-12 md:col-4">DefaultValue:</label>
+      <div class="col-12 md:col-8">
+        <input
+          id="defaultValue"
+          [type]="typeDefaul"
+          class="input inputfield"
+          style="width: -webkit-fill-available"
+          pInputText
+          formControlName="defaultValue"
+          autocomplete="off"
+        />
+      </div>
+    </div>
+  </form>
+
+  <form [formGroup]="optionValuesForm">
+    <p-table
+      #dt
+      formArrayName="optionValues"
+      [rows]="10"
+      [value]="[1]"
+      dataKey="id"
+      [paginator]="true"
+      responsiveLayout="scroll"
+      styleClass="p-datatable-gridlines"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th colspan="3">Agregar valores:</th>
+          <th style="width: 5rem">
+            <button
+              type="button"
+              (click)="addValue()"
+              pButton
+              pRipple
+              icon="pi pi-plus"
+              pTooltip="Agregar valor"
+              class="p-button-rounded p-button-sucess p-mr-2"
+            ></button>
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body">
+        <tr
+          *ngFor="let value of values().controls; let i = index"
+          [formGroupName]="i"
+        >
+          <td style="width: 20rem">
+            Valor:
+            <input
+              type="text"
+              formControlName="value"
+              class="input inputfield"
+              pInputText
+              autocomplete="off"
+            />
+          </td>
+          <td style="width: 20rem">
+            Guardar en:
+            <input
+              type="text"
+              formControlName="saveInto"
+              class="input inputfield"
+              pInputText
+              autocomplete="off"
+            />
+          </td>
+          <td
+            style="max-width: '60vw'"
+            pTooltip="Utilice la 'coma' ( , ) para separar los valores"
+            tooltipPosition="top"
+          >
+            Opciones:
+            <p-chips
+              separator=","
+              class="input inputfield"
+              formControlName="options"
+            ></p-chips>
+          </td>
+          <td style="width: 5rem">
+            <button
+              (click)="removeValue(i)"
+              pButton
+              pRipple
+              icon="pi pi-trash"
+              pTooltip="Eliminar valor"
+              class="p-button-rounded p-button-danger p-mr-2"
+            ></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </form>
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="addNew = false"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Guardar"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="register()"
+      [disabled]="!variablesForm.valid"
+    ></button>
+  </ng-template>
+</p-dialog>
+<p-confirmDialog [style]="{ width: '500px' }"></p-confirmDialog>

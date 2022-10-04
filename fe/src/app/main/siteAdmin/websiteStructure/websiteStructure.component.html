@@ -1,0 +1,699 @@
+<div class="p-grid">
+  <div class="col-12">
+    <button
+      pButton
+      pRipple
+      (click)="closeDialog()"
+      type="button"
+      icon="pi pi-times"
+      class="p-button-rounded p-button-danger p-button-outlined"
+    ></button>
+  </div>
+</div>
+<div class="p-grid">
+  <div class="col-12">
+    <p-steps [model]="items" [(activeIndex)]="stepPage"></p-steps>
+
+    <div class="card col-12 p-mt-4">
+      <p-card>
+        <ng-template pTemplate="title">
+          {{ items[stepPage].title }}
+        </ng-template>
+        <ng-template pTemplate="content">
+          <!-- first Step
+          ============================================================== -->
+          <div *ngIf="stepPage === 0">
+            <div class="field grid">
+              <label for="block" class="col-12 md:col-4"
+                >Bloques disponibles:</label
+              >
+              <div class="col-12 md:col-8">
+                <p-dropdown
+                  id="block"
+                  [options]="blocks"
+                  optionLabel="name"
+                  [(ngModel)]="wizard.block"
+                  placeholder="Seleccione el bloque."
+                >
+                </p-dropdown>
+              </div>
+            </div>
+          </div>
+          <!-- end first step -->
+          <!-- second Step
+          ============================================================== -->
+          <div *ngIf="stepPage === 1">
+            <div class="field grid">
+              <label for="templates" class="col-12 md:col-4"
+                >Reglas disponibles:</label
+              >
+              <div class="col-12 md:col-8">
+                <p-dropdown
+                  id="templates"
+                  [options]="rules"
+                  [(ngModel)]="wizardData.rule"
+                  optionLabel="name"
+                  placeholder="Seleccione la regla."
+                >
+                </p-dropdown>
+              </div>
+            </div>
+          </div>
+          <!-- third Step
+          ============================================================== -->
+          <div *ngIf="stepPage === 2">
+            <div class="field grid">
+              <label for="templates" class="col-12 md:col-4"
+                >Plantilla disponibles:</label
+              >
+              <div class="col-12 md:col-8">
+                <p-dropdown
+                  id="templates"
+                  [options]="templates"
+                  [(ngModel)]="wizardData.template"
+                  optionLabel="title"
+                  placeholder="Seleccione la plantilla."
+                  (onChange)="selectTemplate()"
+                >
+                  <ng-template let-template pTemplate="item">
+                    <div>
+                      <div>
+                        {{ template.title }}
+                        -
+                        {{ template.typeTemplate }}
+                      </div>
+                    </div>
+                  </ng-template>
+                </p-dropdown>
+              </div>
+            </div>
+            <!-- placeholders standard -->
+            <div class="field grid">
+              <label for="templates" class="col-12 md:col-4"
+                >Placeholders:</label
+              >
+            </div>
+
+            <div class="field grid" *ngFor="let placeholder of newPlaceholPers">
+              <label for="name" class="col-12 md:col-4">{{
+                placeholder.name
+              }}</label>
+              <div class="col-12 md:col-8">
+                <input
+                  id="name"
+                  type="text"
+                  class="input inputfield"
+                  style="width: -webkit-fill-available"
+                  [(ngModel)]="placeholder.valueDefault"
+                />
+              </div>
+            </div>
+          </div>
+          <!-- fourth Step
+          ============================================================== -->
+          <div *ngIf="stepPage === 3">
+            <!-- templates type recomendation (editorial) -->
+
+            <!-- matomo or corma -->
+            <div class="field grid">
+              <div class="col-12 md:col-8" *ngIf="typeTemplate">
+                <label for="name">Seleccione el tipo:</label>
+                <p-radioButton
+                  class="p-ml-2"
+                  id="Croma"
+                  name="Croma"
+                  value="Croma"
+                  [(ngModel)]="wizardData.typeTags"
+                ></p-radioButton>
+                <label for="text" class="p-ml-2">Croma</label>
+                <p-radioButton
+                  class="p-ml-2"
+                  id="Matomo"
+                  name="Matomo"
+                  value="Matomo"
+                  [(ngModel)]="wizardData.typeTags"
+                ></p-radioButton>
+                <label for="text" class="p-ml-2">Matomo</label>
+              </div>
+            </div>
+            <!--end  matomo or corma -->
+
+            <!-- num article -->
+            <div class="field grid" *ngIf="typeTemplate">
+              <label for="name" class="col-12 md:col-4"
+                >Cantidad de noticias:</label
+              >
+              <div class="col-12 md:col-8">
+                <span class="p-float-label">
+                  <input
+                    id="luck"
+                    type="text"
+                    class="input inputfield p-ml-2"
+                    pInputText
+                    [(ngModel)]="wizardData.template['numNews']"
+                    autocomplete="off"
+                    [style]="{ width: '100%' }"
+                    [disabled]="true"
+                  />
+                  <label for="inputtext">Cantidad</label>
+                </span>
+              </div>
+            </div>
+            <!-- end num article -->
+
+            <!-- type Croma -->
+            <div class="field grid">
+              <div
+                class="col-12 md:col-8"
+                *ngIf="wizardData.typeTags === 'Croma' && typeTemplate"
+              >
+                <label for="name">Seleccione el tipo:</label>
+                <p-radioButton
+                  class="p-ml-2"
+                  id="Texto"
+                  name="Texto"
+                  value="Texto"
+                  [(ngModel)]="wizardData.cromaType"
+                ></p-radioButton>
+                <label for="text" class="p-ml-2">Texto</label>
+                <p-radioButton
+                  class="p-ml-2"
+                  id="ID"
+                  name="ID"
+                  value="ID"
+                  [(ngModel)]="wizardData.cromaType"
+                ></p-radioButton>
+                <label for="text" class="p-ml-2">ID</label>
+              </div>
+            </div>
+            <!-- end type Croma -->
+
+            <!-- type croma text -->
+            <div
+              class="field grid"
+              *ngIf="
+                wizardData.cromaType === 'Texto' &&
+                typeTemplate &&
+                wizardData.typeTags === 'Croma'
+              "
+            >
+              <label for="name" class="col-12 md:col-4">Titulo:</label>
+              <div class="col-12 md:col-8">
+                <span class="p-float-label">
+                  <input
+                    id="luck"
+                    type="text"
+                    class="input inputfield p-ml-2"
+                    pInputText
+                    [(ngModel)]="weighing.title.luck"
+                    autocomplete="off"
+                    [style]="{ width: '100%' }"
+                  />
+                  <label for="inputtext">Ponderación</label>
+                </span>
+              </div>
+            </div>
+            <div
+              class="field grid"
+              *ngIf="
+                wizardData.cromaType === 'Texto' &&
+                typeTemplate &&
+                wizardData.typeTags === 'Croma'
+              "
+            >
+              <label for="name" class="col-12 md:col-4">Sumario:</label>
+              <div class="col-12 md:col-8">
+                <span class="p-float-label">
+                  <input
+                    id="luck"
+                    type="text"
+                    class="input inputfield p-ml-2"
+                    pInputText
+                    [(ngModel)]="weighing.summary.luck"
+                    autocomplete="off"
+                    [style]="{ width: '100%' }"
+                  />
+                  <label for="inputtext">Ponderación</label>
+                </span>
+              </div>
+            </div>
+            <div
+              class="field grid"
+              *ngIf="
+                wizardData.cromaType === 'Texto' &&
+                typeTemplate &&
+                wizardData.typeTags === 'Croma'
+              "
+            >
+              <label for="name" class="col-12 md:col-4">Cuerpo:</label>
+              <div class="col-12 md:col-8">
+                <span class="p-float-label">
+                  <input
+                    id="luck"
+                    type="text"
+                    class="input inputfield p-ml-2"
+                    pInputText
+                    [(ngModel)]="weighing.body.luck"
+                    autocomplete="off"
+                    [style]="{ width: '100%' }"
+                  />
+                  <label for="inputtext">Ponderación</label>
+                </span>
+              </div>
+            </div>
+            <div
+              class="field grid"
+              *ngIf="
+                wizardData.cromaType === 'Texto' &&
+                typeTemplate &&
+                wizardData.typeTags === 'Croma'
+              "
+            >
+              <label for="name" class="col-12 md:col-4">Alt:</label>
+              <div class="col-12 md:col-8">
+                <span class="p-float-label">
+                  <input
+                    id="luck"
+                    type="text"
+                    class="input inputfield p-ml-2"
+                    pInputText
+                    [(ngModel)]="weighing.altPhoto.luck"
+                    autocomplete="off"
+                    [style]="{ width: '100%' }"
+                  />
+                  <label for="inputtext">Ponderación</label>
+                </span>
+              </div>
+            </div>
+            <div
+              class="field grid"
+              *ngIf="
+                wizardData.cromaType === 'Texto' &&
+                typeTemplate &&
+                wizardData.typeTags === 'Croma'
+              "
+            >
+              <label for="name" class="col-12 md:col-4">Temas:</label>
+              <div class="col-12 md:col-8">
+                <span class="p-float-label">
+                  <input
+                    id="luck"
+                    type="text"
+                    class="input inputfield p-ml-2"
+                    pInputText
+                    [(ngModel)]="weighing.topic.luck"
+                    autocomplete="off"
+                    [style]="{ width: '100%' }"
+                  />
+                  <label for="inputtext">Ponderación</label>
+                </span>
+              </div>
+            </div>
+            <div
+              class="field grid"
+              *ngIf="
+                wizardData.cromaType === 'Texto' &&
+                typeTemplate &&
+                wizardData.typeTags === 'Croma'
+              "
+            >
+              <label for="name" class="col-12 md:col-4">URL:</label>
+              <div class="col-12 md:col-8">
+                <span class="p-float-label">
+                  <input
+                    id="url"
+                    type="url"
+                    class="input inputfield p-ml-2"
+                    pInputText
+                    [(ngModel)]="weighing.url.luck"
+                    autocomplete="off"
+                    [style]="{ width: '100%' }"
+                  />
+                  <label for="inputtext">URL</label>
+                </span>
+              </div>
+            </div>
+            <!-- end type croma text -->
+
+            <!-- type croma ID -->
+            <div
+              class="field grid"
+              *ngIf="
+                wizardData.cromaType === 'ID' &&
+                typeTemplate &&
+                wizardData.typeTags === 'Croma'
+              "
+            >
+              <label for="name" class="col-12 md:col-4">Cant. de años atras:</label>
+              <div class="col-12 md:col-8">
+                  <input
+                    id="year"
+                    type="number"
+                    class="input inputfield p-ml-2"
+                    pInputText
+                    [(ngModel)]="wizardData.cromaPeriod.year"
+                    autocomplete="off"
+                    [style]="{ width: '100%' }"
+                  />
+              </div>
+            </div>
+            <div
+              class="field grid"
+              *ngIf="
+                wizardData.cromaType === 'ID' &&
+                typeTemplate &&
+                wizardData.typeTags === 'Croma'
+              "
+            >
+              <label for="name" class="col-12 md:col-4">Cant. de meses atras:</label>
+              <div class="col-12 md:col-8">
+                  <input
+                    id="month"
+                    type="number"
+                    class="input inputfield p-ml-2"
+                    pInputText
+                    [(ngModel)]="wizardData.cromaPeriod.month"
+                    autocomplete="off"
+                    [style]="{ width: '100%' }"
+                  />
+              </div>
+            </div>
+            <div
+              class="field grid"
+              *ngIf="
+                wizardData.cromaType === 'ID' &&
+                typeTemplate &&
+                wizardData.typeTags === 'Croma'
+              "
+            >
+              <label for="name" class="col-12 md:col-4">Cant. de días atras:</label>
+              <div class="col-12 md:col-8">
+                  <input
+                    id="day"
+                    type="number"
+                    class="input inputfield p-ml-2"
+                    pInputText
+                    [(ngModel)]="wizardData.cromaPeriod.day"
+                    autocomplete="off"
+                    [style]="{ width: '100%' }"
+                  />
+              </div>
+            </div>
+            <div
+              class="field grid"
+              *ngIf="
+                wizardData.cromaType === 'ID' &&
+                typeTemplate &&
+                wizardData.typeTags === 'Croma'
+              "
+            >
+              <label for="name" class="col-12 md:col-4">Radio de búsqueda:</label>
+              <div class="col-12 md:col-8">
+                  <input
+                    id="radius"
+                    type="number"
+                    class="input inputfield p-ml-2"
+                    pInputText
+                    [(ngModel)]="wizardData.cromaPeriod.radius"
+                    autocomplete="off"
+                    [style]="{ width: '100%' }"
+                    max="1"
+                    min="0"
+                    step="0.01"
+                    oninput="validity.valid || (value = 0.01);"
+                  />
+              </div>
+              <p style="margin-left: 0.4rem;"> Recordar que según estos parámetros la carga de la renderización puede verse afectada ya que estos datos provienen de CromaAI.</p>
+            </div>
+            <!-- end type croma ID -->
+
+            <!-- type matomo -->
+
+            <div
+              class="field grid"
+              *ngIf="typeTemplate && wizardData.typeTags === 'Matomo'"
+            >
+              <label for="name" class="col-12 md:col-4">Tag:</label>
+              <div class="col-12 md:col-8">
+                <p-dropdown
+                  [options]="tags"
+                  [(ngModel)]="wizardData.matomoTags"
+                  optionLabel="name"
+                  [filter]="true"
+                  filterBy="name"
+                  [showClear]="true"
+                  placeholder="Seleccione un tag"
+                ></p-dropdown>
+              </div>
+            </div>
+            <div
+              class="field grid"
+              *ngIf="typeTemplate && wizardData.typeTags === 'Matomo'"
+            >
+              <label for="name" class="col-12 md:col-4">Tipo:</label>
+              <div class="col-12 md:col-8">
+                <p-radioButton
+                  class="p-ml-2"
+                  id="text"
+                  name="groupname"
+                  value="Unomi"
+                  [(ngModel)]="wizardData.typeMetaData"
+                ></p-radioButton>
+                <label for="text" class="p-ml-2">Unomi</label>
+                <p-radioButton
+                  class="p-ml-2"
+                  id="text"
+                  name="groupname"
+                  value="Open_Graph"
+                  [(ngModel)]="wizardData.typeMetaData"
+                ></p-radioButton>
+                <label for="text" class="p-ml-2">Open Graph</label>
+                <p-radioButton
+                  class="p-ml-2"
+                  id="text"
+                  name="groupname"
+                  value="JSON-LD"
+                  [(ngModel)]="wizardData.typeMetaData"
+                ></p-radioButton>
+                <label for="text" class="p-ml-2">JSON-LD</label>
+              </div>
+            </div>
+
+            <div
+              class="field grid"
+              *ngIf="typeTemplate && wizardData.typeTags === 'Matomo'"
+            >
+              <label for="name" class="col-12 md:col-4">Metadato:</label>
+              <div class="col-12 md:col-8">
+                <input
+                  id="metadata"
+                  type="text"
+                  autocomplete="off"
+                  [style]="{ width: '100%' }"
+                  pInputText
+                  class="input inputfield p-ml-2"
+                  [(ngModel)]="wizardData.matomoMetaData"
+                  placeholder="Ingrese el metadato"
+                />
+              </div>
+            </div>
+
+            <div
+              class="field grid"
+              *ngIf="typeTemplate && wizardData.typeTags === 'Matomo'"
+            >
+              <label for="name" class="col-12 md:col-4">Año:</label>
+              <div class="col-12 md:col-8">
+                <span class="p-float-label">
+                  <input
+                    id="year"
+                    type="number"
+                    class="input inputfield p-ml-2"
+                    pInputText
+                    [(ngModel)]="wizardData.matomoPeriod.year"
+                    autocomplete="off"
+                    [style]="{ width: '100%' }"
+                  />
+                  <label for="inputtext">Año</label>
+                </span>
+              </div>
+            </div>
+            <div
+              class="field grid"
+              *ngIf="typeTemplate && wizardData.typeTags === 'Matomo'"
+            >
+              <label for="name" class="col-12 md:col-4">Mes:</label>
+              <div class="col-12 md:col-8">
+                <span class="p-float-label">
+                  <input
+                    id="month"
+                    type="number"
+                    class="input inputfield p-ml-2"
+                    pInputText
+                    [(ngModel)]="wizardData.matomoPeriod.month"
+                    autocomplete="off"
+                    [style]="{ width: '100%' }"
+                  />
+                  <label for="inputtext">Mes</label>
+                </span>
+              </div>
+            </div>
+            <div
+              class="field grid"
+              *ngIf="typeTemplate && wizardData.typeTags === 'Matomo'"
+            >
+              <label for="name" class="col-12 md:col-4">Día:</label>
+              <div class="col-12 md:col-8">
+                <span class="p-float-label">
+                  <input
+                    id="day"
+                    type="number"
+                    class="input inputfield p-ml-2"
+                    pInputText
+                    [(ngModel)]="wizardData.matomoPeriod.day"
+                    autocomplete="off"
+                    [style]="{ width: '100%' }"
+                  />
+                  <label for="inputtext">Día</label>
+                </span>
+              </div>
+            </div>
+            <!-- end matomo -->
+          </div>
+          <!-- fifth Step
+          ============================================================== -->
+          <div *ngIf="stepPage === 4">
+            <h3 class="text-center">¿Desea agregar más reglas?</h3>
+            <div class="flex justify-content-center">
+              <p-button
+                label="No"
+                icon="pi pi-times"
+                (click)="addMoreRules(false)"
+                class="p-mr-3"
+              ></p-button>
+              <p-button
+                label="Sí"
+                icon="pi pi-check"
+                (click)="addMoreRules(true)"
+                class="p-ml-3"
+              ></p-button>
+            </div>
+          </div>
+          <!-- sixth Step
+          ============================================================== -->
+          <div *ngIf="stepPage === 5" class="resume">
+            <h3 class="text-center">{{ wizard.block.name }}</h3>
+            <p-table
+              #tableRules
+              [value]="wizard.stepsData"
+              [columns]="cols"
+              [reorderableColumns]="true"
+              responsiveLayout="scroll"
+              styleClass="p-datatable-gridlines"
+            >
+              <ng-template pTemplate="header" let-columns>
+                <tr>
+                  <th style="width: 3rem"></th>
+                  <th *ngFor="let col of columns" pReorderableColumn>
+                    {{ col.header }}
+                  </th>
+                  <th style="width: 3rem">Acciones</th>
+                </tr>
+              </ng-template>
+              <ng-template
+                pTemplate="body"
+                let-rowData
+                let-columns="columns"
+                let-index="rowIndex"
+              >
+                <tr [pReorderableRow]="index">
+                  <td>
+                    <span
+                      class="pi pi-bars"
+                      [pReorderableRowHandle]="index"
+                    ></span>
+                  </td>
+                  <td>
+                    {{ rowData.rule.name }}
+                  </td>
+                  <td>
+                    {{ rowData.template.title }}
+                  </td>
+                  <td>
+                    <button
+                      pButton
+                      pRipple
+                      icon="pi pi-trash"
+                      (click)="deleteRule(rowData)"
+                      pTooltip="Eliminar regla"
+                      class="p-button-rounded p-button-danger p-mr-2"
+                    ></button>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+          <!-- seventh Step
+          ============================================================== -->
+          <div *ngIf="stepPage === 6">
+            <!-- view ifrma and copy -->
+
+            <div class="field grid">
+              <label for="name" class="col-12 md:col-4">Iframe:</label>
+              <div class="col-12 md:col-8">
+                <textarea
+                  #htmlContent
+                  style="resize: none; width: -webkit-fill-available"
+                  id="htmlContent"
+                  rows="10"
+                  cols="10"
+                  pInputTextarea
+                  [(ngModel)]="typeIfrmame"
+                  [disabled]="true"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <div class="flex justify-content-between">
+            <div class="flex justify-content-start">
+              <p-button
+                *ngIf="stepPage !== 0"
+                label="Anterior"
+                icon="pi pi-angle-left"
+                [disabled]="
+                  stepPage === 4 || (stepPage === 1 && validateNewRule)
+                "
+                (click)="validateSteps(false)"
+              ></p-button>
+            </div>
+            <div class="flex justify-content-end">
+              <p-button
+                *ngIf="stepPage !== 6"
+                label="Siguiente"
+                icon="pi pi-angle-right"
+                iconPos="right"
+                [disabled]="stepPage === 4"
+                (click)="validateSteps(true)"
+              ></p-button>
+            </div>
+            <div class="flex justify-content-end" *ngIf="stepPage === 6">
+              <p-button
+                label="Copiar"
+                icon="pi pi-copy"
+                (click)="copyClipboard()"
+                class="p-mr-2"
+              ></p-button>
+              <p-button
+                label="Finalizar"
+                icon="pi pi-check"
+                (click)="saveWizard()"
+              ></p-button>
+            </div>
+          </div>
+        </ng-template>
+      </p-card>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,160 @@
+<p-dialog
+  [(visible)]="display"
+  [style]="{ width: '70vw' }"
+  [maximizable]="true"
+  header="Bitácora"
+  [modal]="true"
+  styleClass="p-fluid"
+>
+  <ng-template pTemplate="content">
+    <p-table
+      #dt
+      [value]="dataActivityLog"
+      styleClass="p-datatable-customers rowexpand-table"
+      [rows]="10"
+      [paginator]="true"
+      dataKey="_id"
+      [globalFilterFields]="['user.name', 'date']"
+    >
+      <ng-template pTemplate="caption">
+        <div
+          class="p-d-flex p-flex-column p-flex-md-row p-jc-md-between table-header"
+        >
+          <h5 class="p-m-0">Bitácora</h5>
+          <span class="p-input-icon-left" style="width: 25%">
+            <i class="pi pi-search"></i>
+            <input
+              pInputText
+              type="text"
+              (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+              placeholder="Buscar..."
+            />
+          </span>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 3rem"></th>
+          <th pSortableColumn="user.name">
+            Usuario <p-sortIcon field="user.name"></p-sortIcon>
+          </th>
+          <th pSortableColumn="objectModified">
+            Id <p-sortIcon field="objectModified"></p-sortIcon>
+          </th>
+          <th pSortableColumn="date">
+            Fecha <p-sortIcon field="date"></p-sortIcon>
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-expanded="expanded" let-activityLog>
+        <tr>
+          <td>
+            <button
+              type="button"
+              pButton
+              pRipple
+              [pRowToggler]="activityLog"
+              class="p-button-text p-button-rounded p-button-plain"
+              [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+            ></button>
+          </td>
+          <td>
+            {{ activityLog.user.name }}
+          </td>
+          <td>
+            {{ activityLog.objectModified }}
+          </td>
+          <td>
+            {{ activityLog.date | date: "dd/M/yyyy, h:mm:ss a" }}
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="rowexpansion" let-activityLog>
+        <tr>
+          <td colspan="4">
+            <div class="p-p-3">
+              <p-table
+                #pr
+                [value]="activityLog.log"
+                [rows]="10"
+                dataKey="_id"
+                [paginator]="true"
+                [globalFilterFields]="['previousValue', 'newValue']"
+              >
+                <ng-template pTemplate="caption">
+                  <div
+                    class="p-d-flex p-flex-column p-flex-md-row p-jc-md-between table-header"
+                  >
+                    <h5 class="p-m-0">logs</h5>
+                  </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th pSortableColumn="campo">
+                      Campo
+                      <p-sortIcon field="campo"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="previousValue">
+                      Valor anterior
+                      <p-sortIcon field="previousValue"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="newValue">
+                      Valor Nuevo
+                      <p-sortIcon field="newValue"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="action">
+                      Acción
+                      <p-sortIcon field="action"></p-sortIcon>
+                    </th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-log>
+                  <tr>
+                    <td>
+                      {{ log.label }}
+                    </td>
+
+                    <td>
+                      <div class="overflow-auto" style="max-width: 30vw">
+                        {{ log.previousValue | json }}
+                      </div>
+                    </td>
+
+                    <td>
+                      <div class="overflow-auto" style="max-width: 30vw">
+                        {{ log.newValue | json }}
+                      </div>
+                    </td>
+                    <td>
+                      <div class="overflow-auto">
+                        {{ log.action }}
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="4">No existen cambios para esta pantalla</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </ng-template>
+
+  <ng-template pTemplate="footer"> </ng-template>
+</p-dialog>
+<div class="p-grid p-justify-end">
+  <button
+    pButton
+    pRipple
+    type="button"
+    icon="pi pi-eye"
+    pTooltip="Bitácora"
+    class="p-button-rounded p-button-info p-button-text"
+    (click)="showDialog()"
+  ></button>
+</div>

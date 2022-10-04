@@ -1,0 +1,427 @@
+<div class="p-grid">
+  <p-toast></p-toast>
+  <div class="p-col-12">
+    <div class="p-grid justify-content-end">
+      <app-activity-log
+        [screen]="'unomiProfiles'"
+        class="p-mr-5"
+      ></app-activity-log>
+    </div>
+    <div class="card">
+      <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+          <h1>Administrar perfiles de UNOMI.</h1>
+        </ng-template>
+        <ng-template pTemplate="right">
+          <button
+            pButton
+            type="button"
+            label="Agregar Perfil"
+            (click)="newProfile()"
+          ></button>
+        </ng-template>
+      </p-toolbar>
+      <p-selectButton
+        [options]="options"
+        optionLabel="name"
+        optionValue="value"
+        [(ngModel)]="optionsSelected"
+      ></p-selectButton>
+      <p-table
+        #dt
+        [rows]="10"
+        [columns]="cols"
+        dataKey="itemId"
+        [paginator]="true"
+        [value]="unomiProfiles"
+        [globalFilterFields]="[
+          'properties.email',
+          'properties.firstName',
+          'properties.lastName'
+        ]"
+        responsiveLayout="scroll"
+        styleClass="p-datatable-gridlines"
+        [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        [(selection)]="unomiProfilesSelected"
+        [lazy]="true"
+        (onLazyLoad)="loadProfiles($event)"
+        [loading]="loading"
+        [totalRecords]="totalRecords"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords}"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex">
+            <button
+              pButton
+              type="button"
+              label="Búsqueda avanzada"
+              (click)="advancedSearch = true"
+            ></button>
+            <button
+              pButton
+              type="button"
+              icon="pi pi-refresh"
+              pTooltip="Refrescar información."
+              class="p-button-rounded p-button-success p-mt-1 p-ml-2"
+              (click)="refreshData()"
+            ></button>
+
+            <span class="p-input-icon-left ml-auto">
+              <i class="pi pi-search"></i>
+
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Buscar.."
+              />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3rem">
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th pSortableColumn="properties.email">
+              Email <p-sortIcon field="properties.email"></p-sortIcon>
+            </th>
+            <th pSortableColumn="properties.firstName">
+              Nombre
+              <p-sortIcon field="properties.firstName"></p-sortIcon>
+            </th>
+            <th pSortableColumn="properties.lastName">
+              Apellidos
+              <p-sortIcon field="properties.lastName"></p-sortIcon>
+            </th>
+            <th pSortableColumn="properties.Suscriptor">
+              Suscriptor
+              <p-sortIcon field="properties.Suscriptor"></p-sortIcon>
+            </th>
+            <th pSortableColumn="properties.Estado">
+              Estado
+              <p-sortIcon field="properties.Estado"></p-sortIcon>
+            </th>
+            <th pSortableColumn="properties.firstVisit">
+              F. Creación
+              <p-sortIcon field="properties.firstVisit"></p-sortIcon>
+            </th>
+            <th pSortableColumn="properties.lastVisit">
+              F. Actualizac.
+              <p-sortIcon field="properties.lastVisit"></p-sortIcon>
+            </th>
+            <th>Acciones</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-userField>
+          <tr
+            *ngIf="
+              userField.properties.enabled === optionsSelected ||
+              (!userField.properties.enabled && optionsSelected)
+            "
+          >
+            <td>
+              <p-tableCheckbox [value]="userField"></p-tableCheckbox>
+            </td>
+            <td>
+              {{ userField.properties.email ? userField.properties.email : "" }}
+            </td>
+            <td>
+              {{
+                userField.properties.firstName
+                  ? userField.properties.firstName
+                  : ""
+              }}
+            </td>
+            <td>
+              {{
+                userField.properties.lastName
+                  ? userField.properties.lastName
+                  : ""
+              }}
+            </td>
+            <td>
+              {{
+                userField.properties.Suscriptor
+                  ? userField.properties.Suscriptor
+                  : ""
+              }}
+            </td>
+            <td>
+              {{
+                userField.properties.Estado ? userField.properties.Estado : ""
+              }}
+            </td>
+            <td>
+              {{
+                userField.properties.firstVisit
+                  ? (userField.properties.firstVisit | date: "shortDate")
+                  : ""
+              }}
+            </td>
+            <td>
+              {{
+                userField.properties.lastVisit
+                  ? (userField.properties.lastVisit | date: "shortDate")
+                  : ""
+              }}
+            </td>
+            <td>
+              <button
+                pButton
+                type="button"
+                icon="pi pi-pencil"
+                (click)="editProfile(userField)"
+                pTooltip="Editar"
+                class="p-button-rounded p-button-warning p-mr-2"
+              ></button>
+              <button
+                pButton
+                type="button"
+                icon="pi pi-chart-bar"
+                pTooltip="Detalle"
+                class="p-button-rounded p-mr-2"
+                (click)="editProfile(userField, true)"
+              ></button>
+              <button
+                pButton
+                type="button"
+                icon="pi pi-times"
+                pTooltip="Inactivar"
+                *ngIf="userField.properties.enabled"
+                class="p-button-rounded p-button-danger p-mr-2"
+                (click)="changeState(userField)"
+              ></button>
+              <button
+                pButton
+                pRipple
+                (click)="changeState(userField)"
+                icon="pi pi-check"
+                *ngIf="!userField.properties.enabled"
+                pTooltip="Activar"
+                class="p-button-rounded p-button-success p-mr-2"
+              ></button>
+              <button
+                pButton
+                type="button"
+                icon="pi pi-chart-line"
+                pTooltip="Sesiones"
+                class="p-button-rounded p-button-success p-mr-2"
+                (click)="getSessions(userField.itemId)"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+          <div class="p-grid">
+            <div class="col-3">
+              <button
+                pButton
+                type="button"
+                icon="pi pi-pencil"
+                pTooltip="Edición Masiva"
+                class="p-button-success p-button-rounded"
+                (click)="op.toggle($event)"
+                [disabled]="unomiProfilesSelected.length === 0"
+              ></button>
+            </div>
+            <div class="col-9">
+              <div class="speeddial-tooltip-demo alignSpeedDialog">
+                <p-speedDial
+                  showIcon="pi pi-upload"
+                  hideIcon="pi pi-times"
+                  [model]="exportOptions"
+                  className="speeddial-left"
+                  direction="left"
+                  [buttonStyle]="{
+                    width: '3rem',
+                    height: '3rem'
+                  }"
+                ></p-speedDial>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+<p-confirmDialog [style]="{ width: '500px' }"></p-confirmDialog>
+<!-- TODO: finalizar la edición masiva
+===================================================== -->
+<p-overlayPanel #op [showCloseIcon]="true" [style]="{ width: '600px' }">
+  <ng-template pTemplate>
+    <div class="p-grid">
+      <div class="col-12">
+        <h3 class="text-center">Edición masiva</h3>
+      </div>
+      <div class="col-6">
+        <p-dropdown
+          [options]="userUnomiFieldsMasiveEdit"
+          [(ngModel)]="updateMasiveField"
+          optionLabel="name"
+          [filter]="true"
+          filterBy="name"
+          [showClear]="true"
+          placeholder="Seleccione el campo"
+          [style]="{
+            width: '-webkit-fill-available'
+          }"
+        ></p-dropdown>
+      </div>
+      <div class="col-6">
+        <input
+          *ngIf="updateMasiveField && 'number' === updateMasiveField.type"
+          [(ngModel)]="updateMasiveField.value"
+          class="fill-available input inputfield"
+          type="number"
+          id="priority"
+          pInputText
+        />
+        <input
+          *ngIf="
+            (updateMasiveField && 'string' === updateMasiveField.type) ||
+            'email' === updateMasiveField.type
+          "
+          [(ngModel)]="updateMasiveField.value"
+          class="fill-available input inputfield"
+          type="text"
+          id="priority"
+          pInputText
+        />
+        <div
+          *ngIf="updateMasiveField && 'boolean' === updateMasiveField.type"
+          style="margin-top: -1rem"
+        >
+          <br />
+          <p-inputSwitch [(ngModel)]="updateMasiveField.value"></p-inputSwitch>
+        </div>
+        <p-calendar
+          *ngIf="updateMasiveField && 'date' === updateMasiveField.type"
+          inputId="basic"
+          id="startDate"
+          [(ngModel)]="updateMasiveField.value"
+          class="fill-available"
+          dateFormat="yy-mm-dd"
+        ></p-calendar>
+      </div>
+      <div class="col-12 flex align-items-center justify-content-center">
+        <button
+          pButton
+          type="button"
+          label="Cancelar"
+          class="p-button-secondary p-button-rounded"
+        ></button>
+        <button
+          pButton
+          type="button"
+          label="Guardar"
+          class="p-button-rounded p-ml-2"
+          (click)="updateMasive()"
+        ></button>
+      </div>
+    </div>
+  </ng-template>
+</p-overlayPanel>
+<p-dialog
+  [(visible)]="addNew"
+  [contentStyle]="{ overflow: 'visible' }"
+  [style]="{
+    overflow: 'auto',
+    'min-width': '100vw',
+    'min-height': '100vh'
+  }"
+  [modal]="true"
+  [draggable]="false"
+  [maximizable]="true"
+>
+  <ng-template pTemplate="header">
+    <p></p>
+  </ng-template>
+  <app-user-details
+    [profile]="profileEditing"
+    [userFields]="userFields"
+    [visualizing]="visualizing"
+    [editing]="editing"
+    (cancelEvent)="cancel()"
+    (saveEvent)="save()"
+  ></app-user-details>
+</p-dialog>
+
+<!-- advanced Search
+============================================= -->
+<p-dialog
+  [(visible)]="advancedSearch"
+  [contentStyle]="{ overflow: 'visible' }"
+  [style]="{
+    overflow: 'auto',
+    'min-width': '70%',
+    'min-height': '40vh'
+  }"
+  [modal]="true"
+  [draggable]="false"
+  [maximizable]="true"
+>
+  <ng-template pTemplate="header">
+    <p>Búsqueda avanzada.</p>
+  </ng-template>
+
+  <app-sharedConditions
+    [schema]="schema"
+    [unomiConditions]="unomiConditions"
+    [conditionVariables]="conditionVariables"
+    (childEvent)="emmit($event)"
+  ></app-sharedConditions>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="advancedSearch = false"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Guardar"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="executeAdvancedSearch()"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<!-- profile sessions
+=========================================================== -->
+<p-dialog
+  [(visible)]="showSessions"
+  [contentStyle]="{ overflow: 'visible' }"
+  [style]="{
+    overflow: 'auto',
+    'min-width': '70%',
+    'min-height': '40vh'
+  }"
+  [modal]="true"
+  [draggable]="false"
+  [maximizable]="true"
+>
+  <ng-template pTemplate="header">
+    <p>Búsqueda avanzada.</p>
+  </ng-template>
+
+  <app-statistics [sessions]="userSessions"></app-statistics>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="showSessions = false"
+    ></button>
+  </ng-template>
+</p-dialog>

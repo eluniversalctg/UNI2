@@ -1,0 +1,208 @@
+<div class="p-grid">
+  <p-toast></p-toast>
+
+  <div class="p-col-12">
+    <div class="card">
+      <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+          <h1>Administrar Dominios.</h1>
+        </ng-template>
+
+        <ng-template pTemplate="right">
+          <button
+            pButton
+            type="button"
+            label="Agregar dominio"
+            (click)="createDomain()"
+          ></button>
+        </ng-template>
+      </p-toolbar>
+
+      <!-- load domains into table
+      ============================================================ -->
+      <p-table
+        #dt
+        [rows]="10"
+        dataKey="_id"
+        [value]="domains"
+        [paginator]="true"
+        responsiveLayout="scroll"
+        [globalFilterFields]="['name', 'domain', 'idSite']"
+        styleClass="p-datatable-gridlines"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex">
+            <span class="p-input-icon-left ml-auto">
+              <i class="pi pi-search"></i>
+
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Buscar.."
+              />
+            </span>
+          </div>
+        </ng-template>
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="name">
+              Nombre <p-sortIcon field="name"></p-sortIcon>
+            </th>
+
+            <th pSortableColumn="domain">
+              Dominio <p-sortIcon field="domain"></p-sortIcon>
+            </th>
+            <th pSortableColumn="idSite">
+              IdSite Matomo<p-sortIcon field="idSite"></p-sortIcon>
+            </th>
+
+            <th>Acciones</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-dom>
+          <tr>
+            <td>{{ dom.name }}</td>
+
+            <td>{{ dom.domain }}</td>
+            <td>{{ dom.idSite }}</td>
+
+            <td>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                pTooltip="Editar dominio"
+                class="p-button-rounded p-button-warning p-mr-2"
+                (click)="editDomain(dom)"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-trash"
+                pTooltip="Eliminar dominio"
+                class="p-button-rounded p-button-danger"
+                (click)="deleteDomain(dom)"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<!-- dialog to create/edit domain
+      ============================================================ -->
+<p-dialog
+  [(visible)]="addNew"
+  [style]="{ overflow: 'auto', 'min-width': '50vw', 'min-height': '60vh' }"
+  [contentStyle]="{ overflow: 'visible' }"
+  [modal]="true"
+  [draggable]="false"
+  [maximizable]="true"
+  e
+>
+  <ng-template pTemplate="header">
+    <p>Crear un nuevo dominio.</p>
+  </ng-template>
+
+  <form name="domainForm" [formGroup]="domainForm" class="mt-2">
+    <div class="field grid">
+      <label for="name" class="col-12 md:col-4">Nombre:</label>
+
+      <div class="col-12 md:col-8">
+        <input
+          style="width: -webkit-fill-available"
+          formControlName="name"
+          class="input inputfield"
+          type="text"
+          id="name"
+          pInputText
+        />
+      </div>
+
+      <p-message
+        *ngIf="
+          domainForm.controls.name.touched && !domainForm.controls.name.valid
+        "
+        severity="error"
+        text="Nombre requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+
+    <div class="field grid">
+      <label for="domain" class="col-12 md:col-4">Dominio:</label>
+
+      <div class="col-12 md:col-8">
+        <input
+          style="width: -webkit-fill-available"
+          formControlName="domain"
+          class="input inputfield"
+          type="text"
+          id="domain"
+          pInputText
+        />
+      </div>
+
+      <p-message
+        *ngIf="
+          domainForm.controls.domain.touched &&
+          !domainForm.controls.domain.valid
+        "
+        severity="error"
+        text="Dominio requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid">
+      <label for="idSite" class="col-12 md:col-4">idSite Matomo:</label>
+
+      <div class="col-12 md:col-8">
+        <input
+          style="width: -webkit-fill-available"
+          formControlName="idSite"
+          class="input inputfield"
+          type="number"
+          min="0"
+          id="idSite"
+          pInputText
+        />
+      </div>
+
+      <p-message
+        *ngIf="
+          domainForm.controls.idSite.touched &&
+          !domainForm.controls.idSite.valid
+        "
+        severity="error"
+        text="IdSite requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="resetDomain()"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Guardar"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="saveDomain()"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{ width: '500px' }"></p-confirmDialog>

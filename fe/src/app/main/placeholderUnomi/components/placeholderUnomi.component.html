@@ -1,0 +1,256 @@
+<div class="p-grid">
+  <p-toast></p-toast>
+  <div class="p-col-12">
+    <div class="card">
+      <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+          <h1>Agregar placeholders.</h1>
+        </ng-template>
+        <ng-template pTemplate="right">
+          <button
+            pButton
+            type="button"
+            label="Agregar placeholder"
+            (click)="createPlaceholders()"
+          ></button>
+        </ng-template>
+      </p-toolbar>
+      <p-selectButton
+        [options]="options"
+        optionLabel="name"
+        optionValue="value"
+        [(ngModel)]="optionsSelected"
+      ></p-selectButton>
+
+      <p-table
+        #dt
+        [rows]="10"
+        dataKey="id"
+        [paginator]="true"
+        responsiveLayout="scroll"
+        [globalFilterFields]="['name', 'valueDefault']"
+        styleClass="p-datatable-gridlines"
+        responsiveLayout="scroll"
+        [value]="placeholders"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex">
+            <span class="p-input-icon-left ml-auto">
+              <i class="pi pi-search"></i>
+
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Buscar.."
+              />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="name">
+              Nombre <p-sortIcon field="name"></p-sortIcon>
+            </th>
+            <th pSortableColumn="type">
+              Tipo <p-sortIcon field="type"></p-sortIcon>
+            </th>
+            <th pSortableColumn="valueDefault">
+              Valor por defecto <p-sortIcon field="valueDefault"></p-sortIcon>
+            </th>
+            <th>Acciones</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-placeholder>
+          <tr *ngIf="placeholder.isActive === optionsSelected">
+            <td>
+              {{ placeholder.name }}
+            </td>
+            <td>
+              {{ placeholder.type }}
+            </td>
+            <td>
+              {{ placeholder.valueDefault }}
+            </td>
+            <td>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                pTooltip="Editar placeholder"
+                (click)="openUpdatePlaceholders(placeholder)"
+                class="p-button-rounded p-button-warning p-mr-2"
+                [disabled]="placeholder.isInUse"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-times"
+                *ngIf="placeholder.isActive"
+                (click)="changeState(placeholder)"
+                pTooltip="Inactivar placeholder"
+                class="p-button-rounded p-button-danger p-mr-2"
+                [disabled]="placeholder.isInUse"
+              ></button>
+              <button
+                pButton
+                pRipple
+                (click)="changeState(placeholder)"
+                icon="pi pi-check"
+                *ngIf="!placeholder.isActive"
+                pTooltip="Activar placeholder"
+                class="p-button-rounded p-button-success p-mr-2"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<p-dialog
+  [(visible)]="addNew"
+  [contentStyle]="{ overflow: 'visible' }"
+  [style]="{ 'min-width': '32%', 'min-height': '40vh' }"
+  [modal]="true"
+  [draggable]="false"
+  [maximizable]="true"
+>
+  <ng-template pTemplate="header">
+    <p>Crear nuevo placeholder.</p>
+  </ng-template>
+  <form [formGroup]="placeholdersForm" class="mt-2">
+    <div class="field grid">
+      <label for="name" class="col-12 md:col-4">Nombre:</label>
+      <div class="col-12 md:col-8">
+        <input
+          id="name"
+          type="text"
+          class="input inputfield"
+          style="width: -webkit-fill-available"
+          pInputText
+          formControlName="name"
+          autocomplete="off"
+        />
+      </div>
+      <p-message
+        *ngIf="
+          placeholdersForm.controls.name.touched &&
+          !placeholdersForm.controls.name.valid
+        "
+        severity="error"
+        text="Nombre requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid">
+      <label for="type" class="col-12 md:col-4">Tipo:</label>
+      <div class="col-12 md:col-8">
+        <p-radioButton
+          class="p-ml-2"
+          id="type"
+          name="type"
+          value="Unomi"
+          formControlName="type"
+          (onClick)="validators()"
+        ></p-radioButton>
+        <label for="text" class="p-ml-2">Unomi</label>
+        <p-radioButton
+          class="p-ml-4"
+          id="type"
+          name="type"
+          value="Estándar"
+          formControlName="type"
+          (onClick)="validators()"
+        ></p-radioButton>
+        <label for="text" class="p-ml-2">Estándar</label>
+      </div>
+      <p-message
+        *ngIf="
+          placeholdersForm.controls.type.touched &&
+          !placeholdersForm.controls.type.valid
+        "
+        severity="error"
+        text="Tipo requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div
+      class="field grid"
+      *ngIf="placeholdersForm.controls.type.value === 'Estándar'"
+    >
+      <label for="valueDefault" class="col-12 md:col-4"
+        >Valor por defecto:</label
+      >
+      <div class="col-12 md:col-8">
+        <input
+          id="valueDefault"
+          type="text"
+          class="input inputfield"
+          class="inputfield"
+          style="width: -webkit-fill-available"
+          pInputText
+          formControlName="valueDefault"
+          autocomplete="off"
+        />
+      </div>
+      <p-message
+        *ngIf="
+          placeholdersForm.controls.valueDefault.touched &&
+          !placeholdersForm.controls.valueDefault.valid
+        "
+        severity="error"
+        text="Valor requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div
+      class="field grid"
+      *ngIf="placeholdersForm.controls.type.value === 'Unomi'"
+    >
+      <label for="name" class="col-12 md:col-4">Valor por defecto:</label>
+      <div class="col-12 md:col-8">
+        <p-dropdown
+          [options]="unomiFields"
+          formControlName="valueDefault"
+          optionLabel="name"
+          optionValue="value"
+          [filter]="true"
+          filterBy="name"
+          [showClear]="true"
+          placeholder="Seleccione un valor"
+        ></p-dropdown>
+      </div>
+      <p-message
+        *ngIf="
+          placeholdersForm.controls.valueDefault.touched &&
+          !placeholdersForm.controls.valueDefault.valid
+        "
+        severity="error"
+        text="Valor requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="addNew = false"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Guardar"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="register()"
+      [disabled]="!placeholdersForm.valid"
+    ></button>
+  </ng-template>
+</p-dialog>
+<p-confirmDialog [style]="{ width: '500px' }"></p-confirmDialog>

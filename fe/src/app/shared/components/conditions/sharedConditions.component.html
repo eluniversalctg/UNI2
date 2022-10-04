@@ -1,0 +1,196 @@
+<div class="card">
+  <!-- CRITERIO
+    ========================================================================= -->
+  <app-recursive
+    [recursiveList]="schema"
+    [unomiConditions]="unomiConditions"
+    [conditionVariables]="conditionVariables"
+  ></app-recursive>
+  <!-- #END CRITERIO
+    ========================================================================= -->
+
+  <!-- add criterio buttons
+    ========================================================================= -->
+  <button
+    pButton
+    pRipple
+    icon="pi pi-plus"
+    type="button"
+    label="Agregar Criterio"
+    class="p-button-text"
+    (click)="op3.toggle($event)"
+  ></button>
+  <button
+    pButton
+    pRipple
+    icon="pi pi-plus"
+    type="button"
+    label="Agregar Grupo de Criterio"
+    class="p-button-text"
+    (click)="op4.toggle($event)"
+  ></button>
+  <!-- #END  add criterio buttons
+    ========================================================================= -->
+
+  <!-- overlayPanel to show the list of conditions
+      ====================================================================== -->
+  <p-overlayPanel #op3 [showCloseIcon]="true" [dismissable]="true">
+    <div class="p-grid">
+      <!-- conditions
+        ======================================================================= -->
+      <div class="overlayPanel">
+        <p>Condiciones</p>
+        <div class="list">
+          <input
+            class="p-ml-2 p-mt-2"
+            pInputText
+            type="text"
+            (keyup)="filterConditions($event)"
+            placeholder="Buscar.."
+          />
+          <ul>
+            <li
+              *ngFor="let condition of unomiConditions"
+              (click)="filterSelected(condition, 'single')"
+            >
+              {{ condition.id }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- variables
+      ======================================================================= -->
+      <div *ngIf="conditionsValuesFiltered.length > 0" class="overlayPanel">
+        <p>Variables</p>
+        <div class="list">
+          <input
+            class="p-ml-2 p-mt-2"
+            pInputText
+            type="text"
+            (keydown)="filterConditionsValues($event)"
+            placeholder="Buscar.."
+          />
+          <ul>
+            <li
+              *ngFor="let value of conditionsValuesFiltered"
+              (click)="setValuesOfParameter(value)"
+            >
+              {{ value.id }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- setVariable
+      ======================================================================= -->
+      <div *ngIf="parameterFiltered.length > 0" class="overlayPanel">
+        <p>Elejir el valor</p>
+        <div class="list">
+          <input
+            class="p-ml-2 p-mt-2"
+            pInputText
+            type="text"
+            (keydown)="filterConditionsValues($event)"
+            placeholder="Buscar.."
+          />
+          <ul>
+            <li
+              *ngFor="let param of parameterFiltered"
+              (click)="filterValuesToVariable(param)"
+            >
+              {{ param.value }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </p-overlayPanel>
+
+  <p-overlayPanel #op4 [showCloseIcon]="true" [dismissable]="true">
+    <div class="p-grid">
+      <!-- conditions
+        ======================================================================= -->
+      <div class="overlayPanel">
+        <p>Condiciones</p>
+        <div class="list">
+          <input
+            class="p-ml-2 p-mt-2"
+            pInputText
+            type="text"
+            (keyup)="filterConditions($event)"
+            placeholder="Buscar.."
+          />
+          <ul>
+            <li
+              *ngFor="let condition of unomiConditions"
+              (click)="filterSelected(condition, 'group')"
+            >
+              {{ condition.id }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- variables
+      ======================================================================= -->
+      <div *ngIf="conditionsValuesFiltered.length > 0" class="overlayPanel">
+        <p>Variables</p>
+        <div class="list">
+          <input
+            class="p-ml-2 p-mt-2"
+            pInputText
+            type="text"
+            (keydown)="filterConditionsValues($event)"
+            placeholder="Buscar.."
+          />
+          <ul>
+            <li
+              *ngFor="let value of conditionsValuesFiltered"
+              (click)="setValuesOfParameter(value)"
+            >
+              {{ value.id }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- setVariable
+      ======================================================================= -->
+      <div *ngIf="parameterFiltered.length > 0" class="overlayPanel">
+        <p>Elejir el valor</p>
+        <div class="list">
+          <input
+            class="p-ml-2 p-mt-2"
+            pInputText
+            type="text"
+            (keydown)="filterConditionsValues($event)"
+            placeholder="Buscar.."
+          />
+          <ul>
+            <li
+              *ngFor="let param of parameterFiltered"
+              (click)="filterValuesToVariable(param)"
+            >
+              {{ param.value }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </p-overlayPanel>
+
+  <!--  #END overlayPanel to show the list of conditions
+          ====================================================================== -->
+</div>
+
+<p-confirmDialog [style]="{ width: '500px' }"></p-confirmDialog>
+
+<!-- response condition -->
+
+<div *ngIf="!isEmpty(response)" class="response">
+  <hr />
+  <h3>Respuesta:</h3>
+  <pre> {{ response | json }}</pre>
+  <hr />
+</div>

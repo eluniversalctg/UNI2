@@ -1,0 +1,129 @@
+<div class="layout-topbar">
+  <div class="layout-topbar-left">
+    <a class="app-name" href="/">
+      <img
+        alt="main logo"
+        [src]="'assets/images/logo-white.png'"
+        class="app-logo"
+      />
+    </a>
+
+    <a href="#" class="menu-button" (click)="appMain.onMenuButtonClick($event)">
+      <div class="menu-button-icon"></div>
+    </a>
+
+    <ul class="layout-topbar-main-menu">
+      <li>
+        <a
+          [routerLink]="['/']"
+          [routerLinkActiveOptions]="{ exact: true }"
+          routerLinkActive="topbar-active-menuitem-routerlink"
+          >Sales
+          <span class="active-bottom"></span>
+        </a>
+      </li>
+      <li>
+        <a
+          [routerLink]="['/analytics']"
+          routerLinkActive="topbar-active-menuitem-routerlink"
+          >Analytics
+          <span class="active-bottom"></span>
+        </a>
+      </li>
+      <li>
+        <a
+          [routerLink]="['/utilities/widgets']"
+          routerLinkActive="topbar-active-menuitem-routerlink"
+          >Widgets
+          <span class="active-bottom"></span>
+        </a>
+      </li>
+      <li
+        app-topmenu
+        *ngFor="let item of menu; let i = index"
+        [item]="item"
+        [index]="i"
+        [root]="true"
+        class="layout-topbar-menu"
+        (click)="appMain.onTopbarMenuClick()"
+      ></li>
+    </ul>
+  </div>
+  <div class="layout-topbar-right">
+    <ul class="layout-topbar-actions">
+      <li
+        #searchItem
+        class="search-item"
+        [ngClass]="{ 'active-topmenuitem': appMain.search }"
+      >
+        <a
+          href="#"
+          tabindex="0"
+          (click)="
+            appMain.onTopbarItemClick($event, searchItem); searchFocus($event)
+          "
+        >
+          <i class="pi pi-search"></i>
+        </a>
+
+        <div class="search-input-wrapper">
+          <span class="p-input-icon-right">
+            <input
+              #input1
+              type="text"
+              pInputText
+              placeholder="Type your keywords"
+              (click)="appMain.searchClick = true"
+              autofocus
+            />
+            <i class="pi pi-search"></i>
+          </span>
+        </div>
+
+        <ul class="fadeInDown">
+          <div class="search-input-wrapper p-fluid" style="width: 100%">
+            <span class="p-input-icon-right">
+              <input
+                #input2
+                type="text"
+                pInputText
+                placeholder="Type your keywords"
+                (click)="appMain.searchClick = true"
+                autofocus
+              />
+              <i class="pi pi-search"></i>
+            </span>
+          </div>
+        </ul>
+      </li>
+
+      <li
+        #profile
+        class="profile-item"
+        [ngClass]="{
+          'active-topmenuitem fadeInDown': appMain.activeTopbarItem === profile
+        }"
+      >
+        <div
+          class="profile-container"
+          (click)="appMain.onTopbarItemClick($event, profile)"
+        >
+          <a href="#">GR</a>
+          <div class="name-container">
+            <span class="name">Gene Russell</span>
+            <span class="job">Developer</span>
+          </div>
+          <i class="pi pi-angle-down"></i>
+        </div>
+
+        <ul class="profile-menu fadeInDown">
+          <li>
+            <a (click)="signOut()">
+              <span>Cerrar Sesión</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>

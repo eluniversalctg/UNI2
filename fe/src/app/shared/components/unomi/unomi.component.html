@@ -1,0 +1,554 @@
+<div class="p-grid">
+  <p-toast></p-toast>
+  <div class="p-col-12">
+    <div class="p-grid justify-content-end">
+      <app-activity-log
+        [screen]="selectedOption.value || ''"
+        class="p-mr-5"
+      ></app-activity-log>
+    </div>
+    <div class="card">
+      <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+          <h1>Administrar {{ selectedOption.label }}.</h1>
+        </ng-template>
+        <ng-template pTemplate="right">
+          <button
+            pButton
+            type="button"
+            label="Agregar nuevo"
+            (click)="createRule()"
+          ></button>
+        </ng-template>
+      </p-toolbar>
+      <p-selectButton
+        [options]="options"
+        optionLabel="name"
+        optionValue="value"
+        [(ngModel)]="optionsSelected"
+      ></p-selectButton>
+
+      <p-table
+        #dt
+        [value]="unomi"
+        [rows]="10"
+        [columns]="cols"
+        [paginator]="true"
+        responsiveLayout="scroll"
+        styleClass="p-datatable-gridlines"
+        [globalFilterFields]="['id', 'name', 'description']"
+        [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords}"
+        [(selection)]="selectedRows"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex">
+            <span class="p-input-icon-left ml-auto">
+              <i class="pi pi-search"></i>
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Buscar.."
+              />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3rem">
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th pSortableColumn="id">
+              Id <p-sortIcon field="id"></p-sortIcon>
+            </th>
+            <th pSortableColumn="name">
+              Nombre <p-sortIcon field="name"></p-sortIcon>
+            </th>
+            <th pSortableColumn="description">
+              Descripción <p-sortIcon field="description"></p-sortIcon>
+            </th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rule>
+          <tr *ngIf="rule.enabled === optionsSelected">
+            <td style="width: 3rem">
+              <p-tableCheckbox [value]="rule"></p-tableCheckbox>
+            </td>
+            <td>
+              {{ rule.id }}
+            </td>
+            <td>
+              {{ rule.name }}
+            </td>
+            <td>
+              {{ rule.description }}
+            </td>
+            <td>{{ rule.enabled | state }}</td>
+            <td [style]="isSegment ? 'width: 23rem;' : 'width: 15rem;'">
+              <button
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                pTooltip="Editar {{ selectedOption.label }}"
+                (click)="openUpdateRule(rule)"
+                class="p-button-rounded p-button-warning p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-copy"
+                pTooltip="Duplicar {{ selectedOption.label }}"
+                (click)="duplicateRule(rule)"
+                class="p-button-rounded p-button-secondary p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-chart-bar"
+                pTooltip="Detalle {{ selectedOption.label }}"
+                (click)="detailRule(rule)"
+                class="p-button-rounded p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                [icon]="rule.enabled ? 'pi pi-times' : 'pi pi-check'"
+                [pTooltip]="rule.enabled ? 'Inactivar ' : 'Activar '"
+                (click)="changeStateRule(rule)"
+                [class]="
+                  rule.enabled
+                    ? 'p-button-danger p-button-rounded  p-mr-2'
+                    : 'p-button-success p-button-rounded  p-mr-2'
+                "
+              ></button>
+              <button
+                *ngIf="selectedOption.label === typeSegment"
+                pButton
+                pRipple
+                icon="pi pi-chart-line"
+                pTooltip="Estadística {{ selectedOption.label }}"
+                (click)="statisticsRule(rule)"
+                class="p-button-rounded p-button-info p-mr-2"
+              ></button>
+              <button
+                *ngIf="selectedOption.label === typeSegment"
+                pButton
+                pRipple
+                icon="pi pi-user"
+                pTooltip="Perfiles"
+                (click)="profile(rule.id)"
+                class="p-button-rounded p-button-plain p-mr-2"
+              ></button>
+              <button
+                *ngIf="selectedOption.label === typeSegment"
+                pButton
+                pRipple
+                icon="pi pi-history"
+                pTooltip="Historial {{ selectedOption.label }}"
+                (click)="record(rule.id)"
+                class="p-button-rounded p-button-secondary p-mr-2"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+          <div class="speeddial-tooltip-demo alignSpeedDialog">
+            <p-speedDial
+              showIcon="pi pi-upload"
+              hideIcon="pi pi-times"
+              [model]="items"
+              className="speeddial-left"
+              direction="left"
+              [buttonStyle]="{
+                width: '3rem',
+                height: '3rem'
+              }"
+            ></p-speedDial>
+          </div>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<p-confirmDialog [style]="{ width: '500px' }"></p-confirmDialog>
+
+<!--  create new condition
+==================================================== -->
+<p-dialog
+  header="Condiciones"
+  [modal]="true"
+  [style]="{
+    overflow: 'auto',
+    'min-width': '70vw',
+    'min-height': '70vh'
+  }"
+  [resizable]="true"
+  [draggable]="false"
+  [maximizable]="true"
+  [(visible)]="addNew"
+  [contentStyle]="{ overflow: 'visible' }"
+>
+  <ng-template pTemplate="header">
+    <p>Crear nueva {{ selectedOption.label }}.</p>
+  </ng-template>
+
+  <!-- Metadata information
+      ===================================================================-->
+  <div class="field grid">
+    <label for="id" class="col-12 md:col-4">Id:</label>
+    <div class="col-12 md:col-8">
+      <input
+        onkeypress="return event.charCode != 32"
+        [(ngModel)]="newUnomi.metadata.id"
+        class="fill-available input inputfield"
+        type="text"
+        id="id"
+        [disabled]="isEditing || isDetail"
+        pInputText
+      />
+    </div>
+  </div>
+
+  <div class="field grid">
+    <label for="name" class="col-12 md:col-4">Name:</label>
+    <div class="col-12 md:col-8">
+      <input
+        [(ngModel)]="newUnomi.metadata.name"
+        class="input inputfield fill-available"
+        type="text"
+        id="name"
+        pInputText
+        [disabled]="isDetail"
+      />
+    </div>
+  </div>
+
+  <div class="field grid">
+    <label for="description" class="col-12 md:col-4">Description:</label>
+    <div class="col-12 md:col-8">
+      <input
+        [(ngModel)]="newUnomi.metadata.description"
+        class="fill-available input inputfield"
+        type="text"
+        id="description"
+        pInputText
+        [disabled]="isDetail"
+      />
+    </div>
+  </div>
+
+  <div class="field grid">
+    <label for="scope" class="col-12 md:col-4">Scope:</label>
+    <div class="col-12 md:col-8">
+      <input
+        [(ngModel)]="newUnomi.metadata.scope"
+        class="fill-available input inputfield"
+        type="text"
+        id="scope"
+        pInputText
+        [disabled]="isDetail"
+      />
+    </div>
+  </div>
+
+  <div class="field grid" *ngIf="selectedOption.value === 'rules'">
+    <label for="priority" class="col-12 md:col-4">Priority:</label>
+    <div class="col-12 md:col-8">
+      <input
+        [(ngModel)]="newUnomi.priority"
+        class="fill-available input inputfield"
+        type="number"
+        id="priority"
+        pInputText
+        [disabled]="isDetail"
+      />
+    </div>
+  </div>
+
+  <div class="field grid">
+    <label for="enabled" class="col-12 md:col-4">Enabled:</label>
+    <div class="col-12 md:col-8">
+      <p-inputSwitch
+        id="enabled"
+        [(ngModel)]="newUnomi.metadata.enabled"
+        [disabled]="isDetail"
+      ></p-inputSwitch>
+    </div>
+  </div>
+
+  <div class="field grid">
+    <label for="missingPlugins" class="col-12 md:col-4">MissingPlugins:</label>
+    <div class="col-12 md:col-8">
+      <p-inputSwitch
+        id="missingPlugins"
+        [(ngModel)]="newUnomi.metadata.missingPlugins"
+        [disabled]="isDetail"
+      ></p-inputSwitch>
+    </div>
+  </div>
+
+  <div class="field grid" *ngIf="selectedOption.value === 'rules'">
+    <label for="endDate" class="col-12 md:col-4"
+      >RaiseEventOnlyOnceForProfile:</label
+    >
+    <div class="col-12 md:col-8">
+      <p-inputSwitch
+        id="enabled"
+        [(ngModel)]="newUnomi.raiseEventOnlyOnceForProfile"
+        [disabled]="isDetail"
+      ></p-inputSwitch>
+    </div>
+  </div>
+
+  <div class="field grid" *ngIf="selectedOption.value === 'rules'">
+    <label for="endDate" class="col-12 md:col-4"
+      >RaiseEventOnlyOnceForSession:</label
+    >
+    <div class="col-12 md:col-8">
+      <p-inputSwitch
+        id="enabled"
+        [(ngModel)]="newUnomi.raiseEventOnlyOnceForSession"
+        [disabled]="isDetail"
+      ></p-inputSwitch>
+    </div>
+  </div>
+
+  <div class="field grid">
+    <label for="systemTags" class="col-12 md:col-4">SystemTags:</label>
+    <div class="col-12 md:col-8">
+      <p-multiSelect
+        id="systemTags"
+        [options]="systemTags"
+        [(ngModel)]="systemTagsSelected"
+        optionLabel="header"
+        placeholder="Valores a seleccionar"
+        [style]="{
+          width: '-webkit-fill-available',
+          'max-width': '45vw'
+        }"
+        [disabled]="isDetail"
+      ></p-multiSelect>
+    </div>
+  </div>
+
+  <div class="field grid" *ngIf="selectedOption.value === 'rules'">
+    <label for="systemTags" class="col-12 md:col-4">Actions:</label>
+    <div class="col-12 md:col-8">
+      <p-multiSelect
+        id="systemTags"
+        [options]="unomiActions"
+        [(ngModel)]="newUnomi.actions"
+        optionLabel="id"
+        placeholder="Valores a seleccionar"
+        [style]="{
+          width: '-webkit-fill-available',
+          'max-width': '45vw'
+        }"
+        [disabled]="isDetail"
+      ></p-multiSelect>
+    </div>
+  </div>
+
+  <div class="field grid" *ngIf="selectedOption.value === 'campaigns'">
+    <label for="cost" class="col-12 md:col-4">Cost:</label>
+    <div class="col-12 md:col-8">
+      <input
+        [(ngModel)]="newUnomi.cost"
+        class="fill-available input inputfield"
+        type="number"
+        id="cost"
+        pInputText
+        [disabled]="isDetail"
+      />
+    </div>
+  </div>
+
+  <div class="field grid" *ngIf="selectedOption.value === 'campaigns'">
+    <label for="currency" class="col-12 md:col-4">Currency:</label>
+    <div class="col-12 md:col-8">
+      <input
+        [(ngModel)]="newUnomi.currency"
+        class="fill-available input inputfield"
+        type="text"
+        id="currency"
+        pInputText
+        [disabled]="isDetail"
+      />
+    </div>
+  </div>
+
+  <div class="field grid" *ngIf="selectedOption.value === 'campaigns'">
+    <label for="timezone" class="col-12 md:col-4">Timezone:</label>
+    <div class="col-12 md:col-8">
+      <input
+        [(ngModel)]="newUnomi.timezone"
+        class="fill-available input inputfield"
+        type="text"
+        id="timezone"
+        pInputText
+        [disabled]="isDetail"
+      />
+    </div>
+  </div>
+
+  <div class="field grid" *ngIf="selectedOption.value === 'campaigns'">
+    <label for="startDate" class="col-12 md:col-4">StartDate:</label>
+    <div class="col-12 md:col-8">
+      <p-calendar
+        inputId="basic"
+        id="startDate"
+        [(ngModel)]="newUnomi.startDate"
+        class="fill-available"
+        [disabled]="isDetail"
+      ></p-calendar>
+    </div>
+  </div>
+
+  <div class="field grid" *ngIf="selectedOption.value === 'campaigns'">
+    <label for="endDate" class="col-12 md:col-4">EndDate:</label>
+    <div class="col-12 md:col-8">
+      <p-calendar
+        inputId="basic"
+        id="endDate"
+        [(ngModel)]="newUnomi.endDate"
+        class="fill-available"
+        [disabled]="isDetail"
+      ></p-calendar>
+    </div>
+  </div>
+  <!-- #end System tags
+      ===================================================================-->
+  <label class="p-mb-2">
+    {{ selectedOption.value === "goals" ? "StartEvent:" : "Condition:" }}</label
+  >
+  <div [ngClass]="{ disabled: isDetail }">
+    <app-sharedConditions
+      [schema]="conditionSchema"
+      [unomiConditions]="unomiConditions"
+      [conditionVariables]="conditionVariables"
+      (childEvent)="emmit($event)"
+    ></app-sharedConditions>
+
+    <div *ngIf="selectedOption.value === 'goals'" class="p-mt-2">
+      <label>TargetEvent:</label>
+      <app-sharedConditions
+        [schema]="conditionSchema2"
+        [unomiConditions]="unomiConditions"
+        [conditionVariables]="conditionVariables"
+        (childEvent)="emmit2($event)"
+      ></app-sharedConditions>
+    </div>
+  </div>
+  <!-- #End Metadata
+      ===================================================================-->
+
+  <ng-template pTemplate="footer">
+    <button
+      *ngIf="!isDetail"
+      pButton
+      pRipple
+      label=" Verify Condition"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="verifyCondition()"
+    ></button>
+    <button
+      pButton
+      pRipple
+      [label]="isDetail ? 'Aceptar' : 'Cancelar'"
+      [icon]="isDetail ? 'pi pi-check' : 'pi pi-times'"
+      class="p-button-text"
+      (click)="addNew = false"
+    ></button>
+    <button
+      *ngIf="!isDetail"
+      pButton
+      pRipple
+      label="Guardar"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="register()"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<!--==========================  View  statistics ========================= -->
+<p-dialog
+  header="Estadística"
+  [modal]="true"
+  [style]="{
+    overflow: 'auto',
+    'min-width': '70vw',
+    'min-height': '70vh'
+  }"
+  [resizable]="true"
+  [draggable]="false"
+  [maximizable]="true"
+  [(visible)]="statisticsDialog"
+  [contentStyle]="{ overflow: 'visible' }"
+>
+  <ng-template pTemplate="header">
+    <p>Estadística de {{ selectedOption.label }}.</p>
+  </ng-template>
+  <div class="response">
+    <hr />
+    <h3>Cantidad:</h3>
+    <pre> {{ countSegments | json }}</pre>
+    <hr />
+  </div>
+  <br /><br />
+  <div class="response">
+    <hr />
+    <h3>Impacto:</h3>
+    <pre> {{ impactedSegments | json }}</pre>
+    <hr />
+  </div>
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Aceptar"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="addNew = false"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<!--==========================  View  record ========================= -->
+<p-dialog
+  header="Historil"
+  [modal]="true"
+  [style]="{
+    overflow: 'auto',
+    'min-width': '70vw',
+    'min-height': '70vh'
+  }"
+  [resizable]="true"
+  [draggable]="false"
+  [maximizable]="true"
+  [(visible)]="recordDialog"
+  [contentStyle]="{ overflow: 'visible' }"
+>
+  <ng-template pTemplate="header">
+    <p>Historil de {{ selectedOption.label }}.</p>
+  </ng-template>
+
+  <app-recordSegments [idSegment]="idSegmentRecord"> </app-recordSegments>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Aceptar"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="closeRecord()"
+    ></button>
+  </ng-template>
+</p-dialog>

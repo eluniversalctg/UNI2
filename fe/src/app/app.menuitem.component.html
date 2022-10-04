@@ -1,0 +1,14 @@
+<ng-container>
+  <a [routerLink]="item.routerLink" *ngIf="!item.routerLink || item.children">
+    <span>{{ item.label }}</span></a
+  >
+  <a [routerLink]="item.routerLink" *ngIf="item.routerLink && !item.children">
+    <span>{{ item.label }}</span></a
+  >
+</ng-container>
+
+<ul *ngIf="item.children" role="menu" class="sidebar__menu__option__list-menu">
+  <ng-template ngFor let-child let-i="index" [ngForOf]="item.children">
+    <li app-menuitem [item]="child" [index]="i" [parentKey]="key"></li>
+  </ng-template>
+</ul>

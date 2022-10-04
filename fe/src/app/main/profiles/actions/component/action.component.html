@@ -1,0 +1,240 @@
+<div class="p-grid">
+  <p-toast></p-toast>
+  <div class="p-col-12">
+    <div class="card">
+      <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+          <h1>Administrar Acciones.</h1>
+        </ng-template>
+        <ng-template pTemplate="right">
+          <button
+            pButton
+            type="button"
+            label="Crear acción"
+            (click)="addNew()"
+          ></button>
+        </ng-template>
+      </p-toolbar>
+
+      <p-table
+        #dt
+        [rows]="10"
+        dataKey="id"
+        [paginator]="true"
+        [value]="unomiActions"
+        responsiveLayout="scroll"
+        styleClass="p-datatable-gridlines"
+        [globalFilterFields]="['id', 'name', 'description']"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex">
+            <button
+              pButton
+              type="button"
+              icon="pi pi-refresh"
+              pTooltip="Refrescar información."
+              class="p-button-rounded p-button-success p-mt-1 p-ml-2"
+              (click)="refreshData()"
+            ></button>
+            <span class="p-input-icon-left ml-auto">
+              <i class="pi pi-search"></i>
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Buscar.."
+              />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="id">
+              Id <p-sortIcon field="id"></p-sortIcon>
+            </th>
+            <th pSortableColumn="name">
+              Nombre <p-sortIcon field="name"></p-sortIcon>
+            </th>
+            <th pSortableColumn="description">
+              Descripción <p-sortIcon field="description"></p-sortIcon>
+            </th>
+            <th>Acciones</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-action>
+          <tr>
+            <td>
+              {{ action.id }}
+            </td>
+            <td>
+              {{ action.name }}
+            </td>
+            <td class="overflow-auto">
+              {{ action.description }}
+            </td>
+            <td>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                pTooltip="Editar acción"
+                (click)="editAction(action); isEditing = true"
+                class="p-button-rounded p-button-warning p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-copy"
+                pTooltip="Duplicar acción"
+                (click)="editAction(action); isEditing = false"
+                class="p-button-rounded p-button-success p-mr-2"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<!--  create new action
+==================================================== -->
+<p-dialog
+  header="Acciones"
+  [modal]="true"
+  [style]="{
+    overflow: 'auto',
+    'min-width': '50vw',
+    'min-height': '60vh'
+  }"
+  [resizable]="true"
+  [draggable]="false"
+  [maximizable]="true"
+  [(visible)]="createAction"
+  [contentStyle]="{ overflow: 'visible' }"
+>
+  <ng-template pTemplate="header">
+    <p>Crear nueva acción.</p>
+  </ng-template>
+
+  <!-- Metadata information
+      ===================================================================-->
+  <div class="field grid">
+    <label for="id" class="col-12 md:col-4">Id:</label>
+    <div class="col-12 md:col-8">
+      <input
+        id="id"
+        type="text"
+        pInputText
+        [disabled]="isEditing"
+        (keyup)="setActionExecutor()"
+        (blur)="setActionName()"
+        [(ngModel)]="actions.metadata.id"
+        onkeypress="return event.charCode != 32"
+        class="input inputfield fill-available"
+      />
+    </div>
+  </div>
+  <div class="field grid">
+    <label for="name" class="col-12 md:col-4">Name:</label>
+    <div class="col-12 md:col-8">
+      <input
+        id="name"
+        pInputText
+        type="text"
+        [(ngModel)]="actions.metadata.name"
+        class="input inputfield fill-available"
+      />
+    </div>
+  </div>
+  <div class="field grid">
+    <label for="description" class="col-12 md:col-4">Description:</label>
+    <div class="col-12 md:col-8">
+      <input
+        [(ngModel)]="actions.metadata.description"
+        class="fill-available input inputfield"
+        type="text"
+        id="description"
+        pInputText
+      />
+    </div>
+  </div>
+  <div class="field grid">
+    <label for="ActionExecutor" class="col-12 md:col-4">ActionExecutor:</label>
+    <div class="col-12 md:col-8">
+      <input
+        id="ActionExecutor"
+        [disabled]="true"
+        placeholder="ActionExecutor"
+        class="fill-available"
+        [(ngModel)]="actions.actionExecutor"
+      />
+    </div>
+  </div>
+
+  <!-- #End Metadata
+      ===================================================================-->
+
+  <!-- pickList of System tags
+      ===================================================================-->
+  <p>Seleccione los systemTags que desea incluir en la acción:</p>
+  <p-pickList
+    [dragdrop]="true"
+    [responsive]="true"
+    [source]="systemTags"
+    [target]="systemTagsSelected"
+    [sourceStyle]="{ height: '20rem' }"
+    [targetStyle]="{ height: '20rem' }"
+    sourceHeader="SystemTags Disponibles"
+    targetHeader="SystemTags seleccionados"
+  >
+    <ng-template let-tag pTemplate="item">
+      <div>
+        <p>{{ tag.header }}</p>
+      </div>
+    </ng-template>
+  </p-pickList>
+  <!-- #end pickList of System tags
+      ===================================================================-->
+
+  <!-- pickList of variables
+        ===================================================================-->
+  <p>Seleccione las variables que desea incluir en la condición:</p>
+  <p-pickList
+    [dragdrop]="true"
+    [responsive]="true"
+    [source]="actionsVariables"
+    [target]="selectedVariables"
+    [sourceStyle]="{ height: '20rem' }"
+    [targetStyle]="{ height: '20rem' }"
+    sourceHeader="Variables Disponibles"
+    targetHeader="Variables seleccionados"
+  >
+    <ng-template let-variable pTemplate="item">
+      <div>
+        <p>{{ variable.id }}</p>
+      </div>
+    </ng-template>
+  </p-pickList>
+  <!-- #end pickList of System tags
+      ===================================================================-->
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="cancel()"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Guardar"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="saveActions()"
+    ></button>
+  </ng-template>
+</p-dialog>

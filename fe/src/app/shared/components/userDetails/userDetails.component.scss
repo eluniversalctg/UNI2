@@ -1,0 +1,82 @@
+.menu-details {
+  color: #006dff;
+  text-decoration: none;
+}
+ul {
+  list-style-type: none;
+  padding-left: 27.5rem;
+}
+ul.segments {
+  padding-left: 3rem;
+}
+ul#detailsMenu li {
+  display: inline;
+  cursor: pointer;
+}
+
+.active {
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.border-contact {
+  border: 1px solid #006dff;
+  border-radius: 15px;
+}
+.color-detail-blue {
+  color: #006dff;
+  margin: 0;
+}
+.color-detail-gray {
+  color: gray;
+  margin-bottom: 0;
+}
+.segments-custom {
+  height: 15vh;
+  overflow: auto;
+}
+.align-date {
+  margin-left: 1.2rem;
+}
+.li-separated {
+  margin-top: 1rem;
+}
+
+// ************** scroll *************
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px #ffff;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #0d89ec;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #5a4edf;
+}
+
+.adjustContent {
+  width: 97%;
+}
+
+@media screen and (max-width: 768px) {
+  ul {
+    list-style-type: none;
+    padding-left: 1rem;
+    cursor: pointer;
+  }
+  .adjustContent {
+    width: 92%;
+  }
+}

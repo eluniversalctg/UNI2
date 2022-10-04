@@ -1,0 +1,333 @@
+<div class="p-grid">
+  <p-toast></p-toast>
+  <div class="p-col-12">
+    <div class="card">
+      <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+          <h1>Agregar usuario.</h1>
+        </ng-template>
+        <ng-template pTemplate="right">
+          <button
+            pButton
+            type="button"
+            label="Agregar usuario"
+            (click)="createUser()"
+          ></button>
+        </ng-template>
+      </p-toolbar>
+
+      <p-selectButton
+        [options]="options"
+        optionLabel="name"
+        optionValue="value"
+        [(ngModel)]="optionsSelected"
+      ></p-selectButton>
+
+      <p-table
+        #dt
+        [rows]="10"
+        dataKey="id"
+        [paginator]="true"
+        responsiveLayout="scroll"
+        [globalFilterFields]="[
+          'name',
+          'firtSurname',
+          'secondSurname',
+          'roles.name'
+        ]"
+        styleClass="p-datatable-gridlines"
+        responsiveLayout="scroll"
+        [value]="users"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex">
+            <span class="p-input-icon-left ml-auto">
+              <i class="pi pi-search"></i>
+
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Buscar.."
+              />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="name">
+              Nombre<p-sortIcon field="name"></p-sortIcon>
+            </th>
+            <th pSortableColumn="roles.name">
+              Role Asignado <p-sortIcon field="roles.name"></p-sortIcon>
+            </th>
+            <th>Acciones</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-user>
+          <tr *ngIf="user.isActive === optionsSelected">
+            <td>
+              {{ user.name }} {{ user.firtSurname }}
+              {{ user.secondSurname }}
+            </td>
+            <td>
+              {{ user.roles.name }}
+            </td>
+            <td>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                *ngIf="user.isActive"
+                pTooltip="Editar usuario"
+                (click)="openUpdateUser(user)"
+                class="p-button-rounded p-button-warning p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-times"
+                *ngIf="user.isActive"
+                (click)="changeState(user)"
+                pTooltip="Inactivar usuario"
+                class="p-button-rounded p-button-danger p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                (click)="changeState(user)"
+                icon="pi pi-check"
+                *ngIf="!user.isActive"
+                pTooltip="Activar usuario"
+                class="p-button-rounded p-button-success p-mr-2"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<p-dialog
+  [(visible)]="addNew"
+  [style]="{ overflow: 'auto', 'min-width': '32%' }"
+  [contentStyle]="{ overflow: 'visible' }"
+  [modal]="true"
+  [draggable]="false"
+  [maximizable]="true"
+>
+  <ng-template pTemplate="header">
+    <p>Crear un nuevo usuario.</p>
+  </ng-template>
+  <form [formGroup]="registerForm" class="mt-2">
+    <div class="field grid">
+      <label for="name" class="col-12 md:col-4">Nombre:</label>
+      <div class="col-12 md:col-8">
+        <input
+          style="width: -webkit-fill-available"
+          id="name"
+          type="text"
+          class="input inputfield"
+          class="inputfield"
+          pInputText
+          formControlName="name"
+          autocomplete="off"
+        />
+      </div>
+      <p-message
+        *ngIf="
+          registerForm.controls.name.touched &&
+          !registerForm.controls.name.valid
+        "
+        severity="error"
+        text="Nombre requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid">
+      <label for="firstSurname" class="col-12 md:col-4">Primer apellido:</label>
+      <div class="col-12 md:col-8">
+        <input
+          id="firstSurname"
+          type="text"
+          class="input inputfield"
+          class="inputfield"
+          style="width: -webkit-fill-available"
+          pInputText
+          formControlName="firstSurname"
+          autocomplete="off"
+        />
+      </div>
+      <p-message
+        *ngIf="
+          registerForm.controls.firstSurname.touched &&
+          !registerForm.controls.firstSurname.valid
+        "
+        severity="error"
+        text="Primer apellido requerido."
+      ></p-message>
+    </div>
+    <div class="field grid">
+      <label for="secondSurname" class="col-12 md:col-4"
+        >Segundo apellido:</label
+      >
+      <div class="col-12 md:col-8">
+        <input
+          id="secondSurname"
+          type="text"
+          class="input inputfield"
+          class="inputfield"
+          style="width: -webkit-fill-available"
+          pInputText
+          formControlName="secondSurname"
+          autocomplete="off"
+        />
+      </div>
+      <p-message
+        *ngIf="
+          registerForm.controls.secondSurname.touched &&
+          !registerForm.controls.secondSurname.valid
+        "
+        severity="error"
+        text="Segundo apellido requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid">
+      <label for="username" class="col-12 md:col-4">Username:</label>
+      <div class="col-12 md:col-8">
+        <input
+          id="username"
+          type="text"
+          class="input inputfield"
+          class="inputfield"
+          style="width: -webkit-fill-available"
+          pInputText
+          formControlName="username"
+        />
+      </div>
+      <p-message
+        *ngIf="
+          registerForm.controls.username.touched &&
+          !registerForm.controls.username.valid
+        "
+        severity="error"
+        text="Username requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid">
+      <label for="email" class="col-12 md:col-4">Correo:</label>
+      <div class="col-12 md:col-8">
+        <input
+          id="email"
+          type="email"
+          class="input inputfield"
+          class="inputfield"
+          style="width: -webkit-fill-available"
+          pInputText
+          formControlName="email"
+        />
+      </div>
+      <p-message
+        *ngIf="
+          registerForm.controls.email.touched &&
+          !registerForm.controls.email.valid
+        "
+        severity="error"
+        text="Correo requerido."
+      ></p-message>
+    </div>
+    <div class="field grid">
+      <label for="roles" class="col-12 md:col-4">Role:</label>
+      <div class="col-12 md:col-8">
+        <p-dropdown
+          id="role"
+          [options]="roles"
+          optionLabel="name"
+          formControlName="roles"
+          [autoDisplayFirst]="false"
+        ></p-dropdown>
+      </div>
+      <p-message
+        *ngIf="
+          registerForm.controls.roles.touched &&
+          !registerForm.controls.roles.valid
+        "
+        severity="error"
+        text="Role requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid" *ngIf="!isEditing">
+      <label for="password" class="col-12 md:col-4">Contraseña:</label>
+      <div class="col-12 md:col-8">
+        <p-password
+          id="password"
+          promptLabel="Ingrese contraseña"
+          weakLabel="Débil"
+          mediumLabel="Media"
+          strongLabel="Fuerte"
+          [toggleMask]="true"
+          formControlName="password"
+        ></p-password>
+      </div>
+      <p-message
+        *ngIf="
+          registerForm.controls.password.touched &&
+          !registerForm.controls.password.valid
+        "
+        severity="error"
+        text="La contraseña debe construirse de mínimo 8 caratéres y almenos un(a): mayúscula, minúscula y un número."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid" *ngIf="!isEditing">
+      <label for="confirmPassword" class="col-12 md:col-4"
+        >Confirmar contraseña</label
+      >
+      <div class="col-12 md:col-8">
+        <p-password
+          promptLabel="Ingrese contraseña"
+          id="confirmPassword"
+          weakLabel="Débil"
+          mediumLabel="Media"
+          strongLabel="Fuerte"
+          [toggleMask]="true"
+          formControlName="confirmPassword"
+        ></p-password>
+      </div>
+      <p-message
+        *ngIf="
+          registerForm.controls.confirmPassword.touched &&
+          registerForm.controls.password.value !==
+            registerForm.controls.confirmPassword.value
+        "
+        severity="error"
+        text="La contraseña de confirmación aún no coincide."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="addNew = false"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Guardar"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="register()"
+      [disabled]="!registerForm.valid"
+    ></button>
+  </ng-template>
+</p-dialog>
+<p-confirmDialog [style]="{ width: '500px' }"></p-confirmDialog>

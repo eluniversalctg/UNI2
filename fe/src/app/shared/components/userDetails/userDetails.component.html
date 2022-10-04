@@ -1,0 +1,560 @@
+<div class="p-card" style="background: #dbe6f3; min-height: 84vh">
+  <h1>Perfil de usuario</h1>
+  <ul id="detailsMenu" class="menu-details">
+    <li [ngClass]="{ active: step === 'step1' }" (click)="step = 'step1'">
+      Básica
+    </li>
+    <li
+      [ngClass]="{ active: step === 'step2' }"
+      (click)="step = 'step2'"
+      class="p-ml-4"
+    >
+      Contacto
+    </li>
+    <li
+      [ngClass]="{ active: step === 'step3' }"
+      (click)="step = 'step3'"
+      class="p-ml-4"
+    >
+      Segmentación
+    </li>
+    <li
+      [ngClass]="{ active: step === 'step4' }"
+      (click)="step = 'step4'"
+      class="p-ml-4"
+    >
+      Estadísticas
+    </li>
+    <li
+      [ngClass]="{ active: step === 'step5' }"
+      (click)="step = 'step5'"
+      class="p-ml-4"
+    >
+      Consentimientos
+    </li>
+    <li
+      [ngClass]="{ active: step === 'step6' }"
+      (click)="step = 'step6'"
+      class="p-ml-4"
+    >
+      Suscripciones
+    </li>
+    <li
+      [ngClass]="{ active: step === 'step7' }"
+      (click)="step = 'step7'"
+      class="p-ml-4"
+    >
+      Adicional +
+    </li>
+  </ul>
+  <div class="p-grid">
+    <div class="col-12 md:col-1 lg:col-1"></div>
+    <div class="col-12 md:col-2 lg:col-2">
+      <div
+        class="p-card flex flex-column align-items-center justify-content-center"
+      >
+        <br />
+        <img
+          [src]="'assets/images/profile_image.svg'"
+          alt="profile image"
+          width="35%"
+        />
+        <h2 class="text-center">
+          {{ profile.properties ? profile.properties.firstName : "" }}
+        </h2>
+        <p class="text-center color-detail-gray">Última visita:</p>
+        <p class="text-center color-detail-blue">
+          {{
+            profile.properties
+              ? (profile.properties.lastVisit | date: "longDate":"+0200":"es")
+              : ""
+          }}
+        </p>
+        <p class="text-center color-detail-gray">Primer visita:</p>
+        <p class="text-center color-detail-blue">
+          {{
+            profile.properties
+              ? (profile.properties.firstVisit | date: "longDate":"+0200":"es")
+              : ""
+          }}
+        </p>
+        <p class="text-center color-detail-gray">Cantidad de visitas:</p>
+        <p class="text-center color-detail-blue">
+          {{ profile.properties ? profile.properties.nbOfVisits : "" }}
+        </p>
+        <br />
+      </div>
+    </div>
+    <div class="col-12 md:col-8 lg:col-8">
+      <div class="p-card">
+        <!-- basic information
+         =========================================================================== -->
+        <br />
+        <div
+          class="grid p-fluid p-ml-2 p-mr-2 p-mb-4 p-mt-2 border-contact"
+          *ngIf="step === 'step1'"
+        >
+          <h3 class="col-12 text-center">Información básica</h3>
+          <div class="col-12 md:col-6 lg:col-6">
+            <span>Nombre</span>
+            <input
+              type="text"
+              pInputText
+              [disabled]="visualizing"
+              [(ngModel)]="profile.properties.firstName"
+            />
+          </div>
+          <div class="col-12 md:col-6 lg:col-6">
+            <span>Apellidos</span>
+            <input
+              type="text"
+              pInputText
+              [disabled]="visualizing"
+              [(ngModel)]="profile.properties.lastName"
+            />
+          </div>
+          <div class="col-12 md:col-6 lg:col-6">
+            <span>Email</span>
+            <input
+              type="text"
+              pInputText
+              [disabled]="visualizing"
+              [(ngModel)]="profile.properties.email"
+            />
+          </div>
+
+          <div class="col-12 md:col-6 lg:col-6 p-mb-3">
+            <span>Género</span>
+            <input
+              type="text"
+              pInputText
+              [disabled]="visualizing"
+              [(ngModel)]="profile.properties.gender"
+            />
+          </div>
+        </div>
+        <br />
+
+        <!-- contact information
+        ========================================================================== -->
+        <div class="p-mt-2" *ngIf="step === 'step2'">
+          <div class="border-contact grid p-fluid p-ml-2 p-mr-2 p-mb-4 p-mt-4">
+            <!-- contact -->
+            <h3 class="col-12 text-center">Contacto</h3>
+            <div class="col-12 md:col-6 lg:col-6">
+              <span>Ciudad</span>
+              <input
+                type="text"
+                pInputText
+                [disabled]="visualizing"
+                [(ngModel)]="profile.properties.city"
+              />
+            </div>
+            <div class="col-12 md:col-6 lg:col-6">
+              <span>País</span>
+              <input
+                type="text"
+                pInputText
+                [disabled]="visualizing"
+                [(ngModel)]="profile.properties.countryName"
+              />
+            </div>
+            <div class="col-12 md:col-6 lg:col-6">
+              <span>Dirección</span>
+              <input
+                type="text"
+                pInputText
+                [disabled]="visualizing"
+                [(ngModel)]="profile.properties.address"
+              />
+            </div>
+            <div class="col-12 md:col-6 lg:col-6">
+              <span>Empresa</span>
+              <input
+                type="text"
+                pInputText
+                [disabled]="visualizing"
+                [(ngModel)]="profile.properties.company"
+              />
+            </div>
+            <div class="col-12 md:col-6 lg:col-6">
+              <span>Ocupación</span>
+              <input
+                type="text"
+                pInputText
+                [disabled]="visualizing"
+                [(ngModel)]="profile.properties.jobTitle"
+              />
+            </div>
+            <div class="col-12 md:col-6 lg:col-6">
+              <span>Celular</span>
+              <input
+                type="text"
+                pInputText
+                [disabled]="visualizing"
+                [(ngModel)]="profile.properties.phoneNumber"
+              />
+            </div>
+          </div>
+
+          <!-- social network -->
+          <div class="border-contact grid p-fluid p-ml-2 p-mr-2 p-mb-4 p-mt-4">
+            <h3 class="col-12 text-center">Redes Sociales</h3>
+            <div class="col-12 md:col-6 lg:col-6">
+              <span>Facebook</span>
+              <input
+                type="text"
+                pInputText
+                [disabled]="visualizing"
+                [(ngModel)]="profile.properties.facebookId"
+              />
+            </div>
+            <div class="col-12 md:col-6 lg:col-6">
+              <span>Twitter</span>
+              <input
+                type="text"
+                pInputText
+                [disabled]="visualizing"
+                [(ngModel)]="profile.properties.twitterId"
+              />
+            </div>
+            <div class="col-12 md:col-6 lg:col-6">
+              <span>Instagram</span>
+              <input
+                type="text"
+                pInputText
+                [disabled]="visualizing"
+                [(ngModel)]="profile.properties.instagramId"
+              />
+            </div>
+            <div class="col-12 md:col-6 lg:col-6">
+              <span>LinkedIn</span>
+              <input
+                type="text"
+                pInputText
+                [disabled]="visualizing"
+                [(ngModel)]="profile.properties.linkedInId"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- segments
+        =================================================================== -->
+        <div
+          class="grid p-fluid p-ml-2 p-mr-2 p-mb-4 p-mt-2"
+          *ngIf="step === 'step3'"
+        >
+          <div class="col-12 md:col-6 lg:col-6">
+            <div class="border-contact">
+              <h3 class="col-12 text-center">Segmentos</h3>
+              <div class="segments-custom">
+                <ul id="segments" class="segments">
+                  <li
+                    *ngFor="let segment of profile.segments"
+                    class="li-separated"
+                  >
+                    <span
+                      ><i class="pi pi-check color-detail-blue"></i>
+                      {{ segment }}</span
+                    >
+                  </li>
+                </ul>
+              </div>
+              <br />
+            </div>
+          </div>
+          <div class="col-12 md:col-6 lg:col-6">
+            <div class="border-contact">
+              <h3 class="col-12 text-center">Goals</h3>
+              <div class="segments-custom">
+                <ul id="segments" class="segments">
+                  <li
+                    *ngFor="
+                      let goal of profile.systemProperties.goals | keyvalue
+                    "
+                    class="li-separated"
+                  >
+                    <span
+                      ><i class="pi pi-check color-detail-blue"></i>
+                      {{ goal.key }}</span
+                    ><br />
+                    <span class="color-detail-blue align-date">
+                      {{ goal.value | goalDate }}</span
+                    >
+                  </li>
+                </ul>
+              </div>
+              <br />
+            </div>
+          </div>
+          <div class="col-12 md:col-6 lg:col-6">
+            <div class="border-contact">
+              <h3 class="col-12 text-center">Score</h3>
+              <div class="segments-custom">
+                <ul id="segments" class="segments">
+                  <li
+                    *ngFor="let goal of profile.scores | keyvalue"
+                    class="li-separated"
+                  >
+                    <span
+                      ><i class="pi pi-check color-detail-blue"></i>
+                      {{ goal.key }}:
+                    </span>
+                    <span class="color-detail-blue">{{ goal.value }}</span>
+                  </li>
+                </ul>
+              </div>
+              <br />
+            </div>
+          </div>
+          <div class="col-12 md:col-6 lg:col-6">
+            <div class="border-contact">
+              <h3 class="col-12 text-center">DMP Piano</h3>
+              <div class="segments-custom">
+                <ul id="segments" class="segments">
+                  <li
+                    *ngFor="
+                      let dmpSegment of profile.properties.dmpSegmentos
+                        | keyvalue
+                    "
+                    class="li-separated"
+                  >
+                    <span
+                      ><i class="pi pi-check color-detail-blue"></i>
+                      {{ dmpSegment.value }}</span
+                    >
+                  </li>
+                </ul>
+              </div>
+              <br />
+            </div>
+          </div>
+        </div>
+
+        <!-- stadistics
+        ================================================================= -->
+        <div class="p-ml-5 p-mr-5 p-mb-4 p-mt-2" *ngIf="step === 'step4'">
+          <div class="border-contact grid p-fluid">
+            <h3 class="col-12 text-center">Estadísticas:</h3>
+            <ul id="segments" class="segments">
+              <li
+                class="li-separated"
+                *ngFor="
+                  let stadistic of profile.properties.pageViewCount | keyvalue
+                "
+              >
+                <span
+                  ><i class="pi pi-check color-detail-blue"></i>
+                  {{ stadistic.key }}:</span
+                ><span class="color-detail-blue align-date">
+                  {{ stadistic.value }}</span
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+        <!-- consents
+        =================================================================== -->
+        <div class="p-ml-5 p-mr-5 p-mb-4 p-mt-2" *ngIf="step === 'step5'">
+          <div *ngFor="let consent of profile.consents | keyvalue">
+            <div class="border-contact grid p-fluid">
+              <h3 class="col-12 text-center">
+                Sitio: {{ consent.value | GetValue: "scope" }}
+              </h3>
+              <ul id="segments" class="segments">
+                <li class="li-separated">
+                  <span
+                    ><i class="pi pi-check color-detail-blue"></i>
+                    Identificador:</span
+                  ><span class="color-detail-blue align-date">
+                    {{ consent.value | GetValue: "typeIdentifier" }}</span
+                  >
+                </li>
+                <li class="li-separated">
+                  <span
+                    ><i class="pi pi-check color-detail-blue"></i>
+                    Estado: </span
+                  ><span class="color-detail-blue align-date">
+                    {{ consent.value | GetValue: "status" }}</span
+                  >
+                </li>
+                <li class="li-separated">
+                  <span
+                    ><i class="pi pi-check color-detail-blue"></i> Fecha Estado: </span
+                  ><span class="color-detail-blue align-date">
+                    {{
+                      consent.value
+                        | GetValue: "statusDate"
+                        | date: "dd-MM-YYYY h:mm:ss"
+                    }}
+                  </span>
+                </li>
+                <li class="li-separated">
+                  <span
+                    ><i class="pi pi-check color-detail-blue"></i> Fecha
+                    Revocación: </span
+                  ><span class="color-detail-blue align-date">
+                    {{
+                      consent.value
+                        | GetValue: "revokeDate"
+                        | date: "dd-MM-YYYY h:mm:ss"
+                    }}
+                  </span>
+                </li>
+              </ul>
+            </div>
+            <br />
+          </div>
+        </div>
+
+        <!-- subscription
+        =================================================================== -->
+        <div class="p-ml-5 p-mr-5 p-mb-4 p-mt-2" *ngIf="step === 'step6'">
+          <div
+            *ngFor="
+              let subscription of profile.properties.sucripciones | keyvalue
+            "
+          >
+            <div class="border-contact grid p-fluid">
+              <h3 class="col-12 text-center">
+                Suscripción: {{ subscription.value | GetValue: "Nombre" }}
+              </h3>
+              <ul id="segments" class="segments">
+                <li class="li-separated">
+                  <span
+                    ><i class="pi pi-check color-detail-blue"></i> Fecha de
+                    inicio:</span
+                  ><span class="color-detail-blue align-date">
+                    {{
+                      subscription.value
+                        | GetValue: "fechaInicio"
+                        | date: "dd-MM-YYYY h:mm:ss"
+                    }}</span
+                  >
+                </li>
+                <li class="li-separated">
+                  <span
+                    ><i class="pi pi-check color-detail-blue"></i> Fecha de
+                    renovación:</span
+                  ><span class="color-detail-blue align-date">
+                    {{
+                      subscription.value
+                        | GetValue: "fechaRenovacion"
+                        | date: "dd-MM-YYYY h:mm:ss"
+                    }}</span
+                  >
+                </li>
+                <li class="li-separated">
+                  <span
+                    ><i class="pi pi-check color-detail-blue"></i> Tipo:</span
+                  ><span class="color-detail-blue align-date">
+                    {{ subscription.value | GetValue: "tipo" }}</span
+                  >
+                </li>
+                <li class="li-separated">
+                  <span
+                    ><i class="pi pi-check color-detail-blue"></i> Plan:</span
+                  ><span class="color-detail-blue align-date">
+                    {{ subscription.value | GetValue: "plan" }}</span
+                  >
+                </li>
+              </ul>
+            </div>
+            <br />
+          </div>
+        </div>
+
+        <!-- additional
+        =================================================================== -->
+        <div
+          class="grid p-fluid p-ml-2 p-mr-2 p-mb-4 p-mt-2 adjustContent"
+          *ngIf="step === 'step7'"
+        >
+          <div
+            *ngFor="let field of aditionalFields | keyvalue"
+            class="col-12 border-contact p-ml-2 p-mr-2 p-mb-4 p-mt-4 grid p-fluid"
+          >
+            <h3 class="col-12 text-center">
+              {{ field.key }}
+            </h3>
+            <div
+              *ngFor="let userField of field.value"
+              class="col-12 md:col-6 lg:col-6"
+            >
+              <span>{{ userField.name }}</span>
+              <input
+                *ngIf="'number' === userField.type"
+                [(ngModel)]="userField.value"
+                class="fill-available input inputfield"
+                type="number"
+                id="priority"
+                pInputText
+                [disabled]="
+                  (userField.canModify && editing) || visualizing || false
+                "
+              />
+              <input
+                *ngIf="
+                  'string' === userField.type || 'email' === userField.type
+                "
+                [(ngModel)]="userField.value"
+                class="fill-available input inputfield"
+                type="text"
+                id="priority"
+                pInputText
+                [disabled]="
+                  (userField.canModify && editing) || visualizing || false
+                "
+              />
+              <div
+                *ngIf="'boolean' === userField.type"
+                style="margin-top: -1rem"
+              >
+                <br />
+                <p-inputSwitch
+                  [(ngModel)]="userField.value"
+                  [disabled]="
+                    (userField.canModify && editing) || visualizing || false
+                  "
+                ></p-inputSwitch>
+              </div>
+              <p-calendar
+                *ngIf="'date' === userField.type"
+                inputId="basic"
+                id="startDate"
+                [(ngModel)]="userField.value"
+                class="fill-available"
+                dateFormat="yy-mm-dd"
+                [disabled]="
+                  (userField.canModify && editing) || visualizing || false
+                "
+              ></p-calendar>
+            </div>
+          </div>
+        </div>
+
+        <!-- buttons
+        =================================================================== -->
+        <div class="p-grid justify-content-center">
+          <button
+            pButton
+            class="p-button-secondary p-button-rounded p-mb-3"
+            type="button"
+            label="Cancelar"
+            (click)="cancel()"
+          ></button>
+          <button
+            [disabled]="visualizing"
+            pButton
+            type="button"
+            label="Guardar"
+            class="p-button-rounded p-ml-3 p-mb-3"
+            (click)="save()"
+          ></button>
+        </div>
+      </div>
+    </div>
+    <div class="p-col-1"></div>
+  </div>
+</div>
