@@ -58,7 +58,6 @@ export class SharedConditionsComponent implements OnChanges {
       this.unomiConditionsBck = [...this.unomiConditions];
     }
 
-
   }
 
   /**

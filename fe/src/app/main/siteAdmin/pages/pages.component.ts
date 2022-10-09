@@ -4,6 +4,7 @@ import {
   PagesService,
   ExportService,
   DomainsService,
+  UtilitiesService,
 } from 'src/app/shared/services';
 import { Component, ViewChild } from '@angular/core';
 import { MessagesTst } from 'src/app/shared/enums/enumMessage';
@@ -49,9 +50,10 @@ export class PagesComponent {
   constructor(
     private msg: MessageService,
     private pagesService: PagesService,
+    private blockService: BlockService,
     private exportService: ExportService,
     private domainService: DomainsService,
-    private blockService: BlockService,
+    private utilitiesSrv: UtilitiesService,
     private confirmationService: ConfirmationService
   ) {
     this.domainService.getList().subscribe({
@@ -64,7 +66,18 @@ export class PagesComponent {
       { name: 'Interna', value: 'Interna' },
     ];
 
-    this.getAllPages();
+    this.utilitiesSrv.changeSite.subscribe(() => {
+      this.getAllPages();
+    });
+
+    if (this.utilitiesSrv.decryptSite()) {
+      this.getAllPages();
+    } else {
+      this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: MessagesTst.NOSITE,
+      });
+    }
 
     this.pagesForm = new FormGroup({
       name: new FormControl('', [Validators.required]),
@@ -164,6 +177,12 @@ export class PagesComponent {
    * @param data - The data object that is passed to the function.
    */
   updateBlock(data) {
+    if (!this.utilitiesSrv.decryptSite()) {
+      return this.msg.add({
+        severity: MessagesTst.WARNING,
+        summary: MessagesTst.NOSITE,
+      });
+    }
     data.block.inUse = true;
     this.blockService.update(data.block).subscribe({
       error: () =>
@@ -244,6 +263,12 @@ export class PagesComponent {
    * description: send request to backend, save a new page
    */
   register() {
+    if (!this.utilitiesSrv.decryptSite()) {
+      return this.msg.add({
+        severity: MessagesTst.WARNING,
+        summary: MessagesTst.NOSITE,
+      });
+    }
     let control = this.pagesForm.controls;
 
     let page: Pages = {
@@ -318,6 +343,7 @@ export class PagesComponent {
   getAllPages() {
     this.pagesService.getList().subscribe(
       (response) => {
+        response = response.filter((x) => x.site._id.toString() === this.utilitiesSrv.decryptSite()._id.toString());
         this.pages = response;
         this.pagesActive = _.filter(response, ['isActive', true]);
         this.pagesActive = _.filter(response, ['typeSection', 'Sección']);
@@ -332,12 +358,10 @@ export class PagesComponent {
   }
 
   changeState(page: Pages) {
-    let message = `¿Está seguro que desea ${
-      page.isActive ? 'inactivar' : 'activar'
-    } la página <b>
+    let message = `¿Está seguro que desea ${page.isActive ? 'inactivar' : 'activar'
+      } la página <b>
       ${page.name}
-      </b>? <br/>La página seleccionada quedará ${
-        page.isActive ? 'sin' : 'con'
+      </b>? <br/>La página seleccionada quedará ${page.isActive ? 'sin' : 'con'
       } función en la plataforma.`;
 
     this.confirmationService.confirm({
@@ -425,6 +449,12 @@ export class PagesComponent {
    * @param page - the page selected
    */
   update(page: Pages[]) {
+    if (!this.utilitiesSrv.decryptSite()) {
+      return this.msg.add({
+        severity: MessagesTst.WARNING,
+        summary: MessagesTst.NOSITE,
+      });
+    }
     this.pagesService.updateMany(page, 'updateMany').subscribe(
       (data) => {
         if (data) {
@@ -468,6 +498,12 @@ export class PagesComponent {
   }
 
   saveSons() {
+    if (!this.utilitiesSrv.decryptSite()) {
+      return this.msg.add({
+        severity: MessagesTst.WARNING,
+        summary: MessagesTst.NOSITE,
+      });
+    }
     let update: any[] = [];
     this.children.route = this.routeSons;
 

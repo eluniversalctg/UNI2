@@ -1,6 +1,5 @@
+import { JSDOM } from 'jsdom';
 import * as _ from 'lodash';
-import mongoose from 'mongoose';
-import { Model } from 'mongoose';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { catchError, lastValueFrom, map } from 'rxjs';
@@ -9,17 +8,13 @@ import { MatomoService } from 'src/matomo/matomo.service';
 import { RelatedCromaDto } from './dto/related-croma.dto';
 import { HttpException, Injectable } from '@nestjs/common';
 import { DomainsService } from 'src/domains/domains.service';
-import { Article, ArticleDocument } from './entities/croma.entity';
 import { PlaceholdersService } from 'src/placeholders/placeholders.service';
-import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class CromaService {
   placeholders: any[] = [];
   constructor(
     private placeholdersService: PlaceholdersService,
-    @InjectModel(Article.name, 'CromaAIdb')
-    private readonly articleModel: Model<ArticleDocument>,
     private readonly httpService: HttpService,
     private readonly config: ConfigService,
     private readonly matomoSrv: MatomoService,
@@ -90,16 +85,29 @@ export class CromaService {
    * @param relatedCromaDto
    * @returns related articles
    */
-  async related(relatedCromaDto: RelatedCromaDto) {
+  async related(
+    relatedCromaDto?: RelatedCromaDto,
+    site?: string,
+    tags?: string,
+    period?: string,
+    date?: string,
+  ) {
+    let searchParams = '';
+    const domain = await this.domainService.find(site);
+    if (relatedCromaDto && relatedCromaDto.years) {
+      searchParams = `&years=${relatedCromaDto.years}&months=${relatedCromaDto.months
+        }&days=${relatedCromaDto.days}&radius=${relatedCromaDto.radius}`;
+    }
     const response = await lastValueFrom(
       this.httpService
         .get(
-          `${this.config.get<string>('CROMA_URL')}/related?id=${relatedCromaDto.id
-          }&years=${relatedCromaDto.years}&months=${relatedCromaDto.months
-          }&days=${relatedCromaDto.days}&radius=${relatedCromaDto.radius}`,
+          `${domain[0].cromaUrl}/related?cmsid=${relatedCromaDto.id
+          }${searchParams}`,
         )
         .pipe(
-          map((response) => this.searchArticles(response.data)),
+          map((response) =>
+            this.searchArticles(response.data, tags, period, date, site)
+          ),
           catchError((e) => {
             throw new HttpException(e.response.data, e.response.status);
           }),
@@ -117,15 +125,17 @@ export class CromaService {
     tags?: string,
     period?: string,
     date?: string,
+    site?: string,
   ) {
+    const domain = await this.domainService.find(site);
     const response = await lastValueFrom(
       this.httpService
-        .post(`${this.config.get<string>('CROMA_URL')}/analyzer/text`, text, {
+        .post(`${domain[0].cromaUrl}/analyzer/text`, text, {
           headers: { 'Content-Type': 'application/json' },
         })
         .pipe(
           map((response) =>
-            this.searchArticles(response.data, tags, period, date),
+            this.searchArticles(response.data, tags, period, date, site),
           ),
           catchError((e) => {
             throw new HttpException(e.response.data, e.response.status);
@@ -139,10 +149,11 @@ export class CromaService {
    * @param word any word to analize
    * @returns
    */
-  similar_words(word: string) {
+  async similar_words(word: string, site?: string) {
+    const domain = await this.domainService.find(site);
     const response = this.httpService
       .post(
-        `${this.config.get<string>('CROMA_URL')}/w2v/similar`,
+        `${domain[0].cromaUrl}/w2v/similar`,
         { word },
         {
           headers: { 'Content-Type': 'application/json' },
@@ -159,10 +170,10 @@ export class CromaService {
     return response;
   }
 
-  async getNews(id): Promise<any> {
+  async getNews(id, url): Promise<any> {
     const response = await lastValueFrom(this.httpService
       .get(
-        `${this.config.get<string>('CROMA_URL')}/article?id=${id}`,
+        `${url}/article?cmsid=${id}`,
         {
           headers: { 'Content-Type': 'application/json' },
         },
@@ -187,15 +198,16 @@ export class CromaService {
    * @param data all data from croma related articles
    * @returns articles populated
    */
-  async searchArticles(data, tags?: string, period?: string, date?: string) {
+  async searchArticles(data, tags?: string, period?: string, date?: string, site?: string) {
     // get placeholders to database
     this.getPlaceholders();
+    const domain = await this.domainService.find(site);
 
     // search for article on CromaAI DB.
     for (let i = 0; i < data.related_articles.length; i++) {
       const element = data.related_articles[i];
       const article = await this.getNews(
-        element.article_id
+        element.cms_id, domain[0].cromaUrl
       );
 
       //verify html valid
@@ -214,6 +226,8 @@ export class CromaService {
           period,
           date,
           element,
+          domain[0].matomoUrl,
+          domain[0].idSite,
         );
       } else {
         data.related_articles[i].matomo = [];
@@ -229,7 +243,7 @@ export class CromaService {
     return [data];
   }
 
-  async getMatomoTags(tags, period, date, article) {
+  async getMatomoTags(tags, period, date, article, matomoUrl, idSite) {
     // *************** get matomo tags******************
 
     // split tags params
@@ -253,7 +267,7 @@ export class CromaService {
       }
 
       const matomoResp = {};
-      matomoResp[`${element2}`] = await this.getInfoMatomo(param);
+      matomoResp[`${element2}`] = await this.getInfoMatomo(param, matomoUrl, idSite);
 
       matomo.push(matomoResp);
     }
@@ -268,9 +282,9 @@ export class CromaService {
    * @param segment
    * @returns data from matomo
    */
-  async getInfoMatomo(param: string) {
+  async getInfoMatomo(param: string, matomoUrl, idSite) {
     const response = await new Promise((resolve, reject) => {
-      this.matomoSrv.getMatomoInfo(param).subscribe({
+      this.matomoSrv.getMatomoInfo(param, matomoUrl, idSite).subscribe({
         next: (resp) => resolve(resp),
         error: (err) => reject(err),
       });
@@ -438,7 +452,7 @@ export class CromaService {
     return result;
   }
 
-  async analyzer_url(url: string, tags: string, period: string, date: string) {
+  async analyzer_url(url: string, tags: string, period: string, date: string, site: string) {
     // validate if link is valid
     if (!url.includes('http')) {
       url = `https://${url}`;
@@ -453,46 +467,12 @@ export class CromaService {
     if (link.length > 0) {
       this.getPlaceholders();
 
-      let article = await this.articleModel.find({
-        url: { $regex: url, $options: 'i' },
-      });
-
-      article = JSON.parse(JSON.stringify(article));
-      const data = [];
-
-
-      for (let i = 0; i < article.length; i++) {
-        const element = article[i];
-        //verify html valid
-        const htmlValid = await this.getHTML(element.url);
-
-        element['similarity'] = '100%';
-        const tagsToUse: string[] = tags.split('&');
-        const matomo = [];
-
-        for (let j = 0; j < tagsToUse.length; j++) {
-          const element2 = tagsToUse[j];
-          const param = `method=${element2}&period=${period}&date=${date}&segment=entryPageUrl==${encodeURIComponent(
-            'http://www.rdscr.com/',
-          )}&idSite=1&`;
-          // ****************** descomentar esto para cuando tengamos informacion real en matomo y croma***************
-          //  const param = `method=${element2}&period=${period}&date=${date}&segment=entryPageUrl==${encodeURIComponent(
-          //    article.url,
-          //  )}&idSite=1&`;
-          // const matomoResp = await this.getInfoMatomo(param);
-          const matomoResp = {};
-          matomoResp[`${element2}`] = await this.getInfoMatomo(param);
-          // matomo[`${element2.split('.')[0]}`];
-          matomo.push(matomoResp);
-        }
-
-        element['matomo'] = matomo;
-        element['metadata'] = htmlValid;
-      }
-      data[0] = {
-        related_articles: article,
-      };
-      return data;
+      const getHTML = await this.getHTML(url);
+      const doc = new JSDOM(getHTML.html);
+      let cmsid = { id: doc.window.document.querySelector('meta[name="cmsid"]').getAttribute('content') };
+      // cmsid
+      let article = await this.related(cmsid, site, tags, period, date);
+      return article;
     } else {
       return 'Dominio no valido.';
     }

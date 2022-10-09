@@ -5,7 +5,7 @@ import { UpdateDomainDto } from './dto/update-domain.dto';
 
 @Injectable()
 export class DomainsService {
-  constructor(private readonly domainRepository: DomainRepository) {}
+  constructor(private readonly domainRepository: DomainRepository) { }
 
   /**
    *
@@ -43,6 +43,16 @@ export class DomainsService {
         domain: { $regex: link, $options: 'i' },
       });
     } catch (error) {
+      return undefined;
+    }
+  }
+
+  async find(id: string) {
+    try {
+      return await this.domainRepository.find({
+        _id: id
+      });
+    } catch (err) {
       return undefined;
     }
   }

@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { MessagesTst } from 'src/app/shared/enums';
 import { Domains } from 'src/app/shared/models';
-import { DomainsService } from 'src/app/shared/services';
+import { DomainsService, UtilitiesService } from 'src/app/shared/services';
 
 @Component({
   selector: 'app-domains',
@@ -17,6 +17,7 @@ export class DomainsComponent {
     private fb: FormBuilder,
     private msg: MessageService,
     private domainService: DomainsService,
+    private utilitiesSrv: UtilitiesService,
     private confirmationService: ConfirmationService
   ) {
     this.domainForm = this.fb.group({
@@ -24,12 +25,14 @@ export class DomainsComponent {
       name: ['', Validators.required],
       domain: ['', Validators.required],
       idSite: ['', Validators.required],
+      matomoUrl: ['', Validators.required],
+      cromaUrl: ['', Validators.required],
     });
 
     //get saved widget parameters
     this.domainService.getList().subscribe({
       next: (data) => (this.domains = data),
-      error: () =>
+      error: (err) =>
         this.msg.add({
           severity: MessagesTst.ERROR,
           summary: MessagesTst.ERRORLIST,
@@ -62,6 +65,7 @@ export class DomainsComponent {
       // update widget
       this.domainService.update(this.domainForm.value).subscribe({
         next: () => (
+          this.utilitiesSrv.domainsUpdatedOrCreated(),
           this.msg.add({
             severity: MessagesTst.SUCCESS,
             summary: MessagesTst.INSERTSUCCESS,
@@ -97,6 +101,7 @@ export class DomainsComponent {
       // save domain
       this.domainService.add(this.domainForm.value).subscribe({
         next: () => (
+          this.utilitiesSrv.domainsUpdatedOrCreated(),
           this.msg.add({
             severity: MessagesTst.SUCCESS,
             summary: MessagesTst.INSERTSUCCESS,
@@ -122,6 +127,8 @@ export class DomainsComponent {
     this.domainForm.controls.name.setValue(value.name);
     this.domainForm.controls.domain.setValue(value.domain);
     this.domainForm.controls.idSite.setValue(value.idSite);
+    this.domainForm.controls.matomoUrl.setValue(value.matomoUrl);
+    this.domainForm.controls.cromaUrl.setValue(value.cromaUrl);
     this.addNew = true;
   }
 
@@ -138,6 +145,7 @@ export class DomainsComponent {
       accept: () => {
         this.domainService.delete(value._id || '').subscribe({
           next: () => (
+            this.utilitiesSrv.domainsUpdatedOrCreated(),
             this.msg.add({
               severity: MessagesTst.SUCCESS,
               summary: MessagesTst.DELETESUCCESS,

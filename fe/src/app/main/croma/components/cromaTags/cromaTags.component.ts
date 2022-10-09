@@ -5,7 +5,7 @@ import { Component, ViewChild } from '@angular/core';
 import { Croma, MatomoTags } from 'src/app/shared/models';
 import { MessagesTst } from 'src/app/shared/enums/enumMessage';
 import { Template } from 'src/app/shared/models/template.model';
-import { CromaService, MatomoService } from 'src/app/shared/services';
+import { CromaService, MatomoService, UtilitiesService } from 'src/app/shared/services';
 import { TemplateService } from 'src/app/shared/services/templates.service';
 import { CreatePlaceholderArtService } from 'src/app/shared/services/createPlaceholderArt.service';
 
@@ -53,6 +53,7 @@ export class CromaTagsComponent {
     private msg: MessageService,
     private matomoSrv: MatomoService,
     private cromaService: CromaService,
+    private utilities: UtilitiesService,
     private templatesService: TemplateService,
     private createPlaceholderArtService: CreatePlaceholderArtService
   ) {
@@ -67,6 +68,13 @@ export class CromaTagsComponent {
         }),
     });
     this.getAllTemplates();
+
+    if (!this.validateSite()) {
+      this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: MessagesTst.NOSITE,
+      });
+    }
   }
 
   /**
@@ -75,6 +83,17 @@ export class CromaTagsComponent {
    * @param text single word or string
    */
   getByText(type: string, text: string) {
+    const site = this.validateSite();
+
+    if (!site) {
+
+      return this.msg.add({
+        severity: MessagesTst.WARNING,
+        summary: MessagesTst.NOSITE,
+      });
+
+    }
+
     this.cromaData = [];
     if (type === 'url') {
       text = encodeURIComponent(text);
@@ -83,8 +102,8 @@ export class CromaTagsComponent {
     let query = 'Actions.getPageUrls&';
     this.selectedTags.forEach((tag) => {
       let customParams = ''
-      if(tag.customParameters){
-        tag.customParameters.forEach((x) =>{customParams+= `${x.parameter}=${x.value}`})
+      if (tag.customParameters) {
+        tag.customParameters.forEach((x) => { customParams += `${x.parameter}=${x.value}` })
       }
       query = query.concat(`${tag.module}.${tag.tag}_${customParams}&`);
     });
@@ -92,7 +111,7 @@ export class CromaTagsComponent {
     this.cromaService
       .getByUrl(
         `${type}`,
-        `${text}/${query}/${this.periodSelected}/${this.dateSelectedFormted}`
+        `${text}/${query}/${this.periodSelected}/${this.dateSelectedFormted}/${site._id}`
       )
       .subscribe({
         next: (data) =>
@@ -319,4 +338,14 @@ export class CromaTagsComponent {
     this.cromaData = [];
     this.wordOrText = '';
   }
+
+  validateSite() {
+    const site = this.utilities.decryptSite();
+    if (site && site._id) {
+      return site
+    } else {
+      return undefined;
+    }
+  }
+
 }

@@ -27,6 +27,7 @@ import {
   PlaceholderUnomiService,
   TemplatePersonalizationService,
   MatomoService,
+  UtilitiesService,
 } from 'src/app/shared/services';
 import { MessagesTst } from 'src/app/shared/enums';
 import { MenuItem, MessageService } from 'primeng/api';
@@ -72,36 +73,16 @@ export class WebsiteStructureComponent implements OnChanges {
     private msg: MessageService,
     private blockService: BlockService,
     private tagsService: MatomoService,
+    private utilitiesSrv: UtilitiesService,
     private weighingService: WeighingService,
     private personalizationService: PersonalizationService,
     private placeholderPersServise: PlaceholderUnomiService,
     private templatesService: TemplatePersonalizationService
   ) {
-    const getBlocks = this.blockService.getList();
-    const weighingServ = this.weighingService.getList();
-    const rules = this.personalizationService.getList();
-    const getPersTemplate = this.templatesService.getList();
-    const placeholderPers = this.placeholderPersServise.getList();
-    const tagsReq = this.tagsService.getList();
-    forkJoin([
-      getBlocks,
-      getPersTemplate,
-      rules,
-      placeholderPers,
-      weighingServ,
-      tagsReq,
-    ]).subscribe({
-      next: (response) => {
-        this.blocksTemp = _.filter(response[0], 'isActive');
-        this.templatesTemp = [...response[1]];
-        this.templatesTemp = _.filter(this.templatesTemp, 'state');
-        this.rules = response[2];
-        this.placehoPersona = response[3];
-        this.weighing = response[4][0];
-        this.weighingTemp = response[4][0];
-        this.tags = response[5];
-      },
-    });
+    this.loadData();
+    this.utilitiesSrv.changeSite.subscribe(() => {
+      this.loadData();
+    })
     this.cols = [
       { field: 'rule.name', header: 'Regla' },
       { field: 'template.title', header: 'Plantilla' },
@@ -126,6 +107,35 @@ export class WebsiteStructureComponent implements OnChanges {
     this.wizardData.matomoPeriod = new Period();
   }
 
+  loadData() {
+    const getBlocks = this.blockService.getList();
+    const weighingServ = this.weighingService.getList();
+    const rules = this.personalizationService.getList();
+    const getPersTemplate = this.templatesService.getList();
+    const placeholderPers = this.placeholderPersServise.getList();
+    const tagsReq = this.tagsService.getList();
+    forkJoin([
+      getBlocks,
+      getPersTemplate,
+      rules,
+      placeholderPers,
+      weighingServ,
+      tagsReq,
+    ]).subscribe({
+      next: (response) => {
+        response[0] = response[0].filter((x) => x.site._id.toString() === this.utilitiesSrv.decryptSite()._id.toString());
+        response[4] = response[4].filter((x) => x.site.toString() === this.utilitiesSrv.decryptSite()._id.toString());
+        this.blocksTemp = _.filter(response[0], 'isActive');
+        this.templatesTemp = [...response[1]];
+        this.templatesTemp = _.filter(this.templatesTemp, 'state');
+        this.rules = response[2];
+        this.placehoPersona = response[3];
+        this.weighing = response[4][0];
+        this.weighingTemp = response[4][0];
+        this.tags = response[5];
+      },
+    });
+  }
   /**
    * When the AdBlock page changes, update the blocks array to be a copy of the blocksTemp array, and
    * then remove any blocks already on the selected page.

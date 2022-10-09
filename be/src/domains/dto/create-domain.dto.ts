@@ -8,5 +8,9 @@ export class CreateDomainDto {
   @ApiProperty()
   readonly domain: string;
   @ApiProperty()
-  readonly idSite: string;
+  readonly idSite: number;
+  @ApiProperty()
+  readonly matomoUrl: string;
+  @ApiProperty()
+  readonly cromaUrl: string;
 }

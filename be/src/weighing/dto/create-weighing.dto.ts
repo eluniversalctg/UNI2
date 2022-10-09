@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Domain } from 'src/domains/entities/domain.entity';
 import { DataWeighing } from './dataWeighting.model';
 
 export class CreateWeighingDto {
@@ -14,4 +15,6 @@ export class CreateWeighingDto {
   readonly altPhoto: DataWeighing;
   @ApiProperty()
   readonly url: DataWeighing;
+  @ApiProperty()
+  readonly site: Domain;
 }

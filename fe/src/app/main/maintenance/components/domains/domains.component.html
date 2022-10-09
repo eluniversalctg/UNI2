@@ -55,7 +55,10 @@
               Dominio <p-sortIcon field="domain"></p-sortIcon>
             </th>
             <th pSortableColumn="idSite">
-              IdSite Matomo<p-sortIcon field="idSite"></p-sortIcon>
+              Matomo<p-sortIcon field="idSite"></p-sortIcon>
+            </th>
+            <th pSortableColumn="cromaUrl">
+              Croma<p-sortIcon field="cromaUrl"></p-sortIcon>
             </th>
 
             <th>Acciones</th>
@@ -65,9 +68,9 @@
         <ng-template pTemplate="body" let-dom>
           <tr>
             <td>{{ dom.name }}</td>
-
             <td>{{ dom.domain }}</td>
-            <td>{{ dom.idSite }}</td>
+            <td>{{ dom.matomoUrl }}&idSite={{ dom.idSite }}</td>
+            <td>{{ dom.cromaUrl }}</td>
 
             <td>
               <button
@@ -159,6 +162,30 @@
       ></p-message>
     </div>
     <div class="field grid">
+      <label for="matomoUrl" class="col-12 md:col-4">MatomoURL:</label>
+
+      <div class="col-12 md:col-8">
+        <input
+          style="width: -webkit-fill-available"
+          formControlName="matomoUrl"
+          class="input inputfield"
+          type="text"
+          id="matomoUrl"
+          pInputText
+        />
+      </div>
+
+      <p-message
+        *ngIf="
+          domainForm.controls.matomoUrl.touched &&
+          !domainForm.controls.matomoUrl.valid
+        "
+        severity="error"
+        text="MatomoURL requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid">
       <label for="idSite" class="col-12 md:col-4">idSite Matomo:</label>
 
       <div class="col-12 md:col-8">
@@ -180,6 +207,30 @@
         "
         severity="error"
         text="IdSite requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid">
+      <label for="cromaUrl" class="col-12 md:col-4">CromaURL:</label>
+
+      <div class="col-12 md:col-8">
+        <input
+          style="width: -webkit-fill-available"
+          formControlName="cromaUrl"
+          class="input inputfield"
+          type="text"
+          id="cromaUrl"
+          pInputText
+        />
+      </div>
+
+      <p-message
+        *ngIf="
+          domainForm.controls.cromaUrl.touched &&
+          !domainForm.controls.cromaUrl.valid
+        "
+        severity="error"
+        text="CromaURL requerido."
         class="mb-2 mt-2"
       ></p-message>
     </div>

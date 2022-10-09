@@ -11,5 +11,9 @@ export class Domain {
   domain: string;
   @Prop()
   idSite: number;
+  @Prop()
+  matomoUrl: string;
+  @Prop()
+  cromaUrl: string;
 }
 export const DomainSchema = SchemaFactory.createForClass(Domain);

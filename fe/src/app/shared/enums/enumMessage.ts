@@ -75,6 +75,7 @@ export enum MessagesTst {
   PROFILESUPDATEERROR = 'Los perfiles no se actualizaron correctamente',
   OPERATOR_REQUIRED = 'Debe agregar al menos un operador',
   RULEEXIST = 'La regla ya existe',
+  NOSITE = 'No ha selecionado un sitio',
 
   //placehoders System
   Title = 'Title',

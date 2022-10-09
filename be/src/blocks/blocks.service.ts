@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as _ from 'lodash';
 import {
   genWord,
   parameterValues,
@@ -23,12 +24,11 @@ export class BlocksService {
     private readonly config: ConfigService,
     private pagesService: PagesService,
     private weighingService: WeighingService,
-  ) {}
+  ) { }
 
   async create(createBlockDto: CreateBlockDto) {
     try {
       const create = await this.blockRepository.create(createBlockDto);
-      this.createRules();
       return create;
     } catch (error) {
       return undefined;
@@ -37,6 +37,7 @@ export class BlocksService {
 
   async findAll() {
     try {
+      this.createRules();
       return await this.blockRepository.find({});
     } catch (error) {
       return [];
@@ -87,7 +88,7 @@ export class BlocksService {
    * create file
    * @returns Promise<string>
    */
-  async createFile(data: string) {
+  async createFile(data: string, domainName: string) {
     try {
       if (!this.checkIfFileOrDirectoryExists(`${__dirname}/file`)) {
         fs.mkdirSync(`${__dirname}/file`);
@@ -96,7 +97,7 @@ export class BlocksService {
       const writeFile = promisify(fs.writeFile);
 
       const writeFileFinaly = await writeFile(
-        `${__dirname}/file/rulesPersonalization.min.js`,
+        `${__dirname}/file/${domainName}.min.js`,
         data,
         'utf8',
       );
@@ -114,61 +115,65 @@ export class BlocksService {
   async createRules() {
     let pages = await this.pagesService.findAll();
     pages = JSON.parse(JSON.stringify(pages));
-    for (let i = 0; i < pages.length; i++) {
-      this.readAllPages([pages[i]], pages[i]._id);
+    const uniqPages = _.uniqBy(pages, 'site');
+    for (let i = 0; i < uniqPages.length; i++) {
+      const element = pages.filter((x) => x.site === uniqPages[i].site);
+      for (let i = 0; i < element.length; i++) {
+        this.readAllPages([element[i]], element[i]._id);
+      }
+      const scriptGraphQl = await this.crearMetadataGraphql();
+      const lazyLoading = await this.writeLazyLoading();
+      const scriptJsonld = this.crearMetadataJson();
+      const loadScript = `
+              document.addEventListener("DOMContentLoaded", () => {
+
+              var currentIframes = [];
+              var iframes = document.getElementsByTagName("iframe");
+
+              for (let i = 0; i < iframes.length; i++) {
+                  const element = iframes[i];
+                  const findUni2Id = element.attributes["uni2id"];
+
+                  if (findUni2Id) {
+                      currentIframes.push(element);
+                  }
+
+              }
+              var lazyloadThrottleTimeout;
+
+              function lazyload() {
+                  if (lazyloadThrottleTimeout) {
+                      clearTimeout(lazyloadThrottleTimeout);
+                  }
+
+                  lazyloadThrottleTimeout = setTimeout(function () {
+                      var scrollTop = window.pageYOffset;
+                      currentIframes.forEach(function (ifm) {
+                          if (ifm.offsetTop < window.innerHeight + scrollTop) {
+                              const name = ifm.attributes["uni2id"].value + '()';
+                              eval(name);
+                          }
+                      });
+                      if (currentIframes.length == 0) {
+                          document.removeEventListener("scroll", lazyload);
+                          window.removeEventListener("resize", lazyload);
+                          window.removeEventListener("orientationChange", lazyload);
+                      }
+                  }, 30);
+              }
+
+              document.addEventListener("scroll", lazyload);
+              window.addEventListener("resize", lazyload);
+              window.addEventListener("orientationChange", lazyload);
+          });
+
+            ${this.finalScript}
+            ${scriptGraphQl}
+            ${scriptJsonld}
+            ${lazyLoading}
+            `;
+      this.createFile(loadScript, element[0].site.name);
     }
-    const scriptGraphQl = await this.crearMetadataGraphql();
-    const lazyLoading = await this.writeLazyLoading();
-    const scriptJsonld = this.crearMetadataJson();
-    const loadScript = `
-    document.addEventListener("DOMContentLoaded", () => {
-
-    var currentIframes = [];
-    var iframes = document.getElementsByTagName("iframe");
-
-    for (let i = 0; i < iframes.length; i++) {
-        const element = iframes[i];
-        const findUni2Id = element.attributes["uni2id"];
-
-        if (findUni2Id) {
-            currentIframes.push(element);
-        }
-
-    }
-    var lazyloadThrottleTimeout;
-
-    function lazyload() {
-        if (lazyloadThrottleTimeout) {
-            clearTimeout(lazyloadThrottleTimeout);
-        }
-
-        lazyloadThrottleTimeout = setTimeout(function () {
-            var scrollTop = window.pageYOffset;
-            currentIframes.forEach(function (ifm) {
-                if (ifm.offsetTop < window.innerHeight + scrollTop) {
-                    const name = ifm.attributes["uni2id"].value + '()';
-                    eval(name);
-                }
-            });
-            if (currentIframes.length == 0) {
-                document.removeEventListener("scroll", lazyload);
-                window.removeEventListener("resize", lazyload);
-                window.removeEventListener("orientationChange", lazyload);
-            }
-        }, 30);
-    }
-
-    document.addEventListener("scroll", lazyload);
-    window.addEventListener("resize", lazyload);
-    window.addEventListener("orientationChange", lazyload);
-});
-
-  ${this.finalScript}
-  ${scriptGraphQl}
-  ${scriptJsonld}
-  ${lazyLoading}
-  `;
-    this.createFile(loadScript);
   }
 
   /**
@@ -185,7 +190,7 @@ export class BlocksService {
     let variable = '';
 
     for (let i = 0; i < keys.length; i++) {
-      if (weighing[0][keys[i]].luck) {
+      if (weighing[0][keys[i]] && weighing[0][keys[i]].luck) {
         if (weighing[0][keys[i]].luck > 0) {
           graphQl = `${graphQl}
          const ${weighing[0][keys[i]].grapgQL} = document

@@ -2,7 +2,7 @@ import moment from 'moment';
 import { Component } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { Widgets } from 'src/app/shared/models';
-import { WidgetsService } from 'src/app/shared/services';
+import { UtilitiesService, WidgetsService } from 'src/app/shared/services';
 import { environment } from 'src/environments/environment';
 import { MessagesTst } from 'src/app/shared/enums/enumMessage';
 
@@ -14,15 +14,29 @@ import { MessagesTst } from 'src/app/shared/enums/enumMessage';
 export class DashboardComponent {
   periodSelectedArray: string[] = [];
   dateSelectedArray: Date[] = [];
-  url = environment.matomoURL;
-  auth_token = environment.matomoAuthToken;
+  url : string = "";
   widgets: Widgets[] = [];
   selectedWidgets: Widgets[] = [];
 
   constructor(
     private msg: MessageService,
+    private utilities: UtilitiesService,
     private widgetService: WidgetsService
   ) {
+    if(this.utilities.decryptSite()){
+      this.url = this.utilities.decryptSite().matomoUrl
+      this.getData();
+    }
+    this.utilities.changeSite.subscribe(()=>{
+      this.getData();
+    })
+  }
+
+  resetDate(index) {
+    this.dateSelectedArray[index] = new Date();
+  }
+
+  getData(){
     this.widgetService.getList().subscribe({
       next: (data) => this.transformData(data),
       error: () =>
@@ -31,10 +45,6 @@ export class DashboardComponent {
           summary: MessagesTst.ERRORLIST,
         }),
     });
-  }
-
-  resetDate(index) {
-    this.dateSelectedArray[index] = new Date();
   }
 
   /**
@@ -54,8 +64,9 @@ export class DashboardComponent {
    * @param widgets
    */
   transformData(widgets: Widgets[]) {
+    const segmentsURL = this.url.split('?');
     widgets.forEach((widget) => {
-      widget.url = `${this.url}${widget.url}token_auth=${this.auth_token}`;
+      widget.url = `${segmentsURL[0]}${widget.url}${segmentsURL[1]}`;
     });
     this.widgets = [...widgets];
   }

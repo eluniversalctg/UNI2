@@ -2,5 +2,7 @@ export class Domains {
   _id: string;
   name: string;
   domain: string;
-  idSite: number;
+  idSite: string;
+  matomoUrl: string;
+  cromaUrl: string;
 }

@@ -1,83 +1,55 @@
+import { Component } from '@angular/core';
+import { Domains } from './shared/models';
 import { AppComponent } from './app.component';
-import { UtilitiesService } from './shared/services';
 import { AppMainComponent } from './app.main.component';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { DomainsService, UtilitiesService } from './shared/services';
 
 @Component({
   selector: 'app-topbar',
   templateUrl: './app.topbar.component.html',
 })
-export class AppTopBarComponent implements OnInit {
-  open: boolean = false;
-  menu: any[];
+export class AppTopBarComponent {
+  sites: Domains[] = []
+  site: Domains = new Domains();
 
-  @ViewChild('input1') inputElement1: ElementRef;
-
-  @ViewChild('input2') inputElement2: ElementRef;
   constructor(
     public app: AppComponent,
     public appMain: AppMainComponent,
-    private utilities: UtilitiesService
-  ) {}
-
-  ngOnInit() {
-    this.menu = [
-      {
-        label: 'Menu',
-        items: [
-          {
-            label: 'UI Kit',
-            icon: 'pi pi-align-left',
-            items: [
-              {
-                label: 'Form Layout',
-                icon: 'pi pi-id-card',
-                routerLink: ['/uikit/formlayout'],
-              },
-              {
-                label: 'Input',
-                icon: 'pi pi-check-square',
-                routerLink: ['/uikit/input'],
-              },
-            ],
-          },
-          {
-            label: 'Hierarchy',
-            icon: 'pi pi-align-left',
-            items: [
-              {
-                label: 'Submenu 1',
-                icon: 'pi pi-align-left',
-                items: [
-                  { label: 'Submenu 1.1', icon: 'pi pi-align-left' },
-                  { label: 'Submenu 1.2', icon: 'pi pi-align-left' },
-                ],
-              },
-              {
-                label: 'Submenu 2',
-                icon: 'pi pi-align-left',
-                items: [{ label: 'Submenu 2.1', icon: 'pi pi-align-left' }],
-              },
-            ],
-          },
-        ],
-      },
-    ];
+    private utilities: UtilitiesService,
+    private domainsService: DomainsService
+  ) {
+    this.getDomains();
+    this.utilities.domainsChanged.subscribe(()=> {
+      this.getDomains();
+      this.site = new Domains();
+      this.site.name = 'Seleccione un sitio';
+    });
+    this.getSite();
   }
 
-  searchFocus(event) {
-    if (this.appMain.search) {
-      setTimeout(() => {
-        this.inputElement1.nativeElement.focus();
-        this.inputElement2.nativeElement.focus();
-      }, 100);
-    }
+  getDomains() {
+    this.domainsService.getList().subscribe({
+      next: (data) => { this.sites = data; }
+    });
+  }
+  /**
+   * Gets site info from local storage
+   */
+  getSite() {
+    this.site = this.utilities.decryptSite() ? this.utilities.decryptSite() : new Domains();
+    this.site.name = !this.site.name ? 'Seleccione un sitio' : this.site.name;
   }
 
-  openLi(open: boolean) {
-    this.open = open;
+  /**
+   * Set selected site lo local storage
+   * @param site site to set into local storage
+   */
+  setSite(site) {
+    this.utilities.setSite(site);
+    this.getSite();
   }
 
+  /* A function that is called when the user clicks on the logout button. */
   signOut() {
     this.utilities.logOut();
   }

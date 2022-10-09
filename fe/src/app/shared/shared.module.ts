@@ -36,7 +36,6 @@ import {
   MatomoService,
   SpinnerService,
   VariableService,
-  UtilitiesService,
   UserFieldsService,
   ConditionsService,
   PermissionsService,
@@ -54,12 +53,12 @@ import { RecordSegmentsComponent } from './components/recordSegments/recordSegme
 //pipes
 import { SafePipe } from './pipes/save.pipe';
 import { statePipe } from './pipes/state.pipe';
+import { ReplacePipe } from './pipes/replace.pipe';
 import { GetValuePipe } from './pipes/getData.pipe';
 import { isRequiredPipe } from './pipes/isRequired.pipe';
 import { GoalDatePipe } from './pipes/transformDate.pipe';
 import { ActivityLogService } from './services/activity-log.service';
 import { UserDetailsComponent } from './components/userDetails/userDetails.component';
-import { ReplacePipe } from './pipes/replace.pipe';
 
 //date format
 import localePy from '@angular/common/locales/es';
@@ -109,7 +108,6 @@ const providers = [
   MessageService,
   SpinnerService,
   VariableService,
-  UtilitiesService,
   UserFieldsService,
   ConditionsService,
   ActivityLogService,

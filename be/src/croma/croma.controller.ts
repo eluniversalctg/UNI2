@@ -21,28 +21,30 @@ export class CromaController {
    * analyze text
    * example: "Cristina Kirchner se reunio con Mauricio Macri en la casa rosada"
    */
-  @Get('/text/:text/:tags/:period/:date')
+  @Get('/text/:text/:tags/:period/:date/:site')
   analyzer_text(
     @Param('text') text: string,
     @Param('tags') tags: string,
     @Param('period') period: string,
     @Param('date') date: string,
+    @Param('site') site: string,
   ) {
-    return this.cromaService.analyzer_text(text, tags, period, date);
+    return this.cromaService.analyzer_text(text, tags, period, date, site);
   }
 
   /**
    * analyze URL
    * example: "https://www.eluniversal.com.co/"
    */
-  @Get('/url/:url/:tags/:period/:date')
+  @Get('/url/:url/:tags/:period/:date/:site')
   analyzer_url(
-    @Param('url') text: string,
+    @Param('url') url: string,
     @Param('tags') tags: string,
     @Param('period') period: string,
     @Param('date') date: string,
+    @Param('site') site: string,
   ) {
-    return this.cromaService.analyzer_url(text, tags, period, date);
+    return this.cromaService.analyzer_url(url, tags, period, date, site);
   }
 
   /**
@@ -60,14 +62,5 @@ export class CromaController {
   @Post()
   create(@Body() createCromaDto: CreateCromaDto) {
     return this.cromaService.create(createCromaDto);
-  }
-
-  /**
-   * find related articles
-   */
-
-  @Post('/related')
-  related(@Body() relatedCromaDto: RelatedCromaDto) {
-    return this.cromaService.related(relatedCromaDto);
   }
 }

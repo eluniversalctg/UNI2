@@ -4,7 +4,7 @@ import { ParamsWidgets, Widgets } from 'src/app/shared/models';
 import { MessagesTst } from 'src/app/shared/enums/enumMessage';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ParamsWidgetsService, WidgetsService } from 'src/app/shared/services';
+import { ParamsWidgetsService, UtilitiesService, WidgetsService } from 'src/app/shared/services';
 
 @Component({
   selector: 'app-widgets',
@@ -20,14 +20,15 @@ export class WidgetsComponent {
   trying: boolean = false;
   widgets: Widgets[] = [];
   addNew: boolean = false;
-  url: string = environment.matomoURL;
-  auth_token: string = environment.matomoAuthToken;
+  url: string = "";
+  auth_token: string = "";
 
   constructor(
     private fb: FormBuilder,
     private msg: MessageService,
-    private paramService: ParamsWidgetsService,
+    private utilities: UtilitiesService,
     private widgetsService: WidgetsService,
+    private paramService: ParamsWidgetsService,
     private confirmationService: ConfirmationService
   ) {
     //get saved widget parameters

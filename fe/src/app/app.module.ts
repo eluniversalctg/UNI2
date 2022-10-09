@@ -16,6 +16,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpInterceptorService } from './core/interceptor/httpInterceptor.service';
 import { CreatePlaceholderArtService } from './shared/services/createPlaceholderArt.service';
+import { DomainsService, UtilitiesService } from './shared/services';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,8 @@ import { CreatePlaceholderArtService } from './shared/services/createPlaceholder
       useClass: HttpInterceptorService,
       multi: true,
     },
+    DomainsService,
+    UtilitiesService,
     TopbarMenuService,
     CreatePlaceholderArtService,
   ],

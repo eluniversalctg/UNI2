@@ -1,10 +1,10 @@
 import * as _ from 'lodash';
-import { Component, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { MessagesTst } from 'src/app/shared/enums';
 import { Blocks } from 'src/app/shared/models';
-import { BlockService, ExportService } from 'src/app/shared/services';
+import { MessagesTst } from 'src/app/shared/enums';
+import { Component, ViewChild } from '@angular/core';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { BlockService, ExportService, UtilitiesService } from 'src/app/shared/services';
 
 @Component({
   selector: 'app-blocks',
@@ -31,10 +31,24 @@ export class BlockComponent {
   constructor(
     private msg: MessageService,
     private blockService: BlockService,
+    private exportService: ExportService,
+    private utilitiesSrv: UtilitiesService,
     private confirmationService: ConfirmationService,
-    private exportService: ExportService
   ) {
-    this.getAllBlocks();
+
+    this.utilitiesSrv.changeSite.subscribe(() => {
+      this.getAllBlocks();
+    });
+
+    if (this.utilitiesSrv.decryptSite()) {
+      this.getAllBlocks();
+    } else {
+      this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: MessagesTst.NOSITE,
+      });
+    }
+
 
     this.blocksForm = new FormGroup({
       name: new FormControl('', [Validators.required]),
@@ -124,22 +138,29 @@ export class BlockComponent {
    * description: send request to backend, save a new block
    */
   register() {
+    if (!this.utilitiesSrv.decryptSite()) {
+      return this.msg.add({
+        severity: MessagesTst.WARNING,
+        summary: MessagesTst.NOSITE,
+      });
+    }
     let control = this.blocksForm.controls;
 
     let block: Blocks = {
       name: control.name.value,
       sizes: control.sizes.value,
       isActive: control.isActive.value,
+      site: this.utilitiesSrv.decryptSite()
     };
     if (!this.isEditing) {
       this.save(block);
     } else {
-      if(this.blocksUpdate){
+      if (this.blocksUpdate) {
 
-        if (!this.blocksUpdate.inUse || block.isActive ) {
+        if (!this.blocksUpdate.inUse || block.isActive) {
 
           this.update(block);
-        }else{
+        } else {
           this.msg.add({
             severity: MessagesTst.ERROR,
             summary: MessagesTst.ERRORINUSE,
@@ -162,6 +183,7 @@ export class BlockComponent {
   getAllBlocks() {
     this.blockService.getList().subscribe(
       (response) => {
+        response = response.filter((x) => x.site._id.toString() === this.utilitiesSrv.decryptSite()._id.toString());
         this.blocks = response;
         this.pagesActive = _.filter(response, ['isActive', true]);
         this.pagesActive = _.filter(response, ['typeSection', 'Sección']);
@@ -176,12 +198,10 @@ export class BlockComponent {
   }
 
   changeState(block: Blocks) {
-    let message = `¿Está seguro que desea ${
-      block.isActive ? 'inactivar' : 'activar'
-    } el bloque <b>
+    let message = `¿Está seguro que desea ${block.isActive ? 'inactivar' : 'activar'
+      } el bloque <b>
       ${block.name}
-      </b>? <br/>El bloque seleccionado quedará ${
-        block.isActive ? 'sin' : 'con'
+      </b>? <br/>El bloque seleccionado quedará ${block.isActive ? 'sin' : 'con'
       } función en la plataforma.`;
 
     this.confirmationService.confirm({
@@ -191,7 +211,7 @@ export class BlockComponent {
       acceptLabel: 'Sí',
       accept: () => {
 
-        if(!block.inUse){
+        if (!block.inUse) {
 
           let update = new Blocks();
 
@@ -220,7 +240,7 @@ export class BlockComponent {
               });
             }
           );
-        }else{
+        } else {
           this.msg.add({
             severity: MessagesTst.ERROR,
             summary: MessagesTst.ERRORINUSE,

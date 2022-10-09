@@ -4,11 +4,11 @@ export class RelatedCromaDto {
   @ApiProperty()
   readonly id: string;
   @ApiProperty()
-  readonly years: number;
+  readonly years?: number;
   @ApiProperty()
-  readonly months: number;
+  readonly months?: number;
   @ApiProperty()
-  readonly days: number;
+  readonly days?: number;
   @ApiProperty()
-  readonly radius: number;
+  readonly radius?: number;
 }

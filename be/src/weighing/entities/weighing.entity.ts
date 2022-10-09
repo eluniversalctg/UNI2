@@ -1,5 +1,6 @@
-import { Document } from 'mongoose';
+import { Document, SchemaTypes } from 'mongoose';
 import { DataWeighing } from '../dto/dataWeighting.model';
+import { Domain } from 'src/domains/entities/domain.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 export type WeighingDocument = Weighing & Document;
@@ -25,6 +26,8 @@ export class Weighing {
 
   @Prop({ required: true, unique: false })
   readonly url: DataWeighing;
+  @Prop({ type: SchemaTypes.ObjectId, ref: 'Domains', required: true, unique: false })
+  site: Domain
 }
 
 export const WeighingSchema = SchemaFactory.createForClass(Weighing);

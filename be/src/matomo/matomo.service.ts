@@ -72,12 +72,10 @@ export class MatomoService {
   /**
    * get info from matomo
    */
-  getMatomoInfo(params) {
+  getMatomoInfo(params, matomoUrl, idSite) {
     const response = this.httpService
       .get(
-        `${this.config.get<string>(
-          'MATOMO_URL',
-        )}&module=API&${params}format=JSON`,
+        `${matomoUrl}&module=API&${params}format=JSON&idSite=${idSite}`,
         {
           // para produccion quitar esto del httpsAgent debido a que debemos de tener un certificado de verdad
           httpsAgent: new https.Agent({

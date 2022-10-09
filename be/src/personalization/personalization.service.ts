@@ -5,6 +5,7 @@ import { Page } from 'src/pages/entities/page.entity';
 import { PagesService } from 'src/pages/pages.service';
 import { CromaService } from 'src/croma/croma.service';
 import { RenderizationDto } from './dto/renderization.dto';
+import { DomainsService } from 'src/domains/domains.service';
 import { RelatedCromaDto } from 'src/croma/dto/related-croma.dto';
 import { Personalization } from './entities/personalization.entity';
 import { PersonalizationRepository } from './personalization.repository';
@@ -26,6 +27,7 @@ export class PersonalizationService {
     private ruleService: RuleService,
     private pagesService: PagesService,
     private cromaService: CromaService,
+    private readonly domainService: DomainsService,
     private placeholderSystemService: PlaceholdersService,
     private placeholderUnomiService: PlaceholderUnomiService,
     private templatePersonalizationService: TemplatePersonalizationService,
@@ -127,6 +129,7 @@ export class PersonalizationService {
     const idBlock = data[3];
     const level = data[4];
     const idRule = data[5];
+    const site = data[6];
 
     const template = this.templatesPersonalization.find(
       (x) => x._id === idTemplateRender,
@@ -371,7 +374,7 @@ export class PersonalizationService {
               };
 
               //get the articles with respect to id
-              const articles = await this.cromaService.related(relatedCromaDto);
+              const articles = await this.cromaService.related(relatedCromaDto, page.site._id, );
               const articlesSelect: any[] = [];
 
               //use the number of items needed for the template
@@ -421,10 +424,10 @@ export class PersonalizationService {
               params += `${param.parameter}=${param.value}&`;
             }
           });
-
           // get matomo data
           const matomoResponse = await this.cromaService.getInfoMatomo(
             `method=${matomoTags.module}.${matomoTags.tag}&period=day&date=${matomoPeriod.year}-${matomoPeriod.month}-${matomoPeriod.day}&idSite=1&${params}`,
+            page.site.matomoUrl, page.site.idSite,
           );
 
           // validate if get information

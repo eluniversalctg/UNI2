@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Domain } from 'src/domains/entities/domain.entity';
 
 export class CreateBlockDto {
   @ApiProperty()
@@ -11,4 +12,6 @@ export class CreateBlockDto {
   readonly isActive?: boolean;
   @ApiProperty()
   readonly inUse?: boolean;
+  @ApiProperty()
+  readonly site?: Domain;
 }

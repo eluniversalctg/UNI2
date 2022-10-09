@@ -1,3 +1,5 @@
+import { Domains } from "./domain.model";
+
 export class Weighing {
   _id?: string;
   title: DataWeighing;
@@ -6,6 +8,7 @@ export class Weighing {
   topic: DataWeighing;
   altPhoto: DataWeighing;
   url: DataWeighing;
+  site: Domains
 }
 
 export class DataWeighing {

@@ -12,9 +12,11 @@ import { RolesModule } from './roles/roles.module';
 import { CromaModule } from './croma/croma.module';
 import { ImagesModule } from './images/images.module';
 import { MatomoModule } from './matomo/matomo.module';
+import { BlocksModule } from './blocks/blocks.module';
 import { DomainsModule } from './domains/domains.module';
-import { WidgetsModule } from './widgets/widgets.module';
 import { ActionsModule } from './actions/actions.module';
+import { WidgetsModule } from './widgets/widgets.module';
+import { WeighingModule } from './weighing/weighing.module';
 import { VariableModule } from './variable/variable.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TemplatesModule } from './templates/templates.module';
@@ -28,8 +30,6 @@ import { PersonalizationModule } from './personalization/personalization.module'
 import { PropertiesUnomiModule } from './properties-unomi/properties-unomi.module';
 import { PlaceholderUnomiModule } from './placeholder-unomi/placeholder-unomi.module';
 import { TemplatePersonalizationModule } from './template-personalization/template-personalization.module';
-import { BlocksModule } from './blocks/blocks.module';
-import { WeighingModule } from './weighing/weighing.module';
 
 @Module({
   imports: [
@@ -61,11 +61,14 @@ import { WeighingModule } from './weighing/weighing.module';
     RolesModule,
     UsersModule,
     CromaModule,
+    PagesModule,
     MatomoModule,
     ImagesModule,
+    BlocksModule,
     ActionsModule,
     DomainsModule,
     WidgetsModule,
+    WeighingModule,
     VariableModule,
     TemplatesModule,
     ConditionsModule,
@@ -78,9 +81,6 @@ import { WeighingModule } from './weighing/weighing.module';
     PersonalizationModule,
     PlaceholderUnomiModule,
     TemplatePersonalizationModule,
-    PagesModule,
-    BlocksModule,
-    WeighingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

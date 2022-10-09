@@ -1,13 +1,17 @@
 import * as CryptoJS from 'crypto-js';
 import { Router } from '@angular/router';
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable()
 export class UtilitiesService {
   private tempStorage: any;
   private secretKey: string = 'uni2';
   private localStorageItem = environment.localStorageItem;
+  private localStorageSite = 'site';
+  changeSite: EventEmitter<boolean> = new EventEmitter();
+  domainsChanged: EventEmitter<boolean> = new EventEmitter();
 
   constructor(private router: Router) {}
 
@@ -31,6 +35,45 @@ export class UtilitiesService {
     );
 
     localStorage.setItem(this.localStorageItem, encrypted);
+  }
+
+  setSite(site) {
+    localStorage.removeItem(this.localStorageSite);
+
+    let toString = site;
+
+    let encrypted: any = CryptoJS.AES.encrypt(
+      JSON.stringify(toString),
+      this.secretKey
+    );
+
+    localStorage.setItem(this.localStorageSite, encrypted);
+    this.emitChange();
+  }
+
+  decryptSite() {
+    let site = localStorage.getItem(this.localStorageSite);
+
+    if (site !== null && site !== undefined) {
+      let decrypted = CryptoJS.AES.decrypt(site, this.secretKey).toString(
+        CryptoJS.enc.Utf8
+      );
+
+      let toObj = JSON.parse(decrypted);
+      return toObj;
+    }
+
+    return undefined;
+  }
+
+  emitChange() {
+    this.changeSite.emit(true);
+  }
+
+  // delete selected site because could change
+  domainsUpdatedOrCreated() {
+    localStorage.removeItem(this.localStorageSite);
+    this.domainsChanged.emit(true);
   }
 
   /**

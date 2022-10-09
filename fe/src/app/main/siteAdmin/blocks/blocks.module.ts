@@ -11,9 +11,9 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { AccesGuard } from 'src/app/core/guard/access.guard';
 
 // primeng modules
+import { ChipsModule } from 'primeng/chips';
 import { DropdownModule } from 'primeng/dropdown';
 import { CheckboxModule } from 'primeng/checkbox';
-import { ChipsModule } from 'primeng/chips';
 
 const routes: Routes = [
   {
