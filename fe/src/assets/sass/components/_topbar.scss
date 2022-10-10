@@ -209,15 +209,15 @@
 .layout-topbar .layout-topbar-right .layout-topbar-actions > li.search-item ul {
   display: none;
 }
-.layout-topbar .layout-topbar-right .layout-topbar-actions > li.profile-item {
+.layout-topbar .layout-topbar-right .layout-topbar-actions > li.site-item {
   border-radius: 10px;
   margin-left: 1.5rem;
 }
 .layout-topbar
   .layout-topbar-right
   .layout-topbar-actions
-  > li.profile-item
-  .profile-container {
+  > li.site-item
+  .site-container {
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -225,8 +225,8 @@
 .layout-topbar
   .layout-topbar-right
   .layout-topbar-actions
-  > li.profile-item
-  .profile-container
+  > li.site-item
+  .site-container
   a {
   font-size: 1.5rem;
   padding: 1rem 0.5rem;
@@ -235,16 +235,16 @@
 .layout-topbar
   .layout-topbar-right
   .layout-topbar-actions
-  > li.profile-item
-  .profile-container
+  > li.site-item
+  .site-container
   .name-container {
   padding: 0.5rem 1rem;
 }
 .layout-topbar
   .layout-topbar-right
   .layout-topbar-actions
-  > li.profile-item
-  .profile-container
+  > li.site-item
+  .site-container
   .name-container
   span {
   display: block;
@@ -252,8 +252,8 @@
 .layout-topbar
   .layout-topbar-right
   .layout-topbar-actions
-  > li.profile-item
-  .profile-container
+  > li.site-item
+  .site-container
   .name-container
   span.name {
   font-weight: 700;
@@ -261,8 +261,8 @@
 .layout-topbar
   .layout-topbar-right
   .layout-topbar-actions
-  > li.profile-item
-  .profile-container
+  > li.site-item
+  .site-container
   i {
   font-size: 1.5rem;
   padding: 1rem;
@@ -271,7 +271,7 @@
 .layout-topbar
   .layout-topbar-right
   .layout-topbar-actions
-  > li.profile-item
+  > li.site-item
   ul
   > li
   > a {
@@ -320,7 +320,7 @@
 .layout-topbar
   .layout-topbar-right
   .layout-topbar-actions
-  > li.active-topmenuitem.profile-item
+  > li.active-topmenuitem.site-item
   i {
   transform: rotate(-180deg);
 }
@@ -667,15 +667,15 @@
   i {
   color: $color-primary;
 }
-.layout-topbar .layout-topbar-right .layout-topbar-actions li.profile-item {
+.layout-topbar .layout-topbar-right .layout-topbar-actions li.site-item {
   background: rgba(245, 247, 250, 0.1);
   border: 2px solid rgba(0, 0, 0, 0.2);
 }
 .layout-topbar
   .layout-topbar-right
   .layout-topbar-actions
-  li.profile-item
-  .profile-container
+  li.site-item
+  .site-container
   a {
   background: $color-primary;
   color: #4c96b6;
@@ -683,43 +683,34 @@
 .layout-topbar
   .layout-topbar-right
   .layout-topbar-actions
-  li.profile-item
-  .profile-container
+  li.site-item
+  .site-container
   .name-container
-  span.name {
+  span.site {
   color: $color-primary;
 }
 .layout-topbar
   .layout-topbar-right
   .layout-topbar-actions
-  li.profile-item
-  .profile-container
-  .name-container
-  span.job {
-  color: $color-primary;
-}
-.layout-topbar
-  .layout-topbar-right
-  .layout-topbar-actions
-  li.profile-item
-  .profile-container
+  li.site-item
+  .site-container
   i {
   color: $color-primary;
 }
 .layout-topbar
   .layout-topbar-right
   .layout-topbar-actions
-  li.profile-item
-  .profile-menu
+  li.site-item
+  .site-menu
   li
   a {
-  color: #495057;
+  color: #ffffff;
 }
 .layout-topbar
   .layout-topbar-right
   .layout-topbar-actions
-  li.profile-item
-  .profile-menu
+  li.site-item
+  .site-menu
   li
   a:hover {
   background: rgba(255, 255, 255, 0.1);
@@ -727,8 +718,8 @@
 .layout-topbar
   .layout-topbar-right
   .layout-topbar-actions
-  li.profile-item
-  .profile-menu
+  li.site-item
+  .site-menu
   li
   a:focus {
   box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.1);
@@ -948,7 +939,7 @@
     .layout-topbar
     .layout-topbar-right
     .layout-topbar-actions
-    > li.profile-item {
+    > li.site-item {
     border-radius: 50%;
     margin-left: 1rem;
   }
@@ -956,8 +947,8 @@
     .layout-topbar
     .layout-topbar-right
     .layout-topbar-actions
-    > li.profile-item
-    .profile-container
+    > li.site-item
+    .site-container
     a {
     width: 50px;
     height: 50px;
@@ -971,8 +962,8 @@
     .layout-topbar
     .layout-topbar-right
     .layout-topbar-actions
-    > li.profile-item
-    .profile-container
+    > li.site-item
+    .site-container
     .name-container {
     display: none;
   }
@@ -980,8 +971,8 @@
     .layout-topbar
     .layout-topbar-right
     .layout-topbar-actions
-    > li.profile-item
-    .profile-container
+    > li.site-item
+    .site-container
     i {
     display: none;
   }
@@ -989,8 +980,8 @@
     .layout-topbar
     .layout-topbar-right
     .layout-topbar-actions
-    > li.profile-item
-    .profile-menu {
+    > li.site-item
+    .site-menu {
     top: 9rem;
   }
   .layout-wrapper .layout-content-wrapper {

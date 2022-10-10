@@ -1,9 +1,9 @@
 import moment from 'moment';
 import { Component } from '@angular/core';
 import { MatomoTags } from 'src/app/shared/models';
-import { MatomoService } from 'src/app/shared/services';
 import { MessagesTst } from 'src/app/shared/enums/enumMessage';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { MatomoService, UtilitiesService } from 'src/app/shared/services';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
@@ -26,6 +26,7 @@ export class TagsComponent {
     private fb: FormBuilder,
     private msg: MessageService,
     private matomoSrv: MatomoService,
+    private utilities: UtilitiesService,
     private confirmationService: ConfirmationService
   ) {
     this.optionValuesForm = this.fb.group({
@@ -192,9 +193,8 @@ export class TagsComponent {
       this.addValue(param);
     });
 
-    await this.tryTag();
     this.columnSelected = tag.columns;
-    this.addNew = true;
+    this.addNew = await this.tryTag();
   }
 
   /**
@@ -231,10 +231,18 @@ export class TagsComponent {
    */
 
   tryTag() {
+    const site = this.utilities.decryptSite();
+    if (!site) {
+      this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: MessagesTst.NOSITE,
+      });
+      return false; 
+    }
     const date = moment().format('YYYY-MM-DD');
     const params = `method=${this.tagsForm.value.module}.${
       this.tagsForm.value.tag
-    }&idSite=1&period=year&date=${date}&${this.setCustomParams()}`;
+      }&idSite=1&period=year&date=${date}&${this.setCustomParams()}/${encodeURIComponent(site.matomoUrl)}/${site.idSite}`;
 
     this.matomoSrv.getByUrl('tags', params).subscribe({
       next: (data) => ((this.response = data), this.formatColumns(data)),
@@ -244,6 +252,7 @@ export class TagsComponent {
           summary: MessagesTst.ERROREJECTION,
         }),
     });
+    return true;
   }
 
   setCustomParams() {

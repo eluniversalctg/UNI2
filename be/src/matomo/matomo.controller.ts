@@ -28,10 +28,10 @@ export class MatomoController {
     return data;
   }
 
-  @Get('/tags/:params')
+  @Get('/tags/:params/:matomoUrl/:idSite')
   getMatomoInfo(@Param('params') params: string,
-    @Param('params') matomoUrl: string,
-    @Param('params') idSite: string) {
+    @Param('matomoUrl') matomoUrl: string,
+    @Param('idSite') idSite: string) {
     const data = this.matomoService.getMatomoInfo(params, matomoUrl, idSite);
     return data;
   }
