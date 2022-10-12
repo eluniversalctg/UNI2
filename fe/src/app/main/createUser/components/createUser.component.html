@@ -118,7 +118,8 @@
   [maximizable]="true"
 >
   <ng-template pTemplate="header">
-    <p>Crear un nuevo usuario.</p>
+    <p *ngIf="!isEditing">Crear un nuevo usuario.</p>
+    <p *ngIf="isEditing">Actualizar usuario.</p>
   </ng-template>
   <form [formGroup]="registerForm" class="mt-2">
     <div class="field grid">
@@ -195,6 +196,27 @@
       ></p-message>
     </div>
     <div class="field grid">
+      <label for="roles" class="col-12 md:col-4">Role:</label>
+      <div class="col-12 md:col-8">
+        <p-dropdown
+          id="role"
+          [options]="roles"
+          optionLabel="name"
+          formControlName="roles"
+          [autoDisplayFirst]="false"
+        ></p-dropdown>
+      </div>
+      <p-message
+        *ngIf="
+          submitted &&
+          !registerForm.controls.roles.valid
+        "
+        severity="error"
+        text="Role requerido."
+        class="mb-2 mt-2"
+      ></p-message>
+    </div>
+    <div class="field grid">
       <label for="username" class="col-12 md:col-4">Username:</label>
       <div class="col-12 md:col-8">
         <input
@@ -237,27 +259,6 @@
         "
         severity="error"
         text="Correo requerido."
-      ></p-message>
-    </div>
-    <div class="field grid">
-      <label for="roles" class="col-12 md:col-4">Role:</label>
-      <div class="col-12 md:col-8">
-        <p-dropdown
-          id="role"
-          [options]="roles"
-          optionLabel="name"
-          formControlName="roles"
-          [autoDisplayFirst]="false"
-        ></p-dropdown>
-      </div>
-      <p-message
-        *ngIf="
-          registerForm.controls.roles.touched &&
-          !registerForm.controls.roles.valid
-        "
-        severity="error"
-        text="Role requerido."
-        class="mb-2 mt-2"
       ></p-message>
     </div>
     <div class="field grid" *ngIf="!isEditing">
@@ -325,7 +326,7 @@
       label="Guardar"
       icon="pi pi-check"
       class="p-button-text"
-      (click)="register()"
+      (click)="register(); submitted = true;"
       [disabled]="!registerForm.valid"
     ></button>
   </ng-template>

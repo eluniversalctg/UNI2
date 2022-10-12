@@ -1,6 +1,8 @@
+import { Roles } from "./roles.model";
+
 export class User {
   _id?: string;
-  roles?: any[];
+  roles: Roles;
   jwt?: string;
   name?: string;
   phone?: string;

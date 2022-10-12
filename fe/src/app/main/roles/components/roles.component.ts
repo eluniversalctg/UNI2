@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { Roles } from 'src/app/shared/models/index';
+import { Roles, User } from 'src/app/shared/models/index';
 import { MenuService } from 'src/app/core/services/index';
-import { RolesService } from 'src/app/shared/services/index';
 import { MessagesTst } from 'src/app/shared/enums/enumMessage';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { RolesService, UserService } from 'src/app/shared/services/index';
 import { ConfirmationService, MessageService, TreeNode } from 'primeng/api';
 @Component({
   selector: 'app-dashboard',
@@ -21,13 +21,20 @@ export class RolesComponent {
   state: boolean = true;
   isEditing: boolean = false;
   optionsSelected: boolean = true;
+  users: User[] = [];
+
   constructor(
     private fb: FormBuilder,
+    private usersSrv: UserService,
     private msg: MessageService,
     private menuService: MenuService,
     private rolesService: RolesService,
     private confirmationService: ConfirmationService
   ) {
+    this.usersSrv.getList().subscribe({
+      next: (data) => ((this.users = data), console.log(data)),
+    });
+
     this.options = [
       { name: 'Activos', value: true },
 
@@ -119,6 +126,15 @@ export class RolesComponent {
 
       // check if is editing to update role
       if (this.isEditing) {
+        if (
+          this.roleInUse(this.rolesForm.controls._id.value) &&
+          !this.rolesForm.controls.isActive.value
+        ) {
+          return this.msg.add({
+            severity: MessagesTst.ERROR,
+            summary: MessagesTst.ROLEUSED,
+          });
+        }
         this.rolesService.update(this.rolesForm.value).subscribe(
           () => {
             this.isEditing = false;
@@ -163,7 +179,21 @@ export class RolesComponent {
     }
   }
 
+  roleInUse(_id) {
+    const find = this.users.find((x) => x.roles._id === _id);
+    if (find) {
+      return true;
+    }
+    return false;
+  }
+
   changeState(role: Roles) {
+    if (this.roleInUse(role._id) && role.isActive) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: MessagesTst.ROLEUSED,
+      });
+    }
     // change role state.
     this.confirmationService.confirm({
       message:

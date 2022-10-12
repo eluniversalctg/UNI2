@@ -76,6 +76,7 @@ export enum MessagesTst {
   OPERATOR_REQUIRED = 'Debe agregar al menos un operador',
   RULEEXIST = 'La regla ya existe',
   NOSITE = 'No ha selecionado un sitio',
+  ROLEUSED = 'El role que desea inactivar cuenta con un usuario asignado',
 
   //placehoders System
   Title = 'Title',

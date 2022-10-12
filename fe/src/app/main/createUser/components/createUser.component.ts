@@ -20,6 +20,7 @@ export class CreateUserComponent {
   addNew: boolean = false;
   registerForm: FormGroup;
   isEditing: boolean = false;
+  submitted: boolean = false;
   optionsSelected: boolean = true;
 
   constructor(
@@ -76,6 +77,7 @@ export class CreateUserComponent {
     if (!this.isEditing) {
       if (user.password === confirmPassword) {
         this.save(user);
+        this.submitted = false;
       } else {
         this.msg.add({
           severity: MessagesTst.ERROR,
@@ -84,6 +86,7 @@ export class CreateUserComponent {
       }
     } else {
       this.update(user);
+      this.submitted = false;
     }
   }
 
@@ -103,7 +106,7 @@ export class CreateUserComponent {
     forkJoin([userReq, roleReq]).subscribe(
       (response) => {
         this.users = response[0];
-        this.roles = response[1];
+        this.roles = response[1].filter((x) => x.isActive);
       },
       () => {
         this.msg.add({
@@ -149,7 +152,7 @@ export class CreateUserComponent {
         update.isActive = !user.isActive;
 
         this.userService.update(update).subscribe(
-          (data) => {
+          () => {
             if (user.isActive) {
               this.msg.add({
                 severity: MessagesTst.SUCCESS,
@@ -163,7 +166,7 @@ export class CreateUserComponent {
             }
             this.getAllUsers();
           },
-          (error) => {
+          () => {
             this.msg.add({
               severity: MessagesTst.ERROR,
               summary: MessagesTst.CHANGESTATE,
