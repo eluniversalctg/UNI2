@@ -194,6 +194,30 @@ export class CromaService {
     return response;
   }
 
+  async getNewsById(id, url): Promise<any> {
+    const response = await lastValueFrom(this.httpService
+      .get(
+        `${url}/article?id=${id}`,
+        {
+          headers: { 'Content-Type': 'application/json' },
+        },
+      )
+      .pipe(
+        map((response) => {
+          const article = response.data.article;
+          article['_id'] = article._id.$oid;
+          article['publication'] = article.publication.$oid;
+          article['publish_date'] = new Date(article.publish_date.$date);
+          return response.data.article;
+        }),
+        catchError((e) => {
+          throw new HttpException(e.response.data, e.response.status);
+        }),
+      )
+    );
+    return response;
+  }
+
   /**
    * @param data all data from croma related articles
    * @returns articles populated
@@ -206,9 +230,9 @@ export class CromaService {
     // search for article on CromaAI DB.
     for (let i = 0; i < data.related_articles.length; i++) {
       const element = data.related_articles[i];
-      const article = await this.getNews(
-        element.cms_id, domain[0].cromaUrl
-      );
+      const article = element.cms_id
+        ? await this.getNews(element.cms_id, domain[0].cromaUrl)
+        : await this.getNewsById(element.article_id, domain[0].cromaUrl);
 
       //verify html valid
       const htmlValid = await this.getHTML(article.url);
@@ -225,7 +249,7 @@ export class CromaService {
           tags,
           period,
           date,
-          element,
+          article,
           domain[0].matomoUrl,
           domain[0].idSite,
         );
@@ -259,11 +283,11 @@ export class CromaService {
         element2 = element2.split('_')[0];
         param = `method=${element2}&period=${period}&date=${date}&segment=entryPageUrl==${encodeURIComponent(
           article.url,
-        )}&idSite=1&${findCustomParam}`;
+        )}&${findCustomParam}`;
       } else {
         param = `method=${element2}&period=${period}&date=${date}&segment=entryPageUrl==${encodeURIComponent(
           article.url,
-        )}&idSite=1&`;
+        )}&`;
       }
 
       const matomoResp = {};

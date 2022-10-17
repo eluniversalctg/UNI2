@@ -88,23 +88,23 @@
                 class="p-button-rounded p-button-warning p-mr-2"
               ></button>
               <button
-              pButton
-              pRipple
-              icon="pi pi-times"
-              *ngIf="userField.isActive"
-              (click)="changeState(userField)"
-              pTooltip="Inactivar campo de usuario"
-              class="p-button-rounded p-button-danger p-mr-2"
-            ></button>
-            <button
-              pButton
-              pRipple
-              (click)="changeState(userField)"
-              icon="pi pi-check"
-              *ngIf="!userField.isActive"
-              pTooltip="Activar campo de usuario"
-              class="p-button-rounded p-button-success p-mr-2"
-            ></button>
+                pButton
+                pRipple
+                icon="pi pi-times"
+                *ngIf="userField.isActive"
+                (click)="changeState(userField)"
+                pTooltip="Inactivar campo de usuario"
+                class="p-button-rounded p-button-danger p-mr-2"
+              ></button>
+              <button
+                pButton
+                pRipple
+                (click)="changeState(userField)"
+                icon="pi pi-check"
+                *ngIf="!userField.isActive"
+                pTooltip="Activar campo de usuario"
+                class="p-button-rounded p-button-success p-mr-2"
+              ></button>
             </td>
           </tr>
         </ng-template>
@@ -140,10 +140,7 @@
         ></p-dropdown>
       </div>
       <p-message
-        *ngIf="
-          userFieldsForm.controls.type.touched &&
-          !userFieldsForm.controls.type.valid
-        "
+        *ngIf="!userFieldsForm.controls.type.valid"
         severity="error"
         text="Tipo requerido."
         class="mb-2 mt-2"
@@ -163,10 +160,7 @@
         ></p-dropdown>
       </div>
       <p-message
-        *ngIf="
-          userFieldsForm.controls.group.touched &&
-          !userFieldsForm.controls.group.valid
-        "
+        *ngIf="!userFieldsForm.controls.group.valid"
         severity="error"
         text="Grupo requerido."
         class="mb-2 mt-2"

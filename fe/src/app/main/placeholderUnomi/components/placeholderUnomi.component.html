@@ -223,10 +223,7 @@
         ></p-dropdown>
       </div>
       <p-message
-        *ngIf="
-          placeholdersForm.controls.valueDefault.touched &&
-          !placeholdersForm.controls.valueDefault.valid
-        "
+        *ngIf="!placeholdersForm.controls.valueDefault.valid"
         severity="error"
         text="Valor requerido."
         class="mb-2 mt-2"

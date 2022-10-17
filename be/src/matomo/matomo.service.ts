@@ -84,9 +84,9 @@ export class MatomoService {
         },
       )
       .pipe(
-        map((response) => response.data),
+        map((response) => [response.data]),
         catchError((e) => {
-          throw new HttpException(e.response.data, e.response.status);
+          return [];
         }),
       );
     return response;

@@ -596,10 +596,7 @@
         ></p-dropdown>
       </div>
       <p-message
-        *ngIf="
-          pagesForm.controls.typeSection.touched &&
-          !pagesForm.controls.typeSection.valid
-        "
+        *ngIf="!pagesForm.controls.typeSection.valid"
         severity="error"
         text="Tipo requerido."
         class="mb-2 mt-2"
@@ -639,9 +636,7 @@
         ></p-dropdown>
       </div>
       <p-message
-        *ngIf="
-          pagesForm.controls.site.touched && !pagesForm.controls.site.valid
-        "
+        *ngIf="!pagesForm.controls.site.valid"
         severity="error"
         text="Sitio es requerido."
         class="mb-2 mt-2"
@@ -716,9 +711,7 @@
     dataKey="id"
     [paginator]="true"
     responsiveLayout="scroll"
-    [globalFilterFields]="[
-      'block.name'
-    ]"
+    [globalFilterFields]="['block.name']"
     styleClass="p-datatable-gridlines"
     responsiveLayout="scroll"
     [value]="selectPageViewBlock"
@@ -731,7 +724,9 @@
           <input
             pInputText
             type="text"
-            (input)="tableBlocks.filterGlobal($any($event.target).value, 'contains')"
+            (input)="
+              tableBlocks.filterGlobal($any($event.target).value, 'contains')
+            "
             placeholder="Buscar.."
           />
         </span>
@@ -766,4 +761,3 @@
 </p-dialog>
 
 <!-- end view blocks  -->
-

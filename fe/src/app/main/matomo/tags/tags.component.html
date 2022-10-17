@@ -154,9 +154,7 @@
         ></p-dropdown>
       </div>
       <p-message
-        *ngIf="
-          tagsForm.controls.module.touched && !tagsForm.controls.module.valid
-        "
+        *ngIf="!tagsForm.controls.module.valid"
         severity="error"
         text="Módulo requerido."
         class="mb-2 mt-2"
@@ -175,7 +173,7 @@
         ></p-dropdown>
       </div>
       <p-message
-        *ngIf="tagsForm.controls.tag.touched && !tagsForm.controls.tag.valid"
+        *ngIf="!tagsForm.controls.tag.valid"
         severity="error"
         text="Tag requerido."
         class="mb-2 mt-2"
