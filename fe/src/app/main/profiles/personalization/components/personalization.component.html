@@ -168,7 +168,7 @@
         >
       </div>
       <p-message
-        *ngIf="!personalizationForm.controls.template.valid"
+        *ngIf="!personalizationForm.controls.template.valid && submited"
         severity="error"
         text="Plantilla requerida."
         class="mb-2 mt-2"

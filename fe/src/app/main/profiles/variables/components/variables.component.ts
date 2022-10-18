@@ -24,6 +24,7 @@ export class VariablesComponent {
   variablesForm: FormGroup;
   variableUpdate: Variable;
   isEditing: boolean = false;
+  submited: boolean = false;
   validDefault: boolean = true;
   typeDefaul;
   optionsSelected: boolean = true;

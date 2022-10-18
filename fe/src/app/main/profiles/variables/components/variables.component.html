@@ -152,7 +152,7 @@
         ></p-dropdown>
       </div>
       <p-message
-        *ngIf="!variablesForm.controls.type.valid"
+        *ngIf="!variablesForm.controls.type.valid && submited"
         severity="error"
         text="Tipo requerido."
         class="mb-2 mt-2"

@@ -19,6 +19,7 @@ export class TagsComponent {
   typeParams: any[];
   matomoResponse: any[] = [];
   columnSelected: string[] = [];
+  submit: boolean = false;
 
   optionValuesForm: FormGroup;
 
@@ -123,6 +124,7 @@ export class TagsComponent {
     this.matomoResponse = [];
     this.columnSelected = [];
     this.addNew = true;
+    this.submit = false;
     this.resetParams();
   }
 
@@ -131,6 +133,7 @@ export class TagsComponent {
    */
   resetTag() {
     this.tagsForm.reset();
+    this.submit = false;
     this.addNew = false;
     this.response = {};
   }
@@ -231,18 +234,31 @@ export class TagsComponent {
    */
 
   tryTag() {
+    this.submit = true;
     const site = this.utilities.decryptSite();
     if (!site) {
       this.msg.add({
         severity: MessagesTst.ERROR,
         summary: MessagesTst.NOSITE,
       });
-      return false; 
+      return false;
+    }
+    if (
+      !this.tagsForm.controls.module.value ||
+      !this.tagsForm.controls.tag.value
+    ) {
+      this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: MessagesTst.ERRORDATA,
+      });
+      return false;
     }
     const date = moment().format('YYYY-MM-DD');
     const params = `method=${this.tagsForm.value.module}.${
       this.tagsForm.value.tag
-      }&idSite=1&period=year&date=${date}&${this.setCustomParams()}/${encodeURIComponent(site.matomoUrl)}/${site.idSite}`;
+    }&idSite=1&period=year&date=${date}&${this.setCustomParams()}/${encodeURIComponent(
+      site.matomoUrl
+    )}/${site.idSite}`;
 
     this.matomoSrv.getByUrl('tags', params).subscribe({
       next: (data) => ((this.response = data), this.formatColumns(data)),

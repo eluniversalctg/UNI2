@@ -596,7 +596,7 @@
         ></p-dropdown>
       </div>
       <p-message
-        *ngIf="!pagesForm.controls.typeSection.valid"
+        *ngIf="!pagesForm.controls.typeSection.valid && submited"
         severity="error"
         text="Tipo requerido."
         class="mb-2 mt-2"
@@ -636,7 +636,7 @@
         ></p-dropdown>
       </div>
       <p-message
-        *ngIf="!pagesForm.controls.site.valid"
+        *ngIf="!pagesForm.controls.site.valid && submited"
         severity="error"
         text="Sitio es requerido."
         class="mb-2 mt-2"

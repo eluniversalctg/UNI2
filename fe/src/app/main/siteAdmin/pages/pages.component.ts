@@ -32,6 +32,7 @@ export class PagesComponent {
   pageFatherDuplicate;
   isEditing: boolean = false;
   optionsSelected: boolean = true;
+  submited: boolean = false;
   options: any[];
   pagesForm: FormGroup;
   sections: any[];

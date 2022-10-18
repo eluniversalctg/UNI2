@@ -5,8 +5,8 @@ import { Component, ViewChild } from '@angular/core';
 import { Croma, MatomoTags } from 'src/app/shared/models';
 import { MessagesTst } from 'src/app/shared/enums/enumMessage';
 import { Template } from 'src/app/shared/models/template.model';
-import { CromaService, MatomoService, UtilitiesService } from 'src/app/shared/services';
 import { TemplateService } from 'src/app/shared/services/templates.service';
+import { CromaService, MatomoService, UtilitiesService } from 'src/app/shared/services';
 import { CreatePlaceholderArtService } from 'src/app/shared/services/createPlaceholderArt.service';
 
 @Component({

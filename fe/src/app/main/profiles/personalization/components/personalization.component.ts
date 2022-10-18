@@ -32,6 +32,7 @@ export class PersonalizationComponent {
   personalizationForm: FormGroup;
   options: any[];
   optionsSelected: boolean = true;
+  submited: boolean = true;
 
   conditionSchema: ParentCondition[] = [];
   unomiConditions: any[] = [];
