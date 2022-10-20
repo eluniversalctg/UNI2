@@ -1,4 +1,9 @@
 import moment from 'moment';
+import {
+  CromaService,
+  MatomoService,
+  UtilitiesService,
+} from 'src/app/shared/services';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Component, ViewChild } from '@angular/core';
@@ -6,7 +11,6 @@ import { Croma, MatomoTags } from 'src/app/shared/models';
 import { MessagesTst } from 'src/app/shared/enums/enumMessage';
 import { Template } from 'src/app/shared/models/template.model';
 import { TemplateService } from 'src/app/shared/services/templates.service';
-import { CromaService, MatomoService, UtilitiesService } from 'src/app/shared/services';
 import { CreatePlaceholderArtService } from 'src/app/shared/services/createPlaceholderArt.service';
 
 @Component({
@@ -25,6 +29,7 @@ export class CromaTagsComponent {
   openArticle: boolean = false;
   openshowArticle: boolean = false;
   analitics: boolean = false;
+  showMessage: boolean = false;
   analiticsData: any;
   seeArticle = new Croma();
 
@@ -86,12 +91,10 @@ export class CromaTagsComponent {
     const site = this.validateSite();
 
     if (!site) {
-
       return this.msg.add({
         severity: MessagesTst.WARNING,
         summary: MessagesTst.NOSITE,
       });
-
     }
 
     this.cromaData = [];
@@ -101,9 +104,11 @@ export class CromaTagsComponent {
 
     let query = 'Actions.getPageUrls&';
     this.selectedTags.forEach((tag) => {
-      let customParams = ''
+      let customParams = '';
       if (tag.customParameters) {
-        tag.customParameters.forEach((x) => { customParams += `${x.parameter}=${x.value}` })
+        tag.customParameters.forEach((x) => {
+          customParams += `${x.parameter}=${x.value}`;
+        });
       }
       query = query.concat(`${tag.module}.${tag.tag}_${customParams}&`);
     });
@@ -114,7 +119,7 @@ export class CromaTagsComponent {
         `${text}/${query}/${this.periodSelected}/${this.dateSelectedFormted}/${site._id}`
       )
       .subscribe({
-        next: (data) =>
+        next: (data) => {
           data[0].related_articles.forEach((art) => {
             if (art['metadata'].valid) {
               if (!art.matomo[0]['Actions.getPageUrls'][0]) {
@@ -127,7 +132,13 @@ export class CromaTagsComponent {
               }
               this.cromaData.push(art);
             }
-          }),
+          });
+          if (this.cromaData.length === 0) {
+            this.showMessage = true;
+          } else {
+            this.showMessage = false;
+          }
+        },
         error: () =>
           this.msg.add({
             severity: MessagesTst.WARNING,
@@ -342,10 +353,9 @@ export class CromaTagsComponent {
   validateSite() {
     const site = this.utilities.decryptSite();
     if (site && site._id) {
-      return site
+      return site;
     } else {
       return undefined;
     }
   }
-
 }

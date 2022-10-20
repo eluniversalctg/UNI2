@@ -187,6 +187,9 @@
           </ng-template>
         </p-table>
       </div>
+      <div *ngIf="showMessage">
+        <h3 class="text-center">No hay noticias que cumplan con los parámetros requeridos.</h3>
+      </div>
       <div *ngIf="selectedSearch === 'word' && cromaData.length > 0">
         <ul *ngFor="let similar of cromaData">
           <li *ngFor="let words of similar.similar_words">
