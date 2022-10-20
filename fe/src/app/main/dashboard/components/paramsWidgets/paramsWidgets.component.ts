@@ -13,6 +13,7 @@ export class ParamsWidgetsComponent {
   paramsForm: FormGroup;
   params: ParamsWidgets[] = [];
   addNew: boolean = false;
+  isEditing: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -108,6 +109,7 @@ export class ParamsWidgetsComponent {
     this.paramsForm.controls.value.setValue(value.value);
 
     this.addNew = true;
+    this.isEditing = true;
   }
 
   /**
@@ -146,6 +148,7 @@ export class ParamsWidgetsComponent {
   createParameter() {
     this.resetParameter();
     this.addNew = true;
+    this.isEditing = false;
   }
 
   /**

@@ -4,7 +4,7 @@
     <div class="card">
       <p-toolbar styleClass="p-mb-4">
         <ng-template pTemplate="left">
-          <h1>Agregar variable.</h1>
+          <h1>Agregar variable</h1>
         </ng-template>
         <ng-template pTemplate="right">
           <button
@@ -137,7 +137,7 @@
   [maximizable]="true"
 >
   <ng-template pTemplate="header">
-    <p>Crear nueva variable.</p>
+    <p>{{ isEditing ? "Actualizar variable" : "Crear nueva variable" }}</p>
   </ng-template>
   <form [formGroup]="variablesForm" class="mt-2">
     <div class="field grid">

@@ -10,7 +10,7 @@
     <div class="card">
       <p-toolbar styleClass="p-mb-4">
         <ng-template pTemplate="left">
-          <h1>Administrar {{ selectedOption.label }}.</h1>
+          <h1>Administrar {{ selectedOption.label }}</h1>
         </ng-template>
         <ng-template pTemplate="right">
           <button
@@ -194,7 +194,7 @@
   [contentStyle]="{ overflow: 'visible' }"
 >
   <ng-template pTemplate="header">
-    <p>Crear nueva {{ selectedOption.label }}.</p>
+    <p>{{isEditing ? 'Editar ':'Crear'}} {{ selectedOption.label }}</p>
   </ng-template>
 
   <!-- Metadata information

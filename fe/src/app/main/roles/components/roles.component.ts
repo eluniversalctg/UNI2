@@ -73,6 +73,7 @@ export class RolesComponent {
   // opens create role pop up
   createRole() {
     this.resetData();
+    this.isEditing = false;
     this.addNew = true;
   }
 

@@ -53,6 +53,7 @@ export class ActionsComponent {
   addNew() {
     this.resetData();
     this.createAction = true;
+    this.isEditing = false;
   }
 
   /**
@@ -177,6 +178,7 @@ export class ActionsComponent {
     });
 
     this.createAction = true;
+    this.isEditing = true;
   }
 
   /**

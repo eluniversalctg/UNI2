@@ -300,8 +300,31 @@ export class UnomiComponent implements OnInit {
         return;
       }
     }
-    this.setTags();
-    this.save(this.newUnomi);
+    if (this.selectedOption.value === genWord.RULE) {
+      if (
+        this.newUnomi.metadata.id !== undefined &&
+        this.newUnomi.metadata.id !== '' &&
+        this.newUnomi.metadata.name !== undefined &&
+        this.newUnomi.metadata.name !== '' &&
+        this.newUnomi.metadata.description !== undefined &&
+        this.newUnomi.metadata.description !== '' &&
+        this.newUnomi.metadata.scope !== undefined &&
+        this.newUnomi.metadata.scope !== '' &&
+        this.newUnomi.actions !== undefined &&
+        this.newUnomi['conditionString'] !== '[]'
+      ) {
+        this.setTags();
+        this.save(this.newUnomi);
+      } else {
+        this.msg.add({
+          severity: MessagesTst.ERROR,
+          summary: MessagesTst.ERRORDATA,
+        });
+      }
+    } else {
+      this.setTags();
+      this.save(this.newUnomi);
+    }
   }
 
   /**

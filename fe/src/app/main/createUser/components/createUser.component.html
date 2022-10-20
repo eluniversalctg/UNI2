@@ -4,7 +4,7 @@
     <div class="card">
       <p-toolbar styleClass="p-mb-4">
         <ng-template pTemplate="left">
-          <h1>Agregar usuario.</h1>
+          <h1>Agregar usuario</h1>
         </ng-template>
         <ng-template pTemplate="right">
           <button
@@ -137,10 +137,7 @@
         />
       </div>
       <p-message
-        *ngIf="
-          registerForm.controls.name.touched &&
-          !registerForm.controls.name.valid
-        "
+        *ngIf="nameForm"
         severity="error"
         text="Nombre requerido."
         class="mb-2 mt-2"
@@ -161,10 +158,7 @@
         />
       </div>
       <p-message
-        *ngIf="
-          registerForm.controls.firstSurname.touched &&
-          !registerForm.controls.firstSurname.valid
-        "
+        *ngIf="firtSurnameForm"
         severity="error"
         text="Primer apellido requerido."
       ></p-message>
@@ -186,15 +180,13 @@
         />
       </div>
       <p-message
-        *ngIf="
-          registerForm.controls.secondSurname.touched &&
-          !registerForm.controls.secondSurname.valid
-        "
+        *ngIf="secondSurnameForm"
         severity="error"
         text="Segundo apellido requerido."
         class="mb-2 mt-2"
       ></p-message>
     </div>
+
     <div class="field grid">
       <label for="roles" class="col-12 md:col-4">Role:</label>
       <div class="col-12 md:col-8">
@@ -207,15 +199,13 @@
         ></p-dropdown>
       </div>
       <p-message
-        *ngIf="
-          submitted &&
-          !registerForm.controls.roles.valid
-        "
+        *ngIf="rolesForm"
         severity="error"
         text="Role requerido."
         class="mb-2 mt-2"
       ></p-message>
     </div>
+
     <div class="field grid">
       <label for="username" class="col-12 md:col-4">Username:</label>
       <div class="col-12 md:col-8">
@@ -230,10 +220,7 @@
         />
       </div>
       <p-message
-        *ngIf="
-          registerForm.controls.username.touched &&
-          !registerForm.controls.username.valid
-        "
+        *ngIf="usernameForm"
         severity="error"
         text="Username requerido."
         class="mb-2 mt-2"
@@ -253,12 +240,9 @@
         />
       </div>
       <p-message
-        *ngIf="
-          registerForm.controls.email.touched &&
-          !registerForm.controls.email.valid
-        "
+        *ngIf="emailForm"
         severity="error"
-        text="Correo requerido."
+        text="Correo requerido y con el formato adecuado."
       ></p-message>
     </div>
     <div class="field grid" *ngIf="!isEditing">
@@ -275,10 +259,7 @@
         ></p-password>
       </div>
       <p-message
-        *ngIf="
-          registerForm.controls.password.touched &&
-          !registerForm.controls.password.valid
-        "
+        *ngIf="passwordForm"
         severity="error"
         text="La contraseña debe construirse de mínimo 8 caratéres y almenos un(a): mayúscula, minúscula y un número."
         class="mb-2 mt-2"
@@ -300,11 +281,7 @@
         ></p-password>
       </div>
       <p-message
-        *ngIf="
-          registerForm.controls.confirmPassword.touched &&
-          registerForm.controls.password.value !==
-            registerForm.controls.confirmPassword.value
-        "
+        *ngIf="confirmPassword"
         severity="error"
         text="La contraseña de confirmación aún no coincide."
         class="mb-2 mt-2"
@@ -326,8 +303,7 @@
       label="Guardar"
       icon="pi pi-check"
       class="p-button-text"
-      (click)="register(); submitted = true;"
-      [disabled]="!registerForm.valid"
+      (click)="register(); submitted = true"
     ></button>
   </ng-template>
 </p-dialog>

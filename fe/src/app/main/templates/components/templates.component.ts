@@ -155,7 +155,6 @@ export class TemplatesComponent {
         if (found < 0 && valid) {
           //save
           if (!this.template._id) {
-
             //check that you don't duplicate the id
             const findDuplicated = this.templates.find(
               (x) => x.title === this.template.title
@@ -165,8 +164,7 @@ export class TemplatesComponent {
                 severity: MessagesTst.WARNING,
                 summary: MessagesTst.EXISTTEMPLATE,
               });
-            }else{
-
+            } else {
               //save in the db
               this.template.inUse = false;
               this.templatesService.add(this.template).subscribe(
@@ -189,20 +187,19 @@ export class TemplatesComponent {
                 }
               );
             }
-
           } else {
-           //check that you don't duplicate the id
+            //check that you don't duplicate the id
             const findDuplicated = this.templates.find(
-              (x) => x.title === this.template.title && x._id !=this.template._id
+              (x) =>
+                x.title === this.template.title && x._id != this.template._id
             );
             if (findDuplicated) {
               return this.msg.add({
                 severity: MessagesTst.WARNING,
                 summary: MessagesTst.EXISTTEMPLATE,
               });
-            }else{
-
-                //update in the data base
+            } else {
+              //update in the data base
               this.templatesService.update(this.template).subscribe(
                 (data) => {
                   if (data) {
@@ -231,9 +228,25 @@ export class TemplatesComponent {
           });
         }
       } else {
+        let messagestError = 'Debe llenar los campos: ';
+        let message = false;
+        if (this.template.htmlContent === '') {
+          messagestError += ' html';
+          message = true;
+        }
+        if (this.template.title === '') {
+          messagestError += message ? ', título ' : ' título ';
+          message = true;
+        }
+        if (this.image === undefined) {
+          messagestError += message
+            ? ', imagen de preview'
+            : ' imagen de preview';
+        }
+
         this.msg.add({
           severity: MessagesTst.ERROR,
-          summary: MessagesTst.ERRORDATA,
+          summary: messagestError,
         });
       }
     } else {

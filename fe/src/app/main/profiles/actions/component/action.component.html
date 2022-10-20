@@ -4,7 +4,7 @@
     <div class="card">
       <p-toolbar styleClass="p-mb-4">
         <ng-template pTemplate="left">
-          <h1>Administrar Acciones.</h1>
+          <h1>Administrar Acciones</h1>
         </ng-template>
         <ng-template pTemplate="right">
           <button
@@ -114,7 +114,7 @@
   [contentStyle]="{ overflow: 'visible' }"
 >
   <ng-template pTemplate="header">
-    <p>Crear nueva acción.</p>
+    <p>{{ isEditing ? 'Editar acción':'Crear nueva acción'}} </p>
   </ng-template>
 
   <!-- Metadata information

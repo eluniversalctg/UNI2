@@ -25,6 +25,7 @@ export class UserFieldsComponent {
   userFieldsForm: FormGroup;
   addNew: boolean = false;
   isEditing: boolean = false;
+  submitted: boolean = false;
   typeOfData: string[] = ['boolean', 'email', 'date', 'number', 'string'];
   optionsSelected: boolean = true;
   options: any[];
@@ -110,6 +111,7 @@ export class UserFieldsComponent {
    * create new user field
    */
   register() {
+    this.submitted = true;
     const controls = this.userFieldsForm.controls;
     let newUserField = new UserFields();
 
@@ -126,6 +128,7 @@ export class UserFieldsComponent {
       this.userFSrv.update(newUserField).subscribe({
         next: () => (
           this.getData(),
+          this.submitted = false,
           (this.addNew = false),
           this.msg.add({
             severity: MessagesTst.SUCCESS,

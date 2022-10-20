@@ -12,6 +12,7 @@ import { DomainsService, UtilitiesService } from 'src/app/shared/services';
 export class DomainsComponent {
   domains: Domains[] = [];
   addNew: boolean = false;
+  isEditing: boolean = false;
   domainForm: FormGroup;
   constructor(
     private fb: FormBuilder,
@@ -130,6 +131,7 @@ export class DomainsComponent {
     this.domainForm.controls.matomoUrl.setValue(value.matomoUrl);
     this.domainForm.controls.cromaUrl.setValue(value.cromaUrl);
     this.addNew = true;
+    this.isEditing = true;
   }
 
   /**
@@ -169,6 +171,7 @@ export class DomainsComponent {
   createDomain() {
     this.resetDomain();
     this.addNew = true;
+    this.isEditing = false;
   }
 
   /**

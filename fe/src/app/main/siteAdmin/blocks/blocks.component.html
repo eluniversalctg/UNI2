@@ -4,7 +4,7 @@
     <div class="card">
       <p-toolbar styleClass="p-mb-4">
         <ng-template pTemplate="left">
-          <h1>Agregar Bloque.</h1>
+          <h1>Agregar Bloque</h1>
         </ng-template>
         <ng-template pTemplate="right">
           <button
@@ -28,10 +28,7 @@
         [rows]="10"
         [paginator]="true"
         responsiveLayout="scroll"
-        [globalFilterFields]="[
-          'name',
-          'sizes'
-        ]"
+        [globalFilterFields]="['name', 'sizes']"
         styleClass="p-datatable-gridlines"
         responsiveLayout="scroll"
         [value]="blocks"
@@ -63,9 +60,7 @@
             <th pSortableColumn="sizes">
               Tamaños <p-sortIcon field="sizes"></p-sortIcon>
             </th>
-            <th >
-              Estado
-            </th>
+            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </ng-template>
@@ -150,7 +145,7 @@
   [maximizable]="true"
 >
   <ng-template pTemplate="header">
-    <p>Crear nueva Bloques.</p>
+    <p>{{ isEditing ? "Editar bloque" : "Crear nuevo bloques" }}</p>
   </ng-template>
   <form [formGroup]="blocksForm" class="mt-2">
     <div class="field grid">

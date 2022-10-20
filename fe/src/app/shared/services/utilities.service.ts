@@ -136,6 +136,7 @@ export class UtilitiesService {
    * description: delete user from local storage, redirect to login
    */
   logOut() {
+    this.tempStorage = undefined;
     localStorage.removeItem(this.localStorageItem);
     this.router.navigateByUrl('auth/login');
   }

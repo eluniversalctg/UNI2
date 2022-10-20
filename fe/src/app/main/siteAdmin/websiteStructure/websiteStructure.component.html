@@ -197,7 +197,7 @@
                 wizardData.typeTags === 'Croma'
               "
             >
-              <label for="name" class="col-12 md:col-4">Titulo:</label>
+              <label for="name" class="col-12 md:col-4">Título:</label>
               <div class="col-12 md:col-8">
                 <span class="p-float-label">
                   <input
@@ -344,17 +344,19 @@
                 wizardData.typeTags === 'Croma'
               "
             >
-              <label for="name" class="col-12 md:col-4">Cant. de años atras:</label>
+              <label for="name" class="col-12 md:col-4"
+                >Cant. de años atras:</label
+              >
               <div class="col-12 md:col-8">
-                  <input
-                    id="year"
-                    type="number"
-                    class="input inputfield p-ml-2"
-                    pInputText
-                    [(ngModel)]="wizardData.cromaPeriod.year"
-                    autocomplete="off"
-                    [style]="{ width: '100%' }"
-                  />
+                <input
+                  id="year"
+                  type="number"
+                  class="input inputfield p-ml-2"
+                  pInputText
+                  [(ngModel)]="wizardData.cromaPeriod.year"
+                  autocomplete="off"
+                  [style]="{ width: '100%' }"
+                />
               </div>
             </div>
             <div
@@ -365,17 +367,19 @@
                 wizardData.typeTags === 'Croma'
               "
             >
-              <label for="name" class="col-12 md:col-4">Cant. de meses atras:</label>
+              <label for="name" class="col-12 md:col-4"
+                >Cant. de meses atras:</label
+              >
               <div class="col-12 md:col-8">
-                  <input
-                    id="month"
-                    type="number"
-                    class="input inputfield p-ml-2"
-                    pInputText
-                    [(ngModel)]="wizardData.cromaPeriod.month"
-                    autocomplete="off"
-                    [style]="{ width: '100%' }"
-                  />
+                <input
+                  id="month"
+                  type="number"
+                  class="input inputfield p-ml-2"
+                  pInputText
+                  [(ngModel)]="wizardData.cromaPeriod.month"
+                  autocomplete="off"
+                  [style]="{ width: '100%' }"
+                />
               </div>
             </div>
             <div
@@ -386,17 +390,19 @@
                 wizardData.typeTags === 'Croma'
               "
             >
-              <label for="name" class="col-12 md:col-4">Cant. de días atras:</label>
+              <label for="name" class="col-12 md:col-4"
+                >Cant. de días atras:</label
+              >
               <div class="col-12 md:col-8">
-                  <input
-                    id="day"
-                    type="number"
-                    class="input inputfield p-ml-2"
-                    pInputText
-                    [(ngModel)]="wizardData.cromaPeriod.day"
-                    autocomplete="off"
-                    [style]="{ width: '100%' }"
-                  />
+                <input
+                  id="day"
+                  type="number"
+                  class="input inputfield p-ml-2"
+                  pInputText
+                  [(ngModel)]="wizardData.cromaPeriod.day"
+                  autocomplete="off"
+                  [style]="{ width: '100%' }"
+                />
               </div>
             </div>
             <div
@@ -407,23 +413,28 @@
                 wizardData.typeTags === 'Croma'
               "
             >
-              <label for="name" class="col-12 md:col-4">Radio de búsqueda:</label>
+              <label for="name" class="col-12 md:col-4"
+                >Radio de búsqueda:</label
+              >
               <div class="col-12 md:col-8">
-                  <input
-                    id="radius"
-                    type="number"
-                    class="input inputfield p-ml-2"
-                    pInputText
-                    [(ngModel)]="wizardData.cromaPeriod.radius"
-                    autocomplete="off"
-                    [style]="{ width: '100%' }"
-                    max="1"
-                    min="0"
-                    step="0.01"
-                    oninput="validity.valid || (value = 0.01);"
-                  />
+                <input
+                  id="radius"
+                  type="number"
+                  class="input inputfield p-ml-2"
+                  pInputText
+                  [(ngModel)]="wizardData.cromaPeriod.radius"
+                  autocomplete="off"
+                  [style]="{ width: '100%' }"
+                  max="1"
+                  min="0"
+                  step="0.01"
+                  oninput="validity.valid || (value = 0.01);"
+                />
               </div>
-              <p style="margin-left: 0.4rem;"> Recordar que según estos parámetros la carga de la renderización puede verse afectada ya que estos datos provienen de CromaAI.</p>
+              <p style="margin-left: 0.4rem">
+                Recordar que según estos parámetros la carga de la renderización
+                puede verse afectada ya que estos datos provienen de CromaAI.
+              </p>
             </div>
             <!-- end type croma ID -->
 

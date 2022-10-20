@@ -4,7 +4,7 @@
     <div class="card">
       <p-toolbar styleClass="p-mb-4">
         <ng-template pTemplate="left">
-          <h1>Administrar campos de usuario.</h1>
+          <h1>Administrar campos de usuario</h1>
         </ng-template>
         <ng-template pTemplate="right">
           <button
@@ -140,7 +140,7 @@
         ></p-dropdown>
       </div>
       <p-message
-        *ngIf="!userFieldsForm.controls.type.valid"
+        *ngIf="!userFieldsForm.controls.type.valid && submitted"
         severity="error"
         text="Tipo requerido."
         class="mb-2 mt-2"
@@ -160,7 +160,7 @@
         ></p-dropdown>
       </div>
       <p-message
-        *ngIf="!userFieldsForm.controls.group.valid"
+        *ngIf="!userFieldsForm.controls.group.valid && submitted"
         severity="error"
         text="Grupo requerido."
         class="mb-2 mt-2"

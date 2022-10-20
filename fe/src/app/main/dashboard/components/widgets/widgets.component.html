@@ -5,7 +5,7 @@
     <div class="card">
       <p-toolbar styleClass="p-mb-4">
         <ng-template pTemplate="left">
-          <h1>Administrar Widgets.</h1>
+          <h1>Administrar Widgets</h1>
         </ng-template>
 
         <ng-template pTemplate="right">
@@ -102,7 +102,7 @@
   e
 >
   <ng-template pTemplate="header">
-    <p>Crear un nuevo widget.</p>
+    <p> {{isEditing ? 'Editar widget': 'Crear un nuevo widget'}} </p>
   </ng-template>
 
   <form name="widgetsForm" [formGroup]="widgetsForm" class="mt-2">

@@ -5,7 +5,7 @@
     <div class="card">
       <p-toolbar styleClass="p-mb-4">
         <ng-template pTemplate="left">
-          <h1>Administrar Dominios.</h1>
+          <h1>Administrar Dominios</h1>
         </ng-template>
 
         <ng-template pTemplate="right">
@@ -106,10 +106,9 @@
   [modal]="true"
   [draggable]="false"
   [maximizable]="true"
-  e
 >
   <ng-template pTemplate="header">
-    <p>Crear un nuevo dominio.</p>
+    <p>{{ isEditing ? "Editar dominio" : "Crear un nuevo dominio" }}</p>
   </ng-template>
 
   <form name="domainForm" [formGroup]="domainForm" class="mt-2">

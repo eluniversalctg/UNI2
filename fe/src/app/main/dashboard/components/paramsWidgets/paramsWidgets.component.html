@@ -5,7 +5,7 @@
     <div class="card">
       <p-toolbar styleClass="p-mb-4">
         <ng-template pTemplate="left">
-          <h1>Administrar Parámetros.</h1>
+          <h1>Administrar Parámetros</h1>
         </ng-template>
 
         <ng-template pTemplate="right">
@@ -107,7 +107,7 @@
   [maximizable]="true"
 >
   <ng-template pTemplate="header">
-    <p>Crear un nuevo parámetro.</p>
+    <p>{{ isEditing ? "Editar parámetro" : "Crear un nuevo parámetro" }}</p>
   </ng-template>
 
   <form name="paramsForm" [formGroup]="paramsForm" class="mt-2">

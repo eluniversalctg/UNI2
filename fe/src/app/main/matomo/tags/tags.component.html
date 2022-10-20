@@ -4,7 +4,7 @@
     <div class="card">
       <p-toolbar styleClass="p-mb-4">
         <ng-template pTemplate="left">
-          <h1>Administrar Tags.</h1>
+          <h1>Administrar Tags</h1>
         </ng-template>
         <ng-template pTemplate="right">
           <button
@@ -90,7 +90,7 @@
   [maximizable]="true"
 >
   <ng-template pTemplate="header">
-    <p>Crear un nuevo tag.</p>
+    <p> {{isEditing ? 'Editar tag' : 'Crear un nuevo tag'}} </p>
   </ng-template>
   <form name="tagsForm" [formGroup]="tagsForm" class="mt-2">
     <div class="field grid">

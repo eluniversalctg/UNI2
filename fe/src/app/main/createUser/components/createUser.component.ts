@@ -23,6 +23,15 @@ export class CreateUserComponent {
   submitted: boolean = false;
   optionsSelected: boolean = true;
 
+  nameForm: boolean = false;
+  rolesForm: boolean = false;
+  emailForm: boolean = false;
+  usernameForm: boolean = false;
+  passwordForm: boolean = false;
+  confirmPassword: boolean = false;
+  firtSurnameForm: boolean = false;
+  secondSurnameForm: boolean = false;
+
   constructor(
     private msg: MessageService,
     private userService: UserService,
@@ -61,6 +70,16 @@ export class CreateUserComponent {
    * description: send request to backend, save a new user
    */
   register() {
+    let valid = true;
+    this.nameForm = false;
+    this.rolesForm = false;
+    this.emailForm = false;
+    this.usernameForm = false;
+    this.passwordForm = false;
+    this.confirmPassword = false;
+    this.firtSurnameForm = false;
+    this.secondSurnameForm = false;
+
     let control = this.registerForm.controls;
     let confirmPassword = control.confirmPassword.value;
 
@@ -74,22 +93,69 @@ export class CreateUserComponent {
       secondSurname: control.secondSurname.value,
     };
 
+    if (user.name === null || user.name === '') {
+      valid = false;
+      this.nameForm = true;
+    }
+
+    if (user.firtSurname === null || user.firtSurname === '') {
+      valid = false;
+      this.firtSurnameForm = true;
+    }
+    if (user.secondSurname === null || user.secondSurname === '') {
+      valid = false;
+      this.secondSurnameForm = true;
+    }
+
+    if (!user.roles) {
+      valid = false;
+      this.rolesForm = true;
+    }
+    if (user.email === null || user.email === '' || !control.email.valid) {
+      valid = false;
+      this.emailForm = true;
+    }
+
+    if (user.username === null || user.username === '') {
+      valid = false;
+      this.usernameForm = true;
+    }
     if (!this.isEditing) {
-      if (user.password === confirmPassword) {
-        this.save(user);
-        this.submitted = false;
-      } else {
-        this.msg.add({
-          severity: MessagesTst.ERROR,
-          summary: MessagesTst.PASSWORDNOTEQUALS,
-        });
+      if (
+        user.password === null ||
+        user.password === '' ||
+        !control.password.valid
+      ) {
+        valid = false;
+        this.passwordForm = true;
       }
-    } else {
-      this.update(user);
-      this.submitted = false;
+
+      if (
+        confirmPassword === null ||
+        confirmPassword === '' ||
+        confirmPassword !== user.password
+      ) {
+        valid = false;
+        this.confirmPassword = true;
+      }
+    }
+
+    if (valid) {
+      if (!this.isEditing) {
+        if (user.password === confirmPassword) {
+          this.save(user);
+          this.addNew = false;
+        } else {
+          this.msg.add({
+            severity: MessagesTst.ERROR,
+            summary: MessagesTst.PASSWORDNOTEQUALS,
+          });
+        }
+      } else {
+        this.update(user);
+      }
     }
   }
-
   /**
    * description: reset form
    */

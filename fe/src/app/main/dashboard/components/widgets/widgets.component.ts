@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
-import { environment } from 'src/environments/environment';
 import { ParamsWidgets, Widgets } from 'src/app/shared/models';
 import { MessagesTst } from 'src/app/shared/enums/enumMessage';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ParamsWidgetsService, UtilitiesService, WidgetsService } from 'src/app/shared/services';
+import { ParamsWidgetsService, WidgetsService } from 'src/app/shared/services';
 
 @Component({
   selector: 'app-widgets',
@@ -20,13 +19,13 @@ export class WidgetsComponent {
   trying: boolean = false;
   widgets: Widgets[] = [];
   addNew: boolean = false;
-  url: string = "";
-  auth_token: string = "";
+  isEditing: boolean = false;
+  url: string = '';
+  auth_token: string = '';
 
   constructor(
     private fb: FormBuilder,
     private msg: MessageService,
-    private utilities: UtilitiesService,
     private widgetsService: WidgetsService,
     private paramService: ParamsWidgetsService,
     private confirmationService: ConfirmationService
@@ -161,6 +160,7 @@ export class WidgetsComponent {
     this.widgetsForm.controls.description.setValue(value.description);
     this.paramsSelected = [...paramsSelected];
     this.addNew = true;
+    this.isEditing = true;
   }
 
   /**
@@ -200,6 +200,7 @@ export class WidgetsComponent {
     this.resetWidget();
     this.paramsSelected = [];
     this.addNew = true;
+    this.isEditing = false;
   }
 
   /**

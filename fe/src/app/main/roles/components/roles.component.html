@@ -4,7 +4,7 @@
     <div class="card">
       <p-toolbar styleClass="p-mb-4">
         <ng-template pTemplate="left">
-          <h1>Agregar roles.</h1>
+          <h1>Agregar roles</h1>
         </ng-template>
         <ng-template pTemplate="right">
           <button
@@ -103,7 +103,7 @@
   [maximizable]="true"
 >
   <ng-template pTemplate="header">
-    <p>Crear un nuevo role.</p>
+    <p>{{ isEditing ? "Editar role" : "Agregar role" }}</p>
   </ng-template>
   <form
     name="rolesForm"

@@ -4,7 +4,7 @@
     <div class="card">
       <p-toolbar styleClass="p-mb-4">
         <ng-template pTemplate="left">
-          <h1>Agregar Página.</h1>
+          <h1>Agregar Página</h1>
         </ng-template>
         <ng-template pTemplate="right">
           <button
@@ -555,7 +555,7 @@
   [maximizable]="true"
 >
   <ng-template pTemplate="header">
-    <p>Crear nueva Página.</p>
+    <p>{{ isEditing ? 'Editar página': 'Crear nueva Página' }} </p>
   </ng-template>
   <form [formGroup]="pagesForm" class="mt-2">
     <div class="field grid">

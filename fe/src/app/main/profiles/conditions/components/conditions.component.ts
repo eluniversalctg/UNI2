@@ -83,6 +83,7 @@ export class ConditionsComponent {
   addNew() {
     this.resetData();
     this.createCondition = true;
+    this.isEditing = false;
   }
 
   /**
@@ -256,6 +257,7 @@ export class ConditionsComponent {
     });
 
     this.createCondition = true;
+    this.isEditing = true;
   }
 
   /**

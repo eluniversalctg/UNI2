@@ -15,6 +15,7 @@ export class TagsComponent {
   response: object = {};
   tags: MatomoTags[] = [];
   addNew: boolean = false;
+  isEditing: boolean = false;
   typeClasification: any[];
   typeParams: any[];
   matomoResponse: any[] = [];
@@ -125,6 +126,7 @@ export class TagsComponent {
     this.columnSelected = [];
     this.addNew = true;
     this.submit = false;
+    this.isEditing = false;
     this.resetParams();
   }
 
@@ -134,6 +136,7 @@ export class TagsComponent {
   resetTag() {
     this.tagsForm.reset();
     this.submit = false;
+    this.isEditing = false;
     this.addNew = false;
     this.response = {};
   }
@@ -197,6 +200,7 @@ export class TagsComponent {
     });
 
     this.columnSelected = tag.columns;
+    this.isEditing = true;
     this.addNew = await this.tryTag();
   }
 
