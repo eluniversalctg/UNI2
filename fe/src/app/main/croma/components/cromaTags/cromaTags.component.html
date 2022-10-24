@@ -98,35 +98,35 @@
                 Similitud <p-sortIcon field="similarity"></p-sortIcon>
               </th>
               <th
-                pSortableColumn="art.matomo[0][Actions.getPageUrls][0].nb_hits"
+                pSortableColumn="art.matomo[0][Actions.getPageUrl][0].nb_hits"
               >
                 Páginas Vistas
                 <p-sortIcon
-                  field="art.matomo[0][Actions.getPageUrls][0].nb_hits"
+                  field="art.matomo[0][Actions.getPageUrl][0].nb_hits"
                 ></p-sortIcon>
               </th>
               <th
-                pSortableColumn="art.matomo[0][Actions.getPageUrls][0].avg_time_on_page"
+                pSortableColumn="art.matomo[0][Actions.getPageUrl][0].avg_time_on_page"
               >
                 Tiempo promedio
                 <p-sortIcon
-                  field="art.matomo[0][Actions.getPageUrls][0].avg_time_on_page"
+                  field="art.matomo[0][Actions.getPageUrl][0].avg_time_on_page"
                 ></p-sortIcon>
               </th>
               <th
-                pSortableColumn="art.matomo[0][Actions.getPageUrls][0].entry_bounce_count"
+                pSortableColumn="art.matomo[0][Actions.getPageUrl][0].entry_bounce_count"
               >
                 Rebote de entrada
                 <p-sortIcon
-                  field="art.matomo[0][Actions.getPageUrls][0].entry_bounce_count"
+                  field="art.matomo[0][Actions.getPageUrl][0].entry_bounce_count"
                 ></p-sortIcon>
               </th>
               <th
-                pSortableColumn="art.matomo[0][Actions.getPageUrls][0].bounce_rate"
+                pSortableColumn="art.matomo[0][Actions.getPageUrl][0].bounce_rate"
               >
                 % Rebote
                 <p-sortIcon
-                  field="art.matomo[0][Actions.getPageUrls][0].bounce_rate"
+                  field="art.matomo[0][Actions.getPageUrl][0].bounce_rate"
                 ></p-sortIcon>
               </th>
               <th pSortableColumn="title">
@@ -148,17 +148,17 @@
 
               <td>{{ art.similarity }}</td>
 
-              <td>{{ art.matomo[0]["Actions.getPageUrls"][0].nb_hits }}</td>
+              <td>{{ art.matomo[0]["Actions.getPageUrl"][0].nb_hits }}</td>
 
               <td>
-                {{ art.matomo[0]["Actions.getPageUrls"][0].avg_time_on_page }}
+                {{ art.matomo[0]["Actions.getPageUrl"][0].avg_time_on_page }}
               </td>
 
               <td>
-                {{ art.matomo[0]["Actions.getPageUrls"][0].entry_bounce_count }}
+                {{ art.matomo[0]["Actions.getPageUrl"][0].entry_bounce_count }}
               </td>
 
-              <td>{{ art.matomo[0]["Actions.getPageUrls"][0].bounce_rate }}</td>
+              <td>{{ art.matomo[0]["Actions.getPageUrl"][0].bounce_rate }}</td>
               <td>
                 {{ art.title }}
               </td>
@@ -188,7 +188,9 @@
         </p-table>
       </div>
       <div *ngIf="showMessage">
-        <h3 class="text-center">No hay noticias que cumplan con los parámetros requeridos.</h3>
+        <h3 class="text-center">
+          No hay noticias que cumplan con los parámetros requeridos.
+        </h3>
       </div>
       <div *ngIf="selectedSearch === 'word' && cromaData.length > 0">
         <ul *ngFor="let similar of cromaData">
@@ -262,14 +264,14 @@
               <span class="pi pi-bars" [pReorderableRowHandle]="index"></span>
             </td>
             <td>{{ art.similarity }}</td>
-            <td>{{ art.matomo[0]["Actions.getPageUrls"][0].nb_hits }}</td>
+            <td>{{ art.matomo[0]["Actions.getPageUrl"][0].nb_hits }}</td>
             <td>
-              {{ art.matomo[0]["Actions.getPageUrls"][0].avg_time_on_page }}
+              {{ art.matomo[0]["Actions.getPageUrl"][0].avg_time_on_page }}
             </td>
             <td>
-              {{ art.matomo[0]["Actions.getPageUrls"][0].entry_bounce_count }}
+              {{ art.matomo[0]["Actions.getPageUrl"][0].entry_bounce_count }}
             </td>
-            <td>{{ art.matomo[0]["Actions.getPageUrls"][0].bounce_rate }}</td>
+            <td>{{ art.matomo[0]["Actions.getPageUrl"][0].bounce_rate }}</td>
             <td>
               {{ art.title }}
             </td>
@@ -481,6 +483,10 @@
           </div>
         </div>
       </p-accordionTab>
+
+      <h1 class="text-center" *ngIf="keys.length === 0">
+        No se obtuvieron resultados de Matomo
+      </h1>
     </p-accordion>
 
     <!-- #END body -->

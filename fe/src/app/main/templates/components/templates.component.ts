@@ -268,6 +268,7 @@ export class TemplatesComponent {
       if (this.selectedTemplates) {
         this.template = { ...this.selectedTemplates };
         this.addTempate = false;
+        this.image = this.selectedTemplates.imagePreview;
         this.onChange();
       } else {
         this.msg.add({
