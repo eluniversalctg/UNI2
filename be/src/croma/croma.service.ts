@@ -281,11 +281,11 @@ export class CromaService {
       if (findCustomParam !== '-1') {
         findCustomParam = element2.split('_')[1];
         element2 = element2.split('_')[0];
-        param = `method=${element2}&period=${period}&date=${date}&segment=entryPageUrl==${encodeURIComponent(
+        param = `method=${element2}&period=${period}&date=${date}&pageUrl=${encodeURIComponent(
           article.url,
         )}&${findCustomParam}`;
       } else {
-        param = `method=${element2}&period=${period}&date=${date}&segment=entryPageUrl==${encodeURIComponent(
+        param = `method=${element2}&period=${period}&date=${date}&pageUrl=${encodeURIComponent(
           article.url,
         )}&`;
       }

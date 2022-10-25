@@ -88,6 +88,8 @@ export class CreateTemplateComponent implements OnInit {
         if (data) {
           this.imagesLoad = data;
           this.onChange();
+        } else {
+          this.onChange();
         }
       });
     } else {

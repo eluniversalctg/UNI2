@@ -200,6 +200,34 @@ export class RuleService {
     return response;
   }
 
+  async verifyCondition(conditionReq) {
+    //create configuration and autorization to access server
+    const configuration = {
+      headers: {
+        Authorization: `Basic ${this.credentialUnomi}`,
+      },
+    };
+
+    //create request object
+    const response = await lastValueFrom(
+      this.httpService
+        .post(
+          `${this.config.get<string>('UNOMI_URL')}/cxs/profiles/search`,
+          conditionReq,
+          configuration,
+        )
+        .pipe(
+          map((response) => {
+            return response.data;
+          }),
+          catchError((e) => {
+            throw new HttpException(e.response.data, e.response.status);
+          }),
+        ),
+    );
+    return response;
+  }
+
   /**
    *
    * @param sessionID id the session

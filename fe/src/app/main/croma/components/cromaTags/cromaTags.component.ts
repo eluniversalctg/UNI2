@@ -1,9 +1,4 @@
 import moment from 'moment';
-import {
-  CromaService,
-  MatomoService,
-  UtilitiesService,
-} from 'src/app/shared/services';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Component, ViewChild } from '@angular/core';
@@ -11,10 +6,16 @@ import { Croma, MatomoTags } from 'src/app/shared/models';
 import { MessagesTst } from 'src/app/shared/enums/enumMessage';
 import { Template } from 'src/app/shared/models/template.model';
 import { TemplateService } from 'src/app/shared/services/templates.service';
+import {
+  CromaService,
+  MatomoService,
+  UtilitiesService,
+} from 'src/app/shared/services';
 import { CreatePlaceholderArtService } from 'src/app/shared/services/createPlaceholderArt.service';
 
 @Component({
   selector: 'app-croma-tags',
+  styleUrls: ['./cromaTags.component.scss'],
   templateUrl: './cromaTags.component.html',
 })
 export class CromaTagsComponent {
@@ -102,7 +103,7 @@ export class CromaTagsComponent {
       text = encodeURIComponent(text);
     }
 
-    let query = 'Actions.getPageUrls&';
+    let query = 'Actions.getPageUrl&';
     this.selectedTags.forEach((tag) => {
       let customParams = '';
       if (tag.customParameters) {
@@ -122,8 +123,8 @@ export class CromaTagsComponent {
         next: (data) => {
           data[0].related_articles.forEach((art) => {
             if (art['metadata'].valid) {
-              if (!art.matomo[0]['Actions.getPageUrls'][0]) {
-                art.matomo[0]['Actions.getPageUrls'].push({
+              if (!art.matomo[0]['Actions.getPageUrl'][0]) {
+                art.matomo[0]['Actions.getPageUrl'].push({
                   nb_hits: '',
                   avg_time_on_page: '',
                   entry_bounce_count: '',
@@ -191,36 +192,38 @@ export class CromaTagsComponent {
         : Object.keys(element);
 
       //found is the name that will be displayed
-      let found = this.tags.find((x) => `${x.module}.${x.tag}` === value[0]);
-      analitics.matomo[i][value[0]] = Array.isArray(
-        analitics.matomo[i][value[0]]
-      )
-        ? analitics.matomo[i][value[0]]
-        : [analitics.matomo[i][value[0]]];
+      const found = this.tags.find((x) => `${x.module}.${x.tag}` === value[0]);
+      if (found) {
+        analitics.matomo[i][value[0]] = Array.isArray(
+          analitics.matomo[i][value[0]]
+        )
+          ? analitics.matomo[i][value[0]]
+          : [analitics.matomo[i][value[0]]];
 
-      //Are the names of the columns
-      let colums = analitics.matomo[i][value[0]]
-        ? analitics.matomo[i][value[0]]
-        : undefined;
+        //Are the names of the columns
+        let colums = analitics.matomo[i][value[0]]
+          ? analitics.matomo[i][value[0]]
+          : undefined;
 
-      let columnsShows: any[] = [];
-      //get the name of columns
-      let keyColums = Object.keys(colums[0]);
-      keyColums.forEach((element) => {
-        columnsShows.push({
-          header: element,
-          field: element,
+        let columnsShows: any[] = [];
+        //get the name of columns
+        let keyColums = Object.keys(colums[0]);
+        keyColums.forEach((element) => {
+          columnsShows.push({
+            header: element,
+            field: element,
+          });
         });
-      });
 
-      //is the object we created
-      let key = {
-        header: found?.name,
-        value: value[0],
-        cols: columnsShows,
-        selectedColumns: found?.columns,
-      };
-      this.keys.push(key);
+        //is the object we created
+        let key = {
+          header: found?.name,
+          value: value[0],
+          cols: columnsShows,
+          selectedColumns: found?.columns,
+        };
+        this.keys.push(key);
+      }
     }
 
     this.analiticsData = analitics.matomo;

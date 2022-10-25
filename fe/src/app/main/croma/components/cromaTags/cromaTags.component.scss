@@ -1,0 +1,8 @@
+:host ::ng-deep {
+  .p-image-toolbar {
+    z-index: 11001;
+    i {
+      text-shadow: 1px 1px 5px #000;
+    }
+  }
+}

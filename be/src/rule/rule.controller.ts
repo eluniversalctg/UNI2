@@ -30,8 +30,13 @@ export class RuleController {
   }
 
   @Post('/sessions/get')
-  verifyCondition(@Body() condition) {
+  getSessions(@Body() condition) {
     return this.ruleService.getSessions(condition);
+  }
+
+  @Post('/verify/Condition')
+  verifyCondition(@Body() condition) {
+    return this.ruleService.verifyCondition(condition);
   }
 
   @Get('/countSegments/:param')
