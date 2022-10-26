@@ -98,24 +98,29 @@ export class CromaService {
       searchParams = `&years=${relatedCromaDto.years}&months=${relatedCromaDto.months}&days=${relatedCromaDto.days}&radius=${relatedCromaDto.radius}`;
     }
     let result;
-    const response = await lastValueFrom(
+    await lastValueFrom(
       this.httpService
         .get(
           `${domain[0].cromaUrl}/related?cmsid=${relatedCromaDto.id}${searchParams}`,
         )
         .pipe(
-          map(
-            (response) => (result = response),
-          ),
+          map((response) => (result = response)),
           catchError((e) => {
             throw new HttpException(e.response.data, e.response.status);
           }),
         ),
     );
-    result.data.related_articles.push({
-      cms_id: relatedCromaDto.id,
-      similarity: 1,
-    });
+
+    const found = result.data.related_articles.find(
+      (x) => x.cms_id === relatedCromaDto.id,
+    );
+
+    if (!found) {
+      result.data.related_articles = [
+        { cms_id: relatedCromaDto.id, similarity: 1 },
+        ...result.data.related_articles,
+      ];
+    }
 
     return this.searchArticles(result.data, tags, period, date, site);
   }
