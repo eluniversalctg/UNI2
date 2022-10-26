@@ -21,6 +21,7 @@
         optionLabel="name"
         optionValue="value"
         [(ngModel)]="optionsSelected"
+        (onChange)="filterDataSource()"
       ></p-selectButton>
 
       <p-table
@@ -32,7 +33,9 @@
         [globalFilterFields]="['name']"
         styleClass="p-datatable-gridlines"
         responsiveLayout="scroll"
-        [value]="roles"
+        [value]="rolesDataSource"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords}"
       >
         <ng-template pTemplate="caption">
           <div class="flex">

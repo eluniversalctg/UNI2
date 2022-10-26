@@ -14,6 +14,7 @@ import { RolesService, UtilitiesService } from 'src/app/shared/services';
 })
 export class CreateUserComponent {
   users: User[];
+  usersDataSource: User[];
   roles: Roles[];
   options: any[];
   userUpdate: User;
@@ -156,6 +157,13 @@ export class CreateUserComponent {
       }
     }
   }
+
+  filterDataTable() {
+    this.usersDataSource = this.users.filter(
+      (x) => x.isActive === this.optionsSelected
+    );
+  }
+
   /**
    * description: reset form
    */
@@ -169,18 +177,19 @@ export class CreateUserComponent {
   getAllUsers() {
     let userReq = this.userService.getList();
     let roleReq = this.rolesService.getList();
-    forkJoin([userReq, roleReq]).subscribe(
-      (response) => {
+    forkJoin([userReq, roleReq]).subscribe({
+      next: (response) => {
         this.users = response[0];
         this.roles = response[1].filter((x) => x.isActive);
+        this.filterDataTable();
       },
-      () => {
+      error: () => {
         this.msg.add({
           severity: MessagesTst.ERROR,
           summary: MessagesTst.ERRORLIST,
         });
-      }
-    );
+      },
+    });
   }
 
   /**
@@ -279,6 +288,17 @@ export class CreateUserComponent {
     this.userService.update(user).subscribe(
       (data) => {
         if (data) {
+          if (data['codeName']) {
+            return this.msg.add({
+              severity: MessagesTst.ERROR,
+              summary: `${
+                data['codeName'] === 'DuplicateKey' &&
+                Object.keys(data['keyValue'])[0] === 'username'
+                  ? 'El username es único.'
+                  : data['codeName']
+              }`,
+            });
+          }
           this.msg.add({
             severity: MessagesTst.SUCCESS,
             summary: MessagesTst.UPDATESUCCESS,

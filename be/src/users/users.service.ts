@@ -73,7 +73,7 @@ export class UsersService {
       );
     } catch (error) {
       this.rollbarLogger.error(error, 'Users - Error in updateUser');
-      return undefined;
+      return error;
     }
   }
 

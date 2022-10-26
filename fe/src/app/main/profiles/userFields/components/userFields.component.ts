@@ -21,6 +21,7 @@ import { FormGroup, Validators, FormControl } from '@angular/forms';
 })
 export class UserFieldsComponent {
   userFields: any[] = [];
+  userFieldsDataSource: any[] = [];
   groupData: any[] = [];
   userFieldsForm: FormGroup;
   addNew: boolean = false;
@@ -56,13 +57,19 @@ export class UserFieldsComponent {
    */
   getData() {
     this.userFSrv.getList().subscribe({
-      next: (data) => (this.userFields = data),
+      next: (data) => ((this.userFields = data), this.filterDataSource()),
       error: () =>
         this.msg.add({
           severity: MessagesTst.ERROR,
           summary: MessagesTst.ERRORLIST,
         }),
     });
+  }
+
+  filterDataSource() {
+    this.userFieldsDataSource = this.userFields.filter(
+      (x) => x.isActive === this.optionsSelected
+    );
   }
 
   /**
@@ -128,7 +135,7 @@ export class UserFieldsComponent {
       this.userFSrv.update(newUserField).subscribe({
         next: () => (
           this.getData(),
-          this.submitted = false,
+          (this.submitted = false),
           (this.addNew = false),
           this.msg.add({
             severity: MessagesTst.SUCCESS,

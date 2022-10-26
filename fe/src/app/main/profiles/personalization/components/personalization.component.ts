@@ -26,6 +26,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 export class PersonalizationComponent {
   templates: TemplatePersonalization[] = [];
   personalizations: Personalization[] = [];
+  personalizationsDataSource: Personalization[] = [];
   personalizationUpdate: Personalization;
   isEditing: boolean = false;
   addNew: boolean = false;
@@ -112,13 +113,21 @@ export class PersonalizationComponent {
 
   getAllScriptPersonalization() {
     this.personalizationService.getList().subscribe({
-      next: (response) => (this.personalizations = response),
+      next: (response) => {
+        this.personalizations = response;
+        this.filterDataSource();
+      },
       error: () =>
         this.msg.add({
           severity: MessagesTst.ERROR,
           summary: MessagesTst.ERRORLIST,
         }),
     });
+  }
+  filterDataSource() {
+    this.personalizationsDataSource = this.personalizations.filter(
+      (x) => x.isActive === this.optionsSelected
+    );
   }
 
   verifyCondition() {

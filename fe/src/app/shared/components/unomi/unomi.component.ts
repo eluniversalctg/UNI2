@@ -32,6 +32,7 @@ export class UnomiComponent implements OnInit {
   options: any[];
   cols: any[] = [];
   unomi: UNOMI[] = [];
+  unomiDatasource: UNOMI[] = [];
   @ViewChild('dt') dt;
   unomiMongo: any[] = [];
   addNew: boolean = false;
@@ -242,7 +243,7 @@ export class UnomiComponent implements OnInit {
   /**
    * description: send request to backend, save a new rule
    */
-  register() {
+  register(changeState?: boolean) {
     // send event to sharedContions to reload the list
     this.conditionSrv.reloadCondition();
 
@@ -253,13 +254,18 @@ export class UnomiComponent implements OnInit {
       this.newUnomi['secConditionString'] = JSON.stringify(
         this.newUnomi['targetEvent']
       );
-      this.newUnomi['startEvent'] = this.conditionSrv.createBooleanConditionObj(
-        this.newUnomi['startEvent']
-      );
+      this.newUnomi['startEvent'] =
+        this.newUnomi['startEvent'].length > 0
+          ? this.conditionSrv.createBooleanConditionObj(
+              this.newUnomi['startEvent']
+            )
+          : [];
       this.newUnomi['targetEvent'] =
-        this.conditionSrv.createBooleanConditionObj(
-          this.newUnomi['targetEvent']
-        );
+        this.newUnomi['targetEvent'].length > 0
+          ? this.conditionSrv.createBooleanConditionObj(
+              this.newUnomi['targetEvent']
+            )
+          : [];
       this.tempUnomi['targetEvent'] = { ...this.tempUnomi['firstCondition'] };
       this.tempUnomi['startEvent'] = { ...this.tempUnomi['secondCondition'] };
       delete this.tempUnomi['firstCondition'];
@@ -269,24 +275,36 @@ export class UnomiComponent implements OnInit {
         this.newUnomi['Condition']
       );
       this.newUnomi['entryCondition'] =
-        this.conditionSrv.createBooleanConditionObj(this.newUnomi['Condition']);
+        this.newUnomi['Condition'].length > 0
+          ? this.conditionSrv.createBooleanConditionObj(
+              this.newUnomi['Condition']
+            )
+          : [];
       this.tempUnomi['entryCondition'] =
-        this.conditionSrv.createBooleanConditionObj(
-          this.tempUnomi['firstCondition']
-        );
+        this.tempUnomi['firstCondition'].length > 0
+          ? this.conditionSrv.createBooleanConditionObj(
+              this.tempUnomi['firstCondition']
+            )
+          : [];
       delete this.tempUnomi['firstCondition'];
     } else {
       this.newUnomi['conditionString'] = JSON.stringify(
         this.newUnomi['Condition']
       );
-      this.newUnomi['condition'] = this.conditionSrv.createBooleanConditionObj(
-        this.newUnomi['Condition']
-      );
+      this.newUnomi['condition'] =
+        this.newUnomi['Condition'] && this.newUnomi['Condition'].length > 0
+          ? this.conditionSrv.createBooleanConditionObj(
+              this.newUnomi['Condition']
+            )
+          : undefined;
       if (this.tempUnomi['firstCondition']) {
         this.tempUnomi['condition'] =
-          this.conditionSrv.createBooleanConditionObj(
-            this.tempUnomi['firstCondition']
-          );
+          this.tempUnomi['firstCondition'] &&
+          this.tempUnomi['firstCondition'].length > 0
+            ? this.conditionSrv.createBooleanConditionObj(
+                this.tempUnomi['firstCondition']
+              )
+            : undefined;
       }
     }
     if (
@@ -310,8 +328,8 @@ export class UnomiComponent implements OnInit {
         this.newUnomi.metadata.description !== '' &&
         this.newUnomi.metadata.scope !== undefined &&
         this.newUnomi.metadata.scope !== '' &&
-        this.newUnomi.actions !== undefined &&
-        this.newUnomi['conditionString'] !== '[]'
+        (this.newUnomi.actions !== undefined || changeState) &&
+        (this.newUnomi['conditionString'] !== '[]' || changeState)
       ) {
         this.setTags();
         this.save(this.newUnomi);
@@ -350,7 +368,8 @@ export class UnomiComponent implements OnInit {
           this.msg.add({
             severity: MessagesTst.SUCCESS,
             summary: MessagesTst.SAVESUCCESS,
-          })
+          }),
+          this.filterDataSource()
         ),
         error: () =>
           this.msg.add({
@@ -369,13 +388,23 @@ export class UnomiComponent implements OnInit {
       `mongo/${this.selectedOption.value}`
     );
     forkJoin([unomiReq, unomiMongoReq]).subscribe({
-      next: (data) => ((this.unomi = data[0]), (this.unomiMongo = data[1])),
+      next: (data) => {
+        this.unomi = data[0];
+        this.unomiMongo = data[1];
+        this.filterDataSource();
+      },
       error: () =>
         this.msg.add({
           severity: MessagesTst.ERROR,
           summary: MessagesTst.ERRORLIST,
         }),
     });
+  }
+
+  filterDataSource() {
+    this.unomiDatasource = this.unomi.filter(
+      (x) => x['enabled'] === this.optionsSelected
+    );
   }
 
   /**
@@ -458,7 +487,7 @@ export class UnomiComponent implements OnInit {
       accept: () => {
         rule.enabled = !rule.enabled;
         this.newUnomi = this.loadUnomiData(rule);
-        this.register();
+        this.register(true);
       },
     });
   }

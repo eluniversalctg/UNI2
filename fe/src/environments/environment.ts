@@ -6,9 +6,7 @@ export const environment = {
   production: false,
   localStorageItem: 'uni2',
   basePath: 'http://localhost:3000/uni2api',
-  captcha: '',
-  matomoAuthToken: '',
-  matomoURL: 'https://0.0.0.0/',
+  captcha: '6LemZVAeAAAAAMDCVw5KhKSwvp0DfzrGu9tUcFC2',
 };
 
 /*

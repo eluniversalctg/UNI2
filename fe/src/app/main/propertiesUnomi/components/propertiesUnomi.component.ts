@@ -11,6 +11,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 })
 export class PropertiesUnomiComponent {
   propertiesUnomi: PropertiesUnomi[];
+  propertiesUnomiDataSource: PropertiesUnomi[];
   addNew: boolean = false;
   propertiesUnomiUpdate: PropertiesUnomi;
   isEditing: boolean = false;
@@ -96,6 +97,7 @@ export class PropertiesUnomiComponent {
     this.propertiesUnomiService.getList().subscribe(
       (response) => {
         this.propertiesUnomi = response;
+        this.filterDataSource();
       },
       () => {
         this.msg.add({
@@ -103,6 +105,12 @@ export class PropertiesUnomiComponent {
           summary: MessagesTst.ERRORLIST,
         });
       }
+    );
+  }
+
+  filterDataSource() {
+    this.propertiesUnomiDataSource = this.propertiesUnomi.filter(
+      (x) => x.isActive === this.optionsSelected
     );
   }
 

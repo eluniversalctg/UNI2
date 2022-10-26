@@ -29,6 +29,8 @@
         responsiveLayout="scroll"
         [globalFilterFields]="['name', 'description']"
         styleClass="p-datatable-gridlines"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords}"
       >
         <ng-template pTemplate="caption">
           <div class="flex">
