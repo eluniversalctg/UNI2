@@ -2,6 +2,12 @@ $particles: 100; // has to match nodes in dom
 $particleSize: 6px;
 $radius: 100;
 $lapDuration: 3s;
+$px16: 16px 16px;
+$px28: 28px 28px;
+$rem2: 2rem;
+.p-card {
+  border-radius: 15px !important;
+}
 
 .spinner-body {
   overflow: hidden;
@@ -28,8 +34,9 @@ i {
     width: $particleSize;
     height: $particleSize;
     border-radius: $particleSize;
-    background: rgba(90, 78, 223, 1);
-    box-shadow: 0px 0px 14px rgba(0, 0, 0, 0.4);
+    background: #006effb0;
+    /* rgba(90, 78, 223, 1);*/
+    box-shadow: 0px 0px 14px rgba(0, 0, 0, 0.212);
 
     animation-name: spin;
     animation-duration: $lapDuration;
@@ -54,9 +61,11 @@ i {
   0% {
     transform: scale(1);
   }
+
   15% {
     transform: translate(-$particleSize/2, -$particleSize/2) scale(3);
   }
+
   50% {
     transform: scale(1);
   }
@@ -67,130 +76,138 @@ i {
     width: 1rem;
     height: 1rem;
   }
+
   .c-iconsMenu {
     width: 2rem;
     height: 2rem;
   }
 
+
+
   .widget-icon {
     background-image: url("/assets/images/iconsMenu/widgets.svg");
-    background-size: 16px 16px;
-    background-repeat: no-repeat;
-    background-position: center
+    background-size: $px16;
   }
+
   .dashboard-icon {
     background-image: url("/assets/images/iconsMenu/dashboard.svg");
-    background-size: 16px 16px;
-    background-repeat: no-repeat;
-    background-position: center
+    background-size: $px16;
   }
+
   .parametrizacionWidgets-icon {
     background-image: url("/assets/images/iconsMenu/parametrizacionWidgets.svg");
-    background-size:16px 16px;
-    background-repeat: no-repeat;
-    background-position: center
+    background-size: $px16;
   }
+
   .dominios-icon {
     background-image: url("/assets/images/iconsMenu/dominios.svg");
-    background-size: 16px 16px;
-    background-repeat: no-repeat;
-    background-position: center
+    background-size: $px16;
   }
+
   .reglas-icon {
     background-image: url("/assets/images/iconsMenu/reglas.svg");
-    background-size:16px 16px;
-    background-repeat: no-repeat;
-    background-position: center
+    background-size: $px16;
   }
+
   .variable-icon {
     background-image: url("/assets/images/iconsMenu/variables.svg");
-    background-size: 16px 16px;
-    background-repeat: no-repeat;
-    background-position: center
+    background-size: $px16;
   }
+
   .template-icon {
     background-image: url("/assets/images/iconsMenu/plantillas.svg");
     background-size: 25px 25px;
-    background-repeat: no-repeat;
-    background-position: center
   }
+
   .condiciones-icon {
     background-image: url("/assets/images/iconsMenu/condiciones.svg");
-    background-size: 16px 16px;
-    background-repeat: no-repeat;
-    background-position: center
+    background-size: $px16;
   }
+
   .acciones-icon {
     background-image: url("/assets/images/iconsMenu/acciones.svg");
-    background-size: 16px 16px;
-    background-repeat: no-repeat;
-    background-position: center
+    background-size: $px16;
   }
+
   .menu1-icon {
     background-image: url("/assets/images/iconsMenu/menu1.svg");
-    background-size: 28px 28px;
-    background-repeat: no-repeat;
-    background-position: center
+    background-size: $px28;
   }
+
   .menu2-icon {
     background-image: url("/assets/images/iconsMenu/menu2.svg");
-    background-size: 28px 28px;
-    background-repeat: no-repeat;
-    background-position: center
+    background-size: $px28;
   }
+
   .menu3-icon {
     background-image: url("/assets/images/iconsMenu/menu3.svg");
-    background-size: 28px 28px;
-    background-repeat: no-repeat;
-    background-position: center
+    background-size: $px28;
   }
+
   .menu4-icon {
     background-image: url("/assets/images/iconsMenu/menu4.svg");
-    background-size: 28px 28px;
-    background-repeat: no-repeat;
-    background-position: center
+    background-size: $px28;
   }
+
   .menu5-icon {
     background-image: url("/assets/images/iconsMenu/menu5.svg");
-    background-size: 28px 28px;
-    background-repeat: no-repeat;
-    background-position: center
+    background-size: $px28;
   }
 
   .menu7-icon {
     background-image: url("/assets/images/iconsMenu/menu7.svg");
-    background-size: 28px 28px;
-    background-repeat: no-repeat;
-    background-position: center
+    background-size: $px28;
   }
+
   .goals-icon {
     background-image: url("/assets/images/iconsMenu/goals.svg");
-    background-size: 28px 28px;
-    background-repeat: no-repeat;
-    background-position: center
   }
-  .campañas-icon {
+
+  .campanas-icon {
     background-image: url("/assets/images/iconsMenu/campañas.svg");
-    background-size: 28px 28px;
-    background-repeat: no-repeat;
-    background-position: center
   }
+
+  .segmento-icon {
+    background-size: 15px 17px;
+  }
+
   .creacion_plantillas-icon {
     background-image: url("/assets/images/iconsMenu/creacion_plantillas.svg");
-    // background-size: 16px 16px;
-    background-repeat: no-repeat;
-    background-position: center
+    width: $rem2;
   }
+
   .creacion_placeholders-icon {
     background-image: url("/assets/images/iconsMenu/creacion_placeholders.svg");
-    // background-size: 16px 16px;
-    background-repeat: no-repeat;
-    background-position: center
+    width: $rem2;
   }
+
   .creacion_propiedades-icon {
     background-image: url("/assets/images/iconsMenu/creacion_propiedades.svg");
-    // background-size: 28px 28px;
-    background-repeat: no-repeat;
-    background-position: center
+    width: $rem2;
+  }
+
+  .parametrizacionWidgets-icon,
+  .dashboard-icon,
+  .parametrizacionWidgets-icon,
+  .dominios-icon,
+  .reglas-icon,
+  .variable-icon,
+  .template-icon,
+  .condiciones-icon,
+  .acciones-icon,
+  .menu1-icon,
+  .menu2-icon,
+  .menu3-icon,
+  .menu4-icon,
+  .menu5-icon,
+  .menu7-icon,
+  .goals-icon,
+  .campanas-icon,
+  .segmento-icon,
+  .creacion_plantillas-icon,
+  .creacion_placeholders-icon,
+  .creacion_propiedades-icon {
+    background-repeat: no-repeat !important;
+    background-position: center !important;
   }
 }

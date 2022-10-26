@@ -126,7 +126,7 @@ export class MenuService {
           {
             key: '3.1',
             label: 'Segmentos',
-            icon: 'c-icons menu3-icon',
+            icon: 'c-icons menu3-icon segmento-icon',
             routerLink: ['/main/profiles/segments'],
           },
           {
@@ -138,7 +138,7 @@ export class MenuService {
           {
             key: '3.3',
             label: 'Campañas',
-            icon: 'c-icons campañas-icon',
+            icon: 'c-icons campanas-icon',
             routerLink: ['/main/profiles/campaigns'],
           },
         ],
