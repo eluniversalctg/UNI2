@@ -244,8 +244,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 4.286rem;
-    height: 4.286rem;
+    width: 3.286rem;
+    height:3.286rem;
     margin-bottom: 1rem;
     border-radius: 14px;
     cursor: pointer;
@@ -306,10 +306,19 @@
   background: transparent;
 }
 .layout-sidebar .layout-menu li a {
-  color: rgba(0, 38, 241, 0.84);
+  color: #006dff;
+  text-decoration: none;
 }
 .layout-sidebar .layout-menu li a:hover {
-  background: rgba(122, 50, 238, 0.1);
+  background: #006eff2a
+}
+
+
+
+.layout-sidebar .layout-menu li a:hover .menu5-icon:hover{
+  margin-top: 0.1rem;
+  height: 3.286rem;
+
 }
 .layout-sidebar .layout-menu li a:focus {
   box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.13);
@@ -395,9 +404,9 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                width: 4.286rem;
-                height: 4.286rem;
-                margin-bottom: 1rem;
+                width: 3.286rem;
+                height: 3.286rem;
+                margin-bottom: 0rem;
                 border-radius: 14px;
                 cursor: pointer;
                 outline: none;
