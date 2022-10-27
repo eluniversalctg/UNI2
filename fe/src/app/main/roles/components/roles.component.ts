@@ -15,6 +15,7 @@ export class RolesComponent {
   options: any[] = [];
   parentsChild: any[] = [];
   roles: Roles[];
+  rolesDataSource: Roles[];
   selectedRole: Roles = new Roles();
   rolesForm: FormGroup;
   addNew: boolean = false;
@@ -55,10 +56,17 @@ export class RolesComponent {
     this.getRoles();
   }
 
+  filterDataSource() {
+    this.rolesDataSource = this.roles.filter(
+      (x) => x.isActive === this.optionsSelected
+    );
+  }
+
   // get roles from DB
   getRoles() {
     this.rolesService.getList().subscribe((data) => {
       this.roles = data;
+      this.filterDataSource();
     });
   }
 

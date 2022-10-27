@@ -26,11 +26,12 @@
         optionLabel="name"
         optionValue="value"
         [(ngModel)]="optionsSelected"
+        (onChange)="filterDataSource()"
       ></p-selectButton>
 
       <p-table
         #dt
-        [value]="unomi"
+        [value]="unomiDatasource"
         [rows]="10"
         [columns]="cols"
         [paginator]="true"
@@ -74,7 +75,7 @@
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-rule>
-          <tr *ngIf="rule.enabled === optionsSelected">
+          <tr>
             <td style="width: 3rem">
               <p-tableCheckbox [value]="rule"></p-tableCheckbox>
             </td>

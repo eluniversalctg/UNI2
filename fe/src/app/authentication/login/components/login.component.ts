@@ -52,6 +52,17 @@ export class LoginComponent {
           if (userRole.isActive && userRole.roles.isActive) {
             this.router.navigateByUrl('/');
           } else {
+            this.msg.add({
+              key: 'loginError',
+              severity: MessagesTst.ERROR,
+              summary: `${
+                !userRole.isActive
+                  ? 'El usuario se encuentra inactivado'
+                  : !userRole.roles.isActive
+                  ? 'El role asignado se encuentra inactivado'
+                  : 'Error al ingresar'
+              }`,
+            });
             this.utilities.logOut();
           }
         },

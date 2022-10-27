@@ -20,6 +20,7 @@
         optionLabel="label"
         optionValue="value"
         [(ngModel)]="optionsSelected"
+        (onChange)="filterDataSource()"
       ></p-selectButton>
 
       <p-table
@@ -31,7 +32,9 @@
         [globalFilterFields]="['label', 'valueDefault']"
         styleClass="p-datatable-gridlines"
         responsiveLayout="scroll"
-        [value]="propertiesUnomi"
+        [value]="propertiesUnomiDataSource"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords}"
       >
         <ng-template pTemplate="caption">
           <div class="flex">

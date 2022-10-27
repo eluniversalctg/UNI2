@@ -33,6 +33,7 @@ export class UnomiProfilesComponent {
   cols: any[] = [];
   screen: string = 'unomiProfiles';
   unomiProfiles: any[] = [];
+  unomiProfilesDataSource: any[] = [];
   unomiProfilesSelected: any[] = [];
   addNew: boolean = false;
   visualizing: boolean = false;
@@ -144,6 +145,14 @@ export class UnomiProfilesComponent {
     ];
   }
 
+  filterDataSource() {
+    this.unomiProfilesDataSource = this.unomiProfiles.filter(
+      (x) =>
+        x.properties.enabled === this.optionsSelected ||
+        (!x.properties.enabled && this.optionsSelected)
+    );
+  }
+
   newProfile() {
     this.profileEditing = new UserProfiles();
     this.profileEditing.systemProperties = { goals: {} };
@@ -239,7 +248,9 @@ export class UnomiProfilesComponent {
         .addByURL('search', [conditionSegment, this.limit])
         .subscribe({
           next: (data) => (
-            (this.unomiProfiles = data[0].list), (this.loading = false)
+            (this.unomiProfiles = data[0].list),
+            (this.loading = false),
+            this.filterDataSource()
           ),
           error: () =>
             this.msg.add({
@@ -254,7 +265,9 @@ export class UnomiProfilesComponent {
         .addByURL('search', [condition, this.limit])
         .subscribe({
           next: (data) => (
-            (this.unomiProfiles = data[0].list), (this.loading = false)
+            (this.unomiProfiles = data[0].list),
+            (this.loading = false),
+            this.filterDataSource()
           ),
           error: () =>
             this.msg.add({
@@ -558,7 +571,9 @@ export class UnomiProfilesComponent {
         .addByURL('search', [condition, this.limit])
         .subscribe({
           next: (data) => (
-            (this.unomiProfiles = data[0].list), (this.loading = false)
+            (this.unomiProfiles = data[0].list),
+            (this.loading = false),
+            this.filterDataSource()
           ),
           error: () =>
             this.msg.add({
@@ -571,7 +586,9 @@ export class UnomiProfilesComponent {
         .addByURL('search', [undefined, this.limit])
         .subscribe({
           next: (data) => (
-            (this.unomiProfiles = data[0].list), (this.loading = false)
+            (this.unomiProfiles = data[0].list),
+            (this.loading = false),
+            this.filterDataSource()
           ),
           error: () =>
             this.msg.add({

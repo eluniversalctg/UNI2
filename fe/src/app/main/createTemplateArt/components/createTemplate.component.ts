@@ -100,18 +100,14 @@ export class CreateTemplateComponent implements OnInit {
     }
   }
 
-  getAlPlaceholders() {
-    this.placeholdersService.getList().subscribe(
-      (response) => {
-        this.placeholders = response;
-      },
-      () => {
-        this.msg.add({
-          severity: MessagesTst.ERROR,
-          summary: MessagesTst.ERRORLIST,
-        });
-      }
-    );
+  async getAlPlaceholders() {
+    const response: Placeholders[] = await new Promise((resolve, reject) => {
+      this.placeholdersService.getList().subscribe({
+        next: (resp) => resolve(resp),
+        error: (err) => reject(err),
+      });
+    });
+    this.placeholders = response;
   }
 
   numImages(selectedTemplates) {
@@ -138,7 +134,10 @@ export class CreateTemplateComponent implements OnInit {
     this.loadTemplates();
   }
 
-  onChange() {
+  async onChange() {
+    if (!this.placeholders) {
+      await this.getAlPlaceholders();
+    }
     this.htmlContentPlaceholder = this.template.htmlContent;
     let replace = this.replacePlaceholderService.replaceFinally(
       this.htmlContentPlaceholder,

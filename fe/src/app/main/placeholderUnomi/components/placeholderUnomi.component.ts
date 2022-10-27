@@ -16,6 +16,7 @@ import { PropertiesUnomi, PlaceholderUnomi } from 'src/app/shared/models';
 export class PlaceholderUnomiComponent {
   propertiesUnomi: PropertiesUnomi[];
   placeholders: PlaceholderUnomi[];
+  placeholdersDataSource: PlaceholderUnomi[];
   placeholdersUpdate: PlaceholderUnomi;
   isEditing: boolean = false;
   addNew: boolean = false;
@@ -137,6 +138,7 @@ export class PlaceholderUnomiComponent {
     this.placeholderUnomiService.getList().subscribe(
       (response) => {
         this.placeholders = response;
+        this.filterDataSource();
       },
       () => {
         this.msg.add({
@@ -147,6 +149,11 @@ export class PlaceholderUnomiComponent {
     );
   }
 
+  filterDataSource() {
+    this.placeholdersDataSource = this.placeholders.filter(
+      (x) => x.isActive === this.optionsSelected
+    );
+  }
   changeState(placeholder: PlaceholderUnomi) {
     let message = `¿Está seguro que desea ${
       placeholder.isActive ? 'inactivar' : 'activar'

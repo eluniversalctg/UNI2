@@ -4,7 +4,11 @@ import { MessagesTst } from 'src/app/shared/enums';
 import { Component, ViewChild } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { BlockService, ExportService, UtilitiesService } from 'src/app/shared/services';
+import {
+  BlockService,
+  ExportService,
+  UtilitiesService,
+} from 'src/app/shared/services';
 
 @Component({
   selector: 'app-blocks',
@@ -13,6 +17,7 @@ import { BlockService, ExportService, UtilitiesService } from 'src/app/shared/se
 })
 export class BlockComponent {
   blocks: Blocks[];
+  blocksDataSource: Blocks[];
   children: Blocks;
   pagesActive: Blocks[] = [];
   addNew: boolean = false;
@@ -33,9 +38,8 @@ export class BlockComponent {
     private blockService: BlockService,
     private exportService: ExportService,
     private utilitiesSrv: UtilitiesService,
-    private confirmationService: ConfirmationService,
+    private confirmationService: ConfirmationService
   ) {
-
     this.utilitiesSrv.changeSite.subscribe(() => {
       this.getAllBlocks();
     });
@@ -48,7 +52,6 @@ export class BlockComponent {
         summary: MessagesTst.NOSITE,
       });
     }
-
 
     this.blocksForm = new FormGroup({
       name: new FormControl('', [Validators.required]),
@@ -150,15 +153,13 @@ export class BlockComponent {
       name: control.name.value,
       sizes: control.sizes.value,
       isActive: control.isActive.value,
-      site: this.utilitiesSrv.decryptSite()
+      site: this.utilitiesSrv.decryptSite(),
     };
     if (!this.isEditing) {
       this.save(block);
     } else {
       if (this.blocksUpdate) {
-
         if (!this.blocksUpdate.inUse || block.isActive) {
-
           this.update(block);
         } else {
           this.msg.add({
@@ -183,10 +184,15 @@ export class BlockComponent {
   getAllBlocks() {
     this.blockService.getList().subscribe(
       (response) => {
-        response = response.filter((x) => x.site._id.toString() === this.utilitiesSrv.decryptSite()._id.toString());
+        response = response.filter(
+          (x) =>
+            x.site._id.toString() ===
+            this.utilitiesSrv.decryptSite()._id.toString()
+        );
         this.blocks = response;
         this.pagesActive = _.filter(response, ['isActive', true]);
         this.pagesActive = _.filter(response, ['typeSection', 'Sección']);
+        this.filterDataSource();
       },
       () => {
         this.msg.add({
@@ -197,11 +203,19 @@ export class BlockComponent {
     );
   }
 
+  filterDataSource() {
+    this.blocksDataSource = this.blocks.filter(
+      (x) => x.isActive === this.optionsSelected
+    );
+  }
+
   changeState(block: Blocks) {
-    let message = `¿Está seguro que desea ${block.isActive ? 'inactivar' : 'activar'
-      } el bloque <b>
+    let message = `¿Está seguro que desea ${
+      block.isActive ? 'inactivar' : 'activar'
+    } el bloque <b>
       ${block.name}
-      </b>? <br/>El bloque seleccionado quedará ${block.isActive ? 'sin' : 'con'
+      </b>? <br/>El bloque seleccionado quedará ${
+        block.isActive ? 'sin' : 'con'
       } función en la plataforma.`;
 
     this.confirmationService.confirm({
@@ -210,9 +224,7 @@ export class BlockComponent {
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Sí',
       accept: () => {
-
         if (!block.inUse) {
-
           let update = new Blocks();
 
           update._id = block._id;
@@ -246,7 +258,6 @@ export class BlockComponent {
             summary: MessagesTst.ERRORINUSE,
           });
         }
-
       },
     });
   }

@@ -19,7 +19,7 @@ export class CromaService {
     private readonly config: ConfigService,
     private readonly matomoSrv: MatomoService,
     private readonly domainService: DomainsService,
-  ) { }
+  ) {}
 
   /**
    * save articles on CROMA DB
@@ -95,25 +95,34 @@ export class CromaService {
     let searchParams = '';
     const domain = await this.domainService.find(site);
     if (relatedCromaDto && relatedCromaDto.years) {
-      searchParams = `&years=${relatedCromaDto.years}&months=${relatedCromaDto.months
-        }&days=${relatedCromaDto.days}&radius=${relatedCromaDto.radius}`;
+      searchParams = `&years=${relatedCromaDto.years}&months=${relatedCromaDto.months}&days=${relatedCromaDto.days}&radius=${relatedCromaDto.radius}`;
     }
-    const response = await lastValueFrom(
+    let result;
+    await lastValueFrom(
       this.httpService
         .get(
-          `${domain[0].cromaUrl}/related?cmsid=${relatedCromaDto.id
-          }${searchParams}`,
+          `${domain[0].cromaUrl}/related?cmsid=${relatedCromaDto.id}${searchParams}`,
         )
         .pipe(
-          map((response) =>
-            this.searchArticles(response.data, tags, period, date, site)
-          ),
+          map((response) => (result = response)),
           catchError((e) => {
             throw new HttpException(e.response.data, e.response.status);
           }),
         ),
     );
-    return response;
+
+    const found = result.data.related_articles.find(
+      (x) => x.cms_id === relatedCromaDto.id,
+    );
+
+    if (!found) {
+      result.data.related_articles = [
+        { cms_id: relatedCromaDto.id, similarity: 1 },
+        ...result.data.related_articles,
+      ];
+    }
+
+    return this.searchArticles(result.data, tags, period, date, site);
   }
 
   /**
@@ -171,49 +180,45 @@ export class CromaService {
   }
 
   async getNews(id, url): Promise<any> {
-    const response = await lastValueFrom(this.httpService
-      .get(
-        `${url}/article?cmsid=${id}`,
-        {
+    const response = await lastValueFrom(
+      this.httpService
+        .get(`${url}/article?cmsid=${id}`, {
           headers: { 'Content-Type': 'application/json' },
-        },
-      )
-      .pipe(
-        map((response) => {
-          const article = response.data.article;
-          article['_id'] = article._id.$oid;
-          article['publication'] = article.publication.$oid;
-          article['publish_date'] = new Date(article.publish_date.$date);
-          return response.data.article;
-        }),
-        catchError((e) => {
-          throw new HttpException(e.response.data, e.response.status);
-        }),
-      )
+        })
+        .pipe(
+          map((response) => {
+            const article = response.data.article;
+            article['_id'] = article._id.$oid;
+            article['publication'] = article.publication.$oid;
+            article['publish_date'] = new Date(article.publish_date.$date);
+            return response.data.article;
+          }),
+          catchError((e) => {
+            throw new HttpException(e.response.data, e.response.status);
+          }),
+        ),
     );
     return response;
   }
 
   async getNewsById(id, url): Promise<any> {
-    const response = await lastValueFrom(this.httpService
-      .get(
-        `${url}/article?id=${id}`,
-        {
+    const response = await lastValueFrom(
+      this.httpService
+        .get(`${url}/article?id=${id}`, {
           headers: { 'Content-Type': 'application/json' },
-        },
-      )
-      .pipe(
-        map((response) => {
-          const article = response.data.article;
-          article['_id'] = article._id.$oid;
-          article['publication'] = article.publication.$oid;
-          article['publish_date'] = new Date(article.publish_date.$date);
-          return response.data.article;
-        }),
-        catchError((e) => {
-          throw new HttpException(e.response.data, e.response.status);
-        }),
-      )
+        })
+        .pipe(
+          map((response) => {
+            const article = response.data.article;
+            article['_id'] = article._id.$oid;
+            article['publication'] = article.publication.$oid;
+            article['publish_date'] = new Date(article.publish_date.$date);
+            return response.data.article;
+          }),
+          catchError((e) => {
+            throw new HttpException(e.response.data, e.response.status);
+          }),
+        ),
     );
     return response;
   }
@@ -222,7 +227,13 @@ export class CromaService {
    * @param data all data from croma related articles
    * @returns articles populated
    */
-  async searchArticles(data, tags?: string, period?: string, date?: string, site?: string) {
+  async searchArticles(
+    data,
+    tags?: string,
+    period?: string,
+    date?: string,
+    site?: string,
+  ) {
     // get placeholders to database
     this.getPlaceholders();
     const domain = await this.domainService.find(site);
@@ -291,7 +302,11 @@ export class CromaService {
       }
 
       const matomoResp = {};
-      matomoResp[`${element2}`] = await this.getInfoMatomo(param, matomoUrl, idSite);
+      matomoResp[`${element2}`] = await this.getInfoMatomo(
+        param,
+        matomoUrl,
+        idSite,
+      );
 
       matomo.push(matomoResp);
     }
@@ -476,7 +491,13 @@ export class CromaService {
     return result;
   }
 
-  async analyzer_url(url: string, tags: string, period: string, date: string, site: string) {
+  async analyzer_url(
+    url: string,
+    tags: string,
+    period: string,
+    date: string,
+    site: string,
+  ) {
     // validate if link is valid
     if (!url.includes('http')) {
       url = `https://${url}`;
@@ -493,9 +514,14 @@ export class CromaService {
 
       const getHTML = await this.getHTML(url);
       const doc = new JSDOM(getHTML.html);
-      let cmsid = { id: doc.window.document.querySelector('meta[name="cmsid"]').getAttribute('content') };
+      const cmsid = {
+        id: doc.window.document
+          .querySelector('meta[name="cmsid"]')
+          .getAttribute('content'),
+      };
+
       // cmsid
-      let article = await this.related(cmsid, site, tags, period, date);
+      const article = await this.related(cmsid, site, tags, period, date);
       return article;
     } else {
       return 'Dominio no valido.';

@@ -26,6 +26,7 @@
         optionLabel="name"
         optionValue="value"
         [(ngModel)]="optionsSelected"
+        (onChange)="filterDataSource()"
       ></p-selectButton>
       <p-table
         #dt
@@ -33,7 +34,7 @@
         [columns]="cols"
         dataKey="itemId"
         [paginator]="true"
-        [value]="unomiProfiles"
+        [value]="unomiProfilesDataSource"
         [globalFilterFields]="[
           'properties.email',
           'properties.firstName',
@@ -115,12 +116,7 @@
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-userField>
-          <tr
-            *ngIf="
-              userField.properties.enabled === optionsSelected ||
-              (!userField.properties.enabled && optionsSelected)
-            "
-          >
+          <tr>
             <td>
               <p-tableCheckbox [value]="userField"></p-tableCheckbox>
             </td>

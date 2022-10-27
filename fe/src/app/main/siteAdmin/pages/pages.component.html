@@ -20,6 +20,7 @@
         optionLabel="name"
         optionValue="value"
         [(ngModel)]="optionsSelected"
+        (onChange)="filterDataSource()"
       ></p-selectButton>
 
       <p-table
@@ -33,7 +34,7 @@
         [(selection)]="selectedRows"
         styleClass="p-datatable-gridlines"
         responsiveLayout="scroll"
-        [value]="pages"
+        [value]="pagesDataSource"
         [showCurrentPageReport]="true"
         [rowsPerPageOptions]="[10, 25, 50]"
         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords}"

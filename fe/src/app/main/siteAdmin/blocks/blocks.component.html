@@ -20,6 +20,7 @@
         optionLabel="name"
         optionValue="value"
         [(ngModel)]="optionsSelected"
+        (onChange)="filterDataSource()"
       ></p-selectButton>
 
       <p-table
@@ -31,9 +32,10 @@
         [globalFilterFields]="['name', 'sizes']"
         styleClass="p-datatable-gridlines"
         responsiveLayout="scroll"
-        [value]="blocks"
-        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords}"
+        [value]="blocksDataSource"
         [(selection)]="selectedRows"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords}"
       >
         <ng-template pTemplate="caption">
           <div class="flex">

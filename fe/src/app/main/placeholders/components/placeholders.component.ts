@@ -11,6 +11,7 @@ import { PlaceholdersService } from 'src/app/shared/services/placeholders.servic
 })
 export class PlaceholdersComponent {
   placeholders: Placeholders[];
+  placeholdersDataSource: Placeholders[];
   addNew: boolean = false;
   placeholdersUpdate: Placeholders;
   isEditing: boolean = false;
@@ -120,6 +121,7 @@ export class PlaceholdersComponent {
     this.placeholdersService.getList().subscribe(
       (response) => {
         this.placeholders = response;
+        this.filterDataSource();
       },
       () => {
         this.msg.add({
@@ -128,6 +130,10 @@ export class PlaceholdersComponent {
         });
       }
     );
+  }
+
+  filterDataSource() {
+    this.placeholdersDataSource = this.placeholders.filter((x)=> x.isActive === this.optionsSelected)
   }
 
   changeState(placeholder: Placeholders) {

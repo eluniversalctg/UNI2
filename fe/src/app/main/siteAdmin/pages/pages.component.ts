@@ -19,6 +19,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 })
 export class PagesComponent {
   pages: Pages[];
+  pagesDataSource: Pages[];
   children: Pages;
   pageWithBlock: Pages;
   pagesActive: Pages[] = [];
@@ -125,6 +126,12 @@ export class PagesComponent {
         },
       },
     ];
+  }
+
+  filterDataSource() {
+    this.pagesDataSource = this.pages.filter(
+      (x) => x.isActive === this.optionsSelected
+    );
   }
 
   /**
@@ -348,6 +355,7 @@ export class PagesComponent {
         this.pages = response;
         this.pagesActive = _.filter(response, ['isActive', true]);
         this.pagesActive = _.filter(response, ['typeSection', 'Sección']);
+        this.filterDataSource();
       },
       () => {
         this.msg.add({
