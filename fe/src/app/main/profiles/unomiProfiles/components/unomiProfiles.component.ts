@@ -151,6 +151,7 @@ export class UnomiProfilesComponent {
         x.properties.enabled === this.optionsSelected ||
         (!x.properties.enabled && this.optionsSelected)
     );
+    this.totalRecords = this.unomiProfilesDataSource.length;
   }
 
   newProfile() {
@@ -570,11 +571,11 @@ export class UnomiProfilesComponent {
       this.unomiProfilesSrv
         .addByURL('search', [condition, this.limit])
         .subscribe({
-          next: (data) => (
-            (this.unomiProfiles = data[0].list),
-            (this.loading = false),
-            this.filterDataSource()
-          ),
+          next: (data) => {
+            this.unomiProfiles = data[0].list;
+            this.filterDataSource();
+            this.loading = false;
+          },
           error: () =>
             this.msg.add({
               severity: MessagesTst.ERROR,

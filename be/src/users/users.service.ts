@@ -43,7 +43,7 @@ export class UsersService {
       return await this.usersRepository.create(createUserDto);
     } catch (error) {
       this.rollbarLogger.error(error, 'Users - Error in createUser');
-      return undefined;
+      return error;
     }
   }
 

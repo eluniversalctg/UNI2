@@ -6,8 +6,8 @@ import {
   Param,
   UseGuards,
   Controller,
+  HttpException,
   NotFoundException,
-  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -35,7 +35,7 @@ export class UsersController {
     const user = await this.usersService.createUser(body);
 
     if (!user) {
-      throw new BadRequestException();
+      throw new HttpException('El username ya existe', 400);
     }
 
     return user;
