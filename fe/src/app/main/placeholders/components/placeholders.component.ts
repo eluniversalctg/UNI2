@@ -133,7 +133,9 @@ export class PlaceholdersComponent {
   }
 
   filterDataSource() {
-    this.placeholdersDataSource = this.placeholders.filter((x)=> x.isActive === this.optionsSelected)
+    this.placeholdersDataSource = this.placeholders.filter(
+      (x) => x.isActive === this.optionsSelected
+    );
   }
 
   changeState(placeholder: Placeholders) {
@@ -191,7 +193,7 @@ export class PlaceholdersComponent {
     if (this.placeholders) {
       found = this.placeholders.find((x) => x.name === placeholder.name);
     }
-    if (!found) {
+    if (!found || placeholder.typesMetaData !== found.typesMetaData) {
       this.placeholdersService.add(placeholder).subscribe(
         (data) => {
           if (data) {
@@ -232,7 +234,12 @@ export class PlaceholdersComponent {
   update(placeholder: Placeholders) {
     placeholder._id = this.placeholdersUpdate._id;
     let found = this.placeholders.find((x) => x.name === placeholder.name);
-    if (!found || found.name === this.placeholdersUpdate.name) {
+
+    if (
+      !found ||
+      found.name === this.placeholdersUpdate.name ||
+      placeholder.typesMetaData !== found.typesMetaData
+    ) {
       this.placeholdersService.update(placeholder).subscribe(
         (data) => {
           if (data) {
