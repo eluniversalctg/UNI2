@@ -4,16 +4,18 @@
   justify-content: space-between;
   position: absolute;
   overflow: auto;
-  height: calc(100% - 7rem);
-  width: calc(100% - 14rem);
-  margin-top: 7rem;
+  height: calc(100% - 5rem);
+  width: calc(100% - 12rem);
+  margin-top: 5rem;
   border-top-left-radius: 30px;
   transition: all 0.2s;
 }
 .layout-wrapper .layout-content-wrapper .layout-content {
-  padding: 2rem;
+  padding: 1rem;
   flex: 1 1 auto;
   background-color: #f6f7fb;
   border-bottom-left-radius: 30px;
   border-top-left-radius: 30px;
 }
+
+

@@ -1,4 +1,4 @@
-<div class="p-card" style="background: #dbe6f3; min-height: 84vh">
+<div class="p-card" style="background: #dbe6f3; min-height: 8vh">
   <h1>Perfil de usuario</h1>
   <ul id="detailsMenu" class="menu-details">
     <li [ngClass]="{ active: step === 'step1' }" (click)="step = 'step1'">
@@ -539,7 +539,7 @@
         <div class="p-grid justify-content-center">
           <button
             pButton
-            class="p-button-secondary p-button-rounded p-mb-3"
+            class="p-button-secondary p-button p-mb-3"
             type="button"
             label="Cancelar"
             (click)="cancel()"
@@ -549,7 +549,7 @@
             pButton
             type="button"
             label="Guardar"
-            class="p-button-rounded p-ml-3 p-mb-3"
+            class="p-button p-ml-3 p-mb-3"
             (click)="save()"
           ></button>
         </div>

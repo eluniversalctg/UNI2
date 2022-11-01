@@ -33,7 +33,7 @@
           <label for="word" class="p-ml-2">URL</label>
         </div>
 
-        <div class="col-12 md:col-6 lg:col-5">
+        <div class="col-12 md:col-6 lg:col-4">
           <input
             [(ngModel)]="wordOrText"
             class="h-auto w-100"
@@ -53,7 +53,7 @@
           ></p-multiSelect>
         </div>
 
-        <div class="col-12 md:col-5 lg:col-3">
+        <div class="col-12 md:col-4 lg:col-4">
           <p-button
             label="Fecha"
             icon="pi pi-calendar"
@@ -502,55 +502,12 @@
   <!-- #END ANALITICS POPUP -->
 
   <!-- date picker -->
-  <p-overlayPanel #op [showCloseIcon]="true" [style]="{ width: '450px' }">
+
+  <p-overlayPanel #op [showCloseIcon]="true" [style]="{ width: '446px' }">
     <ng-template pTemplate>
       <div class="p-grid">
-        <div class="col-8">
-          <!-- day or week picker -->
-          <p-calendar
-            (onSelect)="formatDate()"
-            *ngIf="periodSelected === 'day' || periodSelected === 'week'"
-            [inline]="true"
-            dateFormat="yyyy-mm-dd"
-            [(ngModel)]="dateSelected"
-          ></p-calendar>
 
-          <!-- month picker -->
-          <p-calendar
-            (onSelect)="formatDate()"
-            *ngIf="periodSelected === 'month'"
-            view="month"
-            [inline]="true"
-            [readonlyInput]="true"
-            dateFormat="yyyy-mm-dd"
-            [(ngModel)]="dateSelected"
-          ></p-calendar>
-
-          <!-- Range picker -->
-          <p-calendar
-            (onSelect)="formatDate()"
-            *ngIf="periodSelected === 'range'"
-            inputId="range"
-            [inline]="true"
-            selectionMode="range"
-            [readonlyInput]="true"
-            dateFormat="yyyy-mm-dd"
-            [(ngModel)]="dateSelected"
-          ></p-calendar>
-
-          <!-- year picker -->
-          <p-calendar
-            (onSelect)="formatDate()"
-            *ngIf="periodSelected === 'year'"
-            view="year"
-            [inline]="true"
-            dateFormat="yy"
-            inputId="yearpicker"
-            [(ngModel)]="dateSelected"
-          ></p-calendar>
-        </div>
-
-        <div class="col-4">
+        <div class="col-12" [style]="{ display: 'flex' }">
           <div class="field-radiobutton">
             <p-radioButton
               name="day"
@@ -600,6 +557,50 @@
             ></p-radioButton>
             <label for="range">Rango fechas</label>
           </div>
+        </div>
+        <div class="col-12">
+          <!-- day or week picker -->
+          <p-calendar
+            (onSelect)="formatDate()"
+            *ngIf="periodSelected === 'day' || periodSelected === 'week'"
+            [inline]="true"
+            dateFormat="yyyy-mm-dd"
+            [(ngModel)]="dateSelected"
+          ></p-calendar>
+
+          <!-- month picker -->
+          <p-calendar
+            (onSelect)="formatDate()"
+            *ngIf="periodSelected === 'month'"
+            view="month"
+            [inline]="true"
+            [readonlyInput]="true"
+            dateFormat="yyyy-mm-dd"
+            [(ngModel)]="dateSelected"
+          ></p-calendar>
+
+          <!-- Range picker -->
+          <p-calendar
+            (onSelect)="formatDate()"
+            *ngIf="periodSelected === 'range'"
+            inputId="range"
+            [inline]="true"
+            selectionMode="range"
+            [readonlyInput]="true"
+            dateFormat="yyyy-mm-dd"
+            [(ngModel)]="dateSelected"
+          ></p-calendar>
+
+          <!-- year picker -->
+          <p-calendar
+            (onSelect)="formatDate()"
+            *ngIf="periodSelected === 'year'"
+            view="year"
+            [inline]="true"
+            dateFormat="yy"
+            inputId="yearpicker"
+            [(ngModel)]="dateSelected"
+          ></p-calendar>
         </div>
       </div>
     </ng-template>

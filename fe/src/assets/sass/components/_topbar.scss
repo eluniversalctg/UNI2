@@ -1,5 +1,5 @@
 .layout-topbar {
-  height: 7rem;
+  height: 5rem;
   padding: 0 2rem 0 1.25rem;
   position: fixed;
   width: 100%;
@@ -633,7 +633,8 @@
   box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.1), 0px 24px 36px rgba(0, 0, 0, 0.04);
 }
 .layout-topbar .layout-topbar-right .layout-topbar-actions li > ul {
-  background: $color-primary;
+
+  background:  linear-gradient(147.38deg, #ffffff, #9ec4f7)
 }
 .layout-topbar .layout-topbar-right .layout-topbar-actions li.search-item a {
   background: rgba(245, 247, 250, 0.1);
@@ -671,6 +672,7 @@
 .layout-topbar .layout-topbar-right .layout-topbar-actions li.site-item {
   background: rgba(245, 247, 250, 0.1);
   border: 2px solid rgba(0, 0, 0, 0.2);
+  height: 2.5rem;
 }
 .layout-topbar
   .layout-topbar-right
@@ -762,9 +764,10 @@
   }
 }
 .layout-footer {
-  padding: 1.75rem 2rem;
-  justify-content: space-between;
-  align-items: center;
+    padding: 1.4rem 2rem;
+    justify-content: space-between;
+    align-items: center;
+    height: 4.4rem;
 }
 .layout-footer .footer-left {
   display: flex;

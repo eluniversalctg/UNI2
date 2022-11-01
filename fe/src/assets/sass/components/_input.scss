@@ -8,7 +8,7 @@ input {
   transition: background-color 0.2s, color 0.2s, border-color 0.2s,
     box-shadow 0.2s;
   appearance: none;
-  border-radius: 25px !important;
+  border-radius: 5px !important;
 }
 input:focus {
   border: 1px solid $btn !important;

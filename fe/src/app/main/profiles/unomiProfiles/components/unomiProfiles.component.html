@@ -325,12 +325,14 @@
   [contentStyle]="{ overflow: 'visible' }"
   [style]="{
     overflow: 'auto',
-    'min-width': '100vw',
-    'min-height': '100vh'
+    'min-width': '95vw',
+    'min-height': '95vh',
+    'max-width': '95vw',
+    'max-height': '95vh'
   }"
   [modal]="true"
   [draggable]="false"
-  [maximizable]="true"
+  [maximizable]="false"
 >
   <ng-template pTemplate="header">
     <p></p>

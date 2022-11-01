@@ -3,7 +3,7 @@
   border: 1px solid #d3dbe3;
   transition: background-color 0.2s, color 0.2s, border-color 0.2s,
     box-shadow 0.2s;
-  border-radius: 20px;
+  border-radius: 5px;
 }
 .p-multiselect:not(.p-disabled):hover {
   border-color: $btn-over;

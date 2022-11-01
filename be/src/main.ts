@@ -25,7 +25,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('UNI2')
     .setDescription(
-      'API creada con el fin de tener una plataforma que administre, integre y extienda funcionalidades de las plataformas de Apache Unomi, Crona.Ai y Matomo para la personalización de experiendias a los usuarios de los portales web de editoras.',
+      'API creada con el fin de tener una plataforma que administre, integre y extienda funcionalidades de las plataformas de Apache Unomi, Crona.Ai y Matomo para la personalización de experiencias a los usuarios de los portales web de Editora del Mar.',
     )
     .setVersion('1.0')
     .addBearerAuth()
