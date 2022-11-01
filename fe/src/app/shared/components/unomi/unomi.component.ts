@@ -319,6 +319,14 @@ export class UnomiComponent implements OnInit {
       }
     }
     if (this.selectedOption.value === genWord.RULE) {
+      const actions: any[] = [];
+
+      this.newUnomi.actions?.forEach((action) => {
+        actions.push({ type: action.id, parameterValues: {} });
+      });
+
+      this.newUnomi.actions = actions;
+
       if (
         this.newUnomi.metadata.id !== undefined &&
         this.newUnomi.metadata.id !== '' &&

@@ -145,7 +145,6 @@ export class CreateUserComponent {
       if (!this.isEditing) {
         if (user.password === confirmPassword) {
           this.save(user);
-          this.addNew = false;
         } else {
           this.msg.add({
             severity: MessagesTst.ERROR,
@@ -331,15 +330,23 @@ export class CreateUserComponent {
             summary: MessagesTst.INSERTSUCCESS,
           });
           user = new User();
+          this.addNew = false;
           this.reset();
           this.getAllUsers();
         }
       },
       (error) => {
-        this.msg.add({
-          severity: MessagesTst.ERROR,
-          summary: MessagesTst.INSERTERROR,
-        });
+        if (error.error.message === 'El username ya existe') {
+          this.msg.add({
+            severity: MessagesTst.ERROR,
+            summary: error.error.message,
+          });
+        } else {
+          this.msg.add({
+            severity: MessagesTst.ERROR,
+            summary: MessagesTst.INSERTERROR,
+          });
+        }
       }
     );
   }

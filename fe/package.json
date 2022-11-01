@@ -10,7 +10,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "prepare": "husky install",
-    "build:prod": "ng build --configuration=production --aot"
+    "build:prod": "ng build --configuration=production --aot",
+    "build:qa": "ng build --configuration=qa --aot"
   },
   "husky": {
     "hooks": {

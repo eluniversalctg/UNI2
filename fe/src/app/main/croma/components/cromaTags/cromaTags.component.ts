@@ -121,9 +121,9 @@ export class CromaTagsComponent {
       )
       .subscribe({
         next: (data) => {
-          data[0].related_articles.forEach((art) => {
+          data.forEach((art) => {
             if (art['metadata'].valid) {
-              if (!art.matomo[0]['Actions.getPageUrl'][0]) {
+              if (art.matomo && !art.matomo[0]['Actions.getPageUrl'][0]) {
                 art.matomo[0]['Actions.getPageUrl'].push({
                   nb_hits: '',
                   avg_time_on_page: '',

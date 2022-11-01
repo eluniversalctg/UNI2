@@ -2,7 +2,7 @@ import { JSDOM } from 'jsdom';
 import * as _ from 'lodash';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-import { catchError, lastValueFrom, map } from 'rxjs';
+import { catchError, forkJoin, lastValueFrom, map } from 'rxjs';
 import { CreateCromaDto } from './dto/create-croma.dto';
 import { MatomoService } from 'src/matomo/matomo.service';
 import { RelatedCromaDto } from './dto/related-croma.dto';
@@ -237,45 +237,101 @@ export class CromaService {
     // get placeholders to database
     this.getPlaceholders();
     const domain = await this.domainService.find(site);
-
+    const request = [];
     // search for article on CromaAI DB.
     for (let i = 0; i < data.related_articles.length; i++) {
       const element = data.related_articles[i];
-      const article = element.cms_id
-        ? await this.getNews(element.cms_id, domain[0].cromaUrl)
-        : await this.getNewsById(element.article_id, domain[0].cromaUrl);
-
-      //verify html valid
-      const htmlValid = await this.getHTML(article.url);
-
-      //set similarity as 100 %
-      element.similarity = `${Number(Number(element.similarity) * 100).toFixed(
-        2,
-      )}%`;
-
-      // *************** get matomo tags******************
-
-      if (tags && period && date) {
-        data.related_articles[i].matomo = await this.getMatomoTags(
-          tags,
-          period,
-          date,
-          article,
-          domain[0].matomoUrl,
-          domain[0].idSite,
-        );
-      } else {
-        data.related_articles[i].matomo = [];
-      }
-
-      data.related_articles[i].metadata = htmlValid;
-
-      data.related_articles[i] = {
-        ...element,
-        ...JSON.parse(JSON.stringify(article)),
-      };
+      request.push(
+        element.cms_id
+          ? this.getNews(element.cms_id, domain[0].cromaUrl)
+          : this.getNewsById(element.article_id, domain[0].cromaUrl),
+      );
     }
-    return [data];
+    const reponseToDevolver = await new Promise((resolve, reject) => {
+      forkJoin(...request).subscribe({
+        next: (req) => {
+          for (let i = 0; i < data.related_articles.length; i++) {
+            const element = data.related_articles[i];
+            const article = req.find(
+              (x) =>
+                x['_id'] === element.article_id ||
+                x['pub_art_id'] === element.cms_id,
+            );
+            data.related_articles[i] = {
+              ...element,
+              ...JSON.parse(JSON.stringify(article)),
+            };
+          }
+
+          const getHtml = [];
+          for (let i = 0; i < data.related_articles.length; i++) {
+            const article = data.related_articles[i];
+            article.similarity = `${Number(
+              Number(article.similarity) * 100,
+            ).toFixed(2)}%`;
+            getHtml.push(this.getHTML(article.url));
+          }
+          forkJoin(...getHtml).subscribe({
+            next: (resp) => {
+              for (let i = 0; i < resp.length; i++) {
+                const art = resp[i];
+                const doc = new JSDOM(art['html']);
+                const cmsid = doc.window.document
+                  .querySelector('meta[name="cmsid"]')
+                  .getAttribute('content');
+                const find = data.related_articles.find(
+                  (x) => x.pub_art_id === cmsid,
+                );
+                if (find) {
+                  find.metadata = art;
+                }
+              }
+
+              const matomoReq = [];
+              for (let i = 0; i < data.related_articles.length; i++) {
+                const article = data.related_articles[i];
+                if (tags && period && date) {
+                  matomoReq.push(
+                    this.getMatomoTags(
+                      tags,
+                      period,
+                      date,
+                      article,
+                      domain[0].matomoUrl,
+                      domain[0].idSite,
+                    ),
+                  );
+                } else {
+                  data.related_articles[i].matomo = [];
+                }
+              }
+
+              forkJoin(...matomoReq).subscribe({
+                next: (analitic) => {
+                  const results = [];
+                  for (let i = 0; i < analitic.length; i++) {
+                    analitic[i][1].matomo = analitic[i][0];
+                    results.push(analitic[i][1]);
+                  }
+                  resolve(results);
+                },
+                error: (err) => {
+                  reject(err);
+                },
+              });
+            },
+            error: (err) => {
+              reject(err);
+            },
+          });
+        },
+        error: (err) => {
+          reject(err);
+        },
+      });
+    });
+
+    return reponseToDevolver;
   }
 
   async getMatomoTags(tags, period, date, article, matomoUrl, idSite) {
@@ -310,7 +366,7 @@ export class CromaService {
 
       matomo.push(matomoResp);
     }
-    return matomo;
+    return [matomo, article];
   }
 
   /**

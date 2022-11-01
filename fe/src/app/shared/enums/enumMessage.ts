@@ -40,8 +40,8 @@ export enum MessagesTst {
   VARIABLEINACTIVATED = 'Variable inactivada',
   PLACEHOLDERACTIVATED = 'Placeholder activado',
   PLACEHOLDERINACTIVATED = 'Placeholder inactivado',
-  PAGEACTIVATED = 'Página activado',
-  PAGEINACTIVATED = 'Página inactivado',
+  PAGEACTIVATED = 'Página activada',
+  PAGEINACTIVATED = 'Página inactivada',
 
   BLOCKACTIVATED = 'Bloque activado',
   BLOCKINACTIVATED = 'Bloque inactivado',

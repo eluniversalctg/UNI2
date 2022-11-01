@@ -385,21 +385,21 @@ export class PagesComponent {
         update.isActive = !page.isActive;
 
         this.pagesService.update(update).subscribe(
-          (data) => {
+          () => {
             if (page.isActive) {
-              this.msg.add({
-                severity: MessagesTst.SUCCESS,
-                summary: MessagesTst.PAGEACTIVATED,
-              });
-            } else {
               this.msg.add({
                 severity: MessagesTst.SUCCESS,
                 summary: MessagesTst.PAGEINACTIVATED,
               });
+            } else {
+              this.msg.add({
+                severity: MessagesTst.SUCCESS,
+                summary: MessagesTst.PAGEACTIVATED,
+              });
             }
             this.getAllPages();
           },
-          (error) => {
+          () => {
             this.msg.add({
               severity: MessagesTst.ERROR,
               summary: MessagesTst.CHANGESTATE,
