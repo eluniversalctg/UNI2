@@ -42,6 +42,7 @@ export enum MessagesTst {
   PLACEHOLDERINACTIVATED = 'Placeholder inactivado',
   PAGEACTIVATED = 'Página activada',
   PAGEINACTIVATED = 'Página inactivada',
+  SISESNOVALID = 'La medida de los bloques no es válida, deben ser igual o mayor a uno además debe ir separado por la letra X y sin espacios',
 
   BLOCKACTIVATED = 'Bloque activado',
   BLOCKINACTIVATED = 'Bloque inactivado',

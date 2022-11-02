@@ -99,7 +99,6 @@ export class ConditionsComponent {
     this.conditionSchema = [];
 
     this.isEditing = false;
-    this.tableConditions.reset();
   }
 
   /**

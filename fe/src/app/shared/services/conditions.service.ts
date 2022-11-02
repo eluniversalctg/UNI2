@@ -74,9 +74,6 @@ export class ConditionsService extends ResourceService<Condition> {
                 ? element['value']
                 : element['selectedValue'];
             }
-            if (!element['value'] || !element['selectedValue']) {
-              throw new Error(genWord.NOVAL);
-            }
 
             // validate if replace values
             if (
@@ -85,7 +82,7 @@ export class ConditionsService extends ResourceService<Condition> {
             ) {
               obj['parameterValues'][element['saveValueInto']] =
                 element['selectedValue'];
-            } else if (element['variable'] !== 'Seleccionar Condición') {
+            } else if (element['variable'] !== 'Seleccionar Condición' && element['selectedValue']) {
               obj['parameterValues'][element['variable']] =
                 element['selectedValue'];
             }
