@@ -137,15 +137,6 @@
           autocomplete="off"
         />
       </div>
-      <p-message
-        *ngIf="
-          placeholdersForm.controls.name.touched &&
-          !placeholdersForm.controls.name.valid
-        "
-        severity="error"
-        text="Nombre requerido."
-        class="mb-2 mt-2"
-      ></p-message>
     </div>
     <div class="field grid">
       <label for="type" class="col-12 md:col-4">Tipo:</label>
@@ -198,15 +189,6 @@
           autocomplete="off"
         />
       </div>
-      <p-message
-        *ngIf="
-          placeholdersForm.controls.valueDefault.touched &&
-          !placeholdersForm.controls.valueDefault.valid
-        "
-        severity="error"
-        text="Valor requerido."
-        class="mb-2 mt-2"
-      ></p-message>
     </div>
     <div
       class="field grid"
@@ -225,12 +207,6 @@
           placeholder="Seleccione un valor"
         ></p-dropdown>
       </div>
-      <p-message
-        *ngIf="!placeholdersForm.controls.valueDefault.valid"
-        severity="error"
-        text="Valor requerido."
-        class="mb-2 mt-2"
-      ></p-message>
     </div>
   </form>
   <ng-template pTemplate="footer">

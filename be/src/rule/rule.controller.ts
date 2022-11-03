@@ -34,6 +34,11 @@ export class RuleController {
     return this.ruleService.getSessions(condition);
   }
 
+  @Get('/sessions/count')
+  getSessionscount() {
+    return this.ruleService.getSessionscount();
+  }
+
   @Post('/verify/Condition')
   verifyCondition(@Body() condition) {
     return this.ruleService.verifyCondition(condition);

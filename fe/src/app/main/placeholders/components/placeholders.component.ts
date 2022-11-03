@@ -191,9 +191,13 @@ export class PlaceholdersComponent {
   save(placeholder: Placeholders) {
     let found;
     if (this.placeholders) {
-      found = this.placeholders.find((x) => x.name === placeholder.name);
+      found = this.placeholders.find(
+        (x) =>
+          x.name === placeholder.name &&
+          x.typesMetaData === placeholder.typesMetaData
+      );
     }
-    if (!found || placeholder.typesMetaData !== found.typesMetaData) {
+    if (!found) {
       this.placeholdersService.add(placeholder).subscribe(
         (data) => {
           if (data) {
@@ -233,13 +237,13 @@ export class PlaceholdersComponent {
    */
   update(placeholder: Placeholders) {
     placeholder._id = this.placeholdersUpdate._id;
-    let found = this.placeholders.find((x) => x.name === placeholder.name);
+    let found = this.placeholders.find(
+      (x) =>
+        x.name === placeholder.name &&
+        x.typesMetaData === placeholder.typesMetaData
+    );
 
-    if (
-      !found ||
-      found.name === this.placeholdersUpdate.name ||
-      placeholder.typesMetaData !== found.typesMetaData
-    ) {
+    if (!found) {
       this.placeholdersService.update(placeholder).subscribe(
         (data) => {
           if (data) {
