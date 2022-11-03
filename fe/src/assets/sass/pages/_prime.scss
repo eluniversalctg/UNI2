@@ -4,6 +4,9 @@ h1, .p-dialog{
   font-family: 'Raleway' !important;
 }
 
+h1{
+   font-size: 1.7rem;
+}
 .p-dropdown {
   border-radius: 3px !important;
 }
@@ -2523,5 +2526,24 @@ h1, .p-dialog{
     margin-left: 0.5rem;
     line-height: 1;
     padding-right: 10px;
+
+  }
+  .p-button-icon{
+    font-size:11px !important;
+  }
+  .p-button.p-button-icon-only.p-button-rounded {
+    height: 23px;
+    width: 23px;
+}
+.p-datatable .p-datatable-tbody > tr > td {
+  font-size: 0.9rem;
+  padding: 0.3rem 1rem;
+}
+.p-tree .p-tree-container .p-treenode .p-treenode-content .p-treenode-icon {
+  color: #006dff;
+  font-size: 1.6rem;
+}
+.field.grid > label {
+   font-size: 0.9rem;
 }
 }

@@ -8,7 +8,7 @@ import { genWord } from 'src/app/shared/enums/genericWords';
 })
 export class CampaignsComponent {
   ruleComponent: Options = {
-    label: genWord.CAMPAIGNLABEL,
+    label: genWord.CAMPAIGNLABEL2,
     value: genWord.CAMPAIGN,
   };
 

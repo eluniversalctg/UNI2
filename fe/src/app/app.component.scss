@@ -5,6 +5,7 @@ $lapDuration: 3s;
 $px16: 16px 16px;
 $px28: 28px 28px;
 $rem2: 2rem;
+
 .p-card {
   border-radius: 15px !important;
 }
@@ -117,6 +118,7 @@ i {
   .template-icon {
     background-image: url("/assets/images/iconsMenu/plantillas.svg");
     background-size: 25px 25px;
+    margin-left: 1px;
   }
 
   .condiciones-icon {
@@ -157,6 +159,11 @@ i {
   .menu7-icon {
     background-image: url("/assets/images/iconsMenu/menu7.svg");
     background-size: $px28;
+    margin-left: 5px;
+  }
+
+  .pi-globe{
+    margin-left: 5px;
   }
 
   .goals-icon {

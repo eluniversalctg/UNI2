@@ -3,6 +3,12 @@
   <div class="p-col-12">
     <div class="card">
       <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+          <h1>Croma tags</h1>
+        </ng-template>
+      </p-toolbar>
+
+      <p-toolbar styleClass="p-mb-4">
         <div class="col-12 md:col-12 p-mb-2">
           <p-radioButton
             class="p-ml-2"
@@ -36,7 +42,7 @@
         <div class="col-12 md:col-6 lg:col-4">
           <input
             [(ngModel)]="wordOrText"
-            class="h-auto w-100"
+            class="h-auto w-100 input-croma"
             type="text"
             pInputText
             placeholder="Ingrese una palabra o un texto para buscar."

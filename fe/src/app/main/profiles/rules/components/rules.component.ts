@@ -9,7 +9,7 @@ import { genWord } from 'src/app/shared/enums/genericWords';
 })
 export class RulesComponent {
   ruleComponent: Options = {
-    label: genWord.RULELABEL,
+    label: genWord.RULELABEL2,
     value: genWord.RULE,
   };
   constructor() {}

@@ -7,7 +7,7 @@ import { genWord } from 'src/app/shared/enums/genericWords';
 })
 export class SegmentsComponent {
   ruleComponent: Options = {
-    label: genWord.SEGMENTLABEL,
+    label: genWord.SEGMENTLABEL2,
     value: genWord.SEGMENT,
   };
 
