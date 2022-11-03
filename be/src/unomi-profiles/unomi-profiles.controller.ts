@@ -31,8 +31,8 @@ export class UnomiProfilesController {
     return this.unomiProfilesService.batchProfiles(conditionReq);
   }
 
-  @Get()
-  getCountProfiles() {
-    return this.unomiProfilesService.getCountProfiles();
+  @Post('/profiles/count')
+  getCountProfiles(@Body() condition) {
+    return this.unomiProfilesService.getCountProfiles(condition);
   }
 }
