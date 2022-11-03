@@ -46,7 +46,7 @@ export class ConditionsService extends ResourceService<Condition> {
       // create new parentCondition
       let condition = new parentCondition();
 
-      if (value) {
+      if (value && value.length > 0) {
         // will always be a boolean condition
         condition.type = genWord.BOOLEANCONDITION;
         condition[genWord.PARAMETERVALUES] = new parameterValues();

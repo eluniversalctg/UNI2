@@ -104,7 +104,7 @@
   e
 >
   <ng-template pTemplate="header">
-    <p> {{isEditing ? 'Editar widget': 'Crear un nuevo widget'}} </p>
+    <p>{{ isEditing ? "Editar widget" : "Crear un nuevo widget" }}</p>
   </ng-template>
 
   <form name="widgetsForm" [formGroup]="widgetsForm" class="mt-2">
@@ -269,6 +269,11 @@
       label="Guardar"
       icon="pi pi-check"
       class="p-button-text"
+      [disabled]="
+        !widgetsForm.controls.name.valid ||
+        !widgetsForm.controls.description.valid ||
+        paramsSelected.length < 1
+      "
       (click)="saveWidget()"
     ></button>
   </ng-template>

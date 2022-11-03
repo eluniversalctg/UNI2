@@ -45,6 +45,14 @@
       >
         <ng-template pTemplate="caption">
           <div class="flex">
+            <button
+              pButton
+              type="button"
+              icon="pi pi-refresh"
+              pTooltip="Refrescar información."
+              class="p-button-rounded p-button-success p-mt-1 p-ml-2"
+              (click)="getData()"
+            ></button>
             <span class="p-input-icon-left ml-auto">
               <i class="pi pi-search"></i>
               <input
