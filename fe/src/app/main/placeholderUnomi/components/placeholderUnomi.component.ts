@@ -110,6 +110,7 @@ export class PlaceholderUnomiComponent {
    */
   register() {
     let control = this.placeholdersForm.controls;
+    let valid = false;
 
     let placeholder: PlaceholderUnomi = {
       name: control.name.value,
@@ -117,10 +118,29 @@ export class PlaceholderUnomiComponent {
       type: control.type.value,
     };
 
-    if (!this.isEditing) {
-      this.save(placeholder);
+    if (placeholder.name) {
+      valid = true;
     } else {
-      this.update(placeholder);
+      this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: MessagesTst.ERRORNAME,
+      });
+    }
+    if (placeholder.valueDefault) {
+      valid = true;
+    } else {
+      this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: MessagesTst.ERROVALUEDEFAULT,
+      });
+    }
+
+    if (valid) {
+      if (!this.isEditing) {
+        this.save(placeholder);
+      } else {
+        this.update(placeholder);
+      }
     }
   }
 

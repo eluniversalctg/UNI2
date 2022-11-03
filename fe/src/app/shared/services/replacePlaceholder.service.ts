@@ -143,7 +143,7 @@ export class ReplacePlaceholderService extends ResourceService<any> {
                 );
                 let index = j + 1;
                 htmlContentPlaceholder = htmlContentPlaceholder.replaceAll(
-                  `[$$${placeholders[i].name}${index}$$]`,
+                  `[$$ld:${placeholders[i].name}${index}$$]`,
                   replace
                 );
               }
@@ -179,9 +179,11 @@ export class ReplacePlaceholderService extends ResourceService<any> {
     return result;
   }
 
-  replacePersonalization(htmlContentPlaceholder, placeholders,placeholderSystem) {
-
-
+  replacePersonalization(
+    htmlContentPlaceholder,
+    placeholders,
+    placeholderSystem
+  ) {
     //placeholders unomi
     let unomiPlaceholders = htmlContentPlaceholder.split('[$$');
     let newUnomiPlaceholders: any[] = [];
@@ -216,21 +218,19 @@ export class ReplacePlaceholderService extends ResourceService<any> {
     }
 
     for (let i = 0; i < placeholderSystem.length; i++) {
+      for (let j = 1; j <= newSystemPlaceholders.length; j++) {
+        //REPLACE OPEN FRAFT
+        htmlContentPlaceholder = htmlContentPlaceholder.replaceAll(
+          `[$$og:${placeholderSystem[i].name}${j}$$]`,
+          placeholderSystem[i].valueDefault
+        );
 
-        for (let j = 1; j <= newSystemPlaceholders.length; j++) {
-          //REPLACE OPEN FRAFT
-          htmlContentPlaceholder = htmlContentPlaceholder.replaceAll(
-            `[$$og:${placeholderSystem[i].name}${j}$$]`,
-            placeholderSystem[i].valueDefault
-          );
-
-          //REPLACE JSON-LD
-          htmlContentPlaceholder = htmlContentPlaceholder.replaceAll(
-            `[$$${placeholderSystem[i].name}${j}$$]`,
-            placeholderSystem[i].valueDefault
-          );
-        }
-
+        //REPLACE JSON-LD
+        htmlContentPlaceholder = htmlContentPlaceholder.replaceAll(
+          `[$$ld:${placeholderSystem[i].name}${j}$$]`,
+          placeholderSystem[i].valueDefault
+        );
+      }
     }
 
     return htmlContentPlaceholder;

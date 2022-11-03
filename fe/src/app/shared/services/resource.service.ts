@@ -56,6 +56,12 @@ export abstract class ResourceService<T> {
       .pipe(catchError(this.handleError));
   }
 
+  getByURL(param: string): Observable<any> {
+    return this.httpClient
+      .get(`/${this.APIUrl}/${param}`)
+      .pipe(catchError(this.handleError));
+  }
+
   delete(id: string | number): Observable<any> {
     return this.httpClient
       .delete(`/${this.APIUrl}/${id}`)

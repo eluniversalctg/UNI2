@@ -61,6 +61,8 @@ export class TemplatesPersonalizationComponent {
   placeholdersSys: Placeholders[] = [];
   selectedPlaceholdersSystem: Placeholders;
 
+  typePersonalization: boolean = false;
+
   constructor(
     private msg: MessageService,
     private placeholdersService: PlaceholderUnomiService,
@@ -112,7 +114,7 @@ export class TemplatesPersonalizationComponent {
         this.placeholdersSys.forEach((placeholder) => {
           if (placeholder.isActive) {
             if (placeholder.type === MessagesTst.SYSTEM) {
-              placeholder['typeUpdate']=false;
+              placeholder['typeUpdate'] = false;
               this.placeholdersSystem.push(placeholder);
             }
           }
@@ -202,7 +204,15 @@ export class TemplatesPersonalizationComponent {
   }
 
   save() {
-    if (this.template.numNews >= 1 && this.template.numNews <= 10) {
+    let valid = false;
+    if (this.typePersonalization) {
+      if (this.template.numNews >= 1 && this.template.numNews <= 10) {
+        valid = true;
+      }
+    } else {
+      valid = true;
+    }
+    if (valid) {
       let valdExistTemplate = this.templates.find(
         (x) => x.title === this.template.title
       );
@@ -343,7 +353,7 @@ export class TemplatesPersonalizationComponent {
         let index = numPlaceholder.length + 1;
         this.template.htmlContent = `${select[0]}[$$og:${placeholder.name}${index}$$]${select[1]}`;
       } else {
-        let systemPlaceholders = htmlText.split('[$$');
+        let systemPlaceholders = htmlText.split('[$$ld:');
         let newsystemPlaceholders: any[] = [];
         for (let i = 0; i < systemPlaceholders.length; i++) {
           let indice = systemPlaceholders[i].indexOf('$$]');
@@ -355,7 +365,7 @@ export class TemplatesPersonalizationComponent {
           (x) => x.indexOf(placeholder.name) === 0
         );
         let index = numPlaceholder.length + 1;
-        this.template.htmlContent = `${select[0]}[$$${placeholder.name}${index}$$]${select[1]}`;
+        this.template.htmlContent = `${select[0]}[$$ld:${placeholder.name}${index}$$]${select[1]}`;
       }
     } else if (placeholder.type === html.UNOMI) {
       let systemPlaceholders = htmlText.split('[$$');
@@ -380,8 +390,7 @@ export class TemplatesPersonalizationComponent {
     let found = this.placeholderUpdate.find((x) => x._id === placeholder._id);
     if (!found) {
       placeholder.isInUse = true;
-      if(placeholder.typeUpdate){
-
+      if (placeholder.typeUpdate) {
         this.placeholderUpdate.push(placeholder);
       }
     }
@@ -397,7 +406,7 @@ export class TemplatesPersonalizationComponent {
       (response) => {
         this.placeholders = response;
         this.placeholders.forEach((placeholder) => {
-          placeholder['typeUpdate']=true;
+          placeholder['typeUpdate'] = true;
           if (placeholder.type === html.UNOMI) {
             this.placeholdersUnomi.push(placeholder);
           } else {
@@ -460,5 +469,13 @@ export class TemplatesPersonalizationComponent {
         fileUpload.clear();
       }
     };
+  }
+
+  changeType(type) {
+    if (type === 'Editorial') {
+      this.typePersonalization = true;
+    } else {
+      this.typePersonalization = false;
+    }
   }
 }

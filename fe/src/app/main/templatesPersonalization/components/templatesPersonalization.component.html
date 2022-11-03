@@ -29,6 +29,7 @@
             (click)="dialogPlaceholderStandard()"
           ></button>
           <button
+            *ngIf="typePersonalization"
             class="p-ml-2"
             pButton
             type="button"
@@ -92,6 +93,7 @@
             value="Editorial"
             [(ngModel)]="template.typeTemplate"
             [disabled]="template.inUse ? template.inUse : false"
+            (onClick)="changeType(template.typeTemplate)"
           ></p-radioButton>
           <label for="text" class="p-ml-2">Editorial</label>
           <p-radioButton
@@ -101,10 +103,14 @@
             value="Personalización"
             [(ngModel)]="template.typeTemplate"
             [disabled]="template.inUse ? template.inUse : false"
+            (onClick)="changeType(template.typeTemplate)"
           ></p-radioButton>
           <label for="text" class="p-ml-2">Personalización</label>
         </div>
-        <div class="col-12 md:col-12 p-mb-2 lg:col-3">
+        <div
+          class="col-12 md:col-12 p-mb-2 lg:col-3"
+          *ngIf="typePersonalization"
+        >
           <label for="name">Número de noticias:</label>
           <input
             id="numNews"
