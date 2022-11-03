@@ -55,8 +55,8 @@ export class UnomiProfilesComponent {
 
   totalRecords;
   options: any[];
-  limit: any[] = [];
   optionsSelected: boolean = true;
+  limit: any[] = [];
 
   constructor(
     private router: Router,
@@ -277,6 +277,7 @@ export class UnomiProfilesComponent {
             }),
         });
     }
+    this.filterDataSource();
   }
 
   /**
@@ -562,41 +563,46 @@ export class UnomiProfilesComponent {
   }
 
   loadProfiles(event: LazyLoadEvent) {
-    this.loading = true;
-
-    this.limit[0] = event.first;
-    this.limit[1] = event.rows;
-    if (this.schema.length > 0) {
-      let condition = this.conditionSrv.createBooleanConditionObj(this.schema);
-      this.unomiProfilesSrv
-        .addByURL('search', [condition, this.limit])
-        .subscribe({
-          next: (data) => {
-            this.unomiProfiles = data[0].list;
-            this.filterDataSource();
-            this.loading = false;
-          },
-          error: () =>
-            this.msg.add({
-              severity: MessagesTst.ERROR,
-              summary: MessagesTst.ERRORGETDATA,
-            }),
-        });
+    if (this.segmentId) {
+      this.getData(undefined);
     } else {
-      this.unomiProfilesSrv
-        .addByURL('search', [undefined, this.limit])
-        .subscribe({
-          next: (data) => (
-            (this.unomiProfiles = data[0].list),
-            (this.loading = false),
-            this.filterDataSource()
-          ),
-          error: () =>
-            this.msg.add({
-              severity: MessagesTst.ERROR,
-              summary: MessagesTst.ERRORGETDATA,
-            }),
-        });
+      this.loading = true;
+      this.limit[0] = event.first;
+      this.limit[1] = event.rows;
+      if (this.schema.length > 0) {
+        let condition = this.conditionSrv.createBooleanConditionObj(
+          this.schema
+        );
+        this.unomiProfilesSrv
+          .addByURL('search', [condition, this.limit])
+          .subscribe({
+            next: (data) => {
+              this.unomiProfiles = data[0].list;
+              this.filterDataSource();
+              this.loading = false;
+            },
+            error: () =>
+              this.msg.add({
+                severity: MessagesTst.ERROR,
+                summary: MessagesTst.ERRORGETDATA,
+              }),
+          });
+      } else {
+        this.unomiProfilesSrv
+          .addByURL('search', [undefined, this.limit])
+          .subscribe({
+            next: (data) => (
+              (this.unomiProfiles = data[0].list),
+              (this.loading = false),
+              this.filterDataSource()
+            ),
+            error: () =>
+              this.msg.add({
+                severity: MessagesTst.ERROR,
+                summary: MessagesTst.ERRORGETDATA,
+              }),
+          });
+      }
     }
   }
   refreshData() {

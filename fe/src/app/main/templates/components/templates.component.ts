@@ -328,7 +328,7 @@ export class TemplatesComponent {
           let index = numPlaceholder.length + 1;
           this.template.htmlContent = `${select[0]}[$$og:${placeholder.name}${index}$$]${select[1]}`;
         } else {
-          let systemPlaceholders = u.split('[$$');
+          let systemPlaceholders = u.split('[$$ld:');
           let newsystemPlaceholders: any[] = [];
           for (let i = 0; i < systemPlaceholders.length; i++) {
             let indice = systemPlaceholders[i].indexOf('$$]');

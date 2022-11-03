@@ -107,4 +107,8 @@ export enum MessagesTst {
 
   PAGEINTERNAL = 'Interna',
   PAGESECTION = 'Sección',
+
+  //error
+  ERRORNAME = 'El nombre es requerido',
+  ERROVALUEDEFAULT = 'El valor por defecto es requerido',
 }

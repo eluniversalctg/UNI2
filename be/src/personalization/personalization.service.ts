@@ -374,7 +374,10 @@ export class PersonalizationService {
               };
 
               //get the articles with respect to id
-              const articles = await this.cromaService.related(relatedCromaDto, page.site._id, );
+              const articles = await this.cromaService.related(
+                relatedCromaDto,
+                page.site._id,
+              );
               const articlesSelect: any[] = [];
 
               //use the number of items needed for the template
@@ -427,7 +430,8 @@ export class PersonalizationService {
           // get matomo data
           const matomoResponse = await this.cromaService.getInfoMatomo(
             `method=${matomoTags.module}.${matomoTags.tag}&period=day&date=${matomoPeriod.year}-${matomoPeriod.month}-${matomoPeriod.day}&idSite=1&${params}`,
-            page.site.matomoUrl, page.site.idSite,
+            page.site.matomoUrl,
+            page.site.idSite,
           );
 
           // validate if get information
@@ -528,7 +532,7 @@ export class PersonalizationService {
 
                 //REPLACE JSON-LD
                 template.htmlContent = template.htmlContent.replaceAll(
-                  `[$$${this.placeholdersSystem[i].name}${j}$$]`,
+                  `[$$ld:${this.placeholdersSystem[i].name}${j}$$]`,
                   this.placeholdersSystem[i].valueDefault,
                 );
               }
@@ -796,7 +800,7 @@ export class PersonalizationService {
               );
               const index = j + 1;
               htmlContentPlaceholder = htmlContentPlaceholder.replaceAll(
-                `[$$${placeholders[i].name}${index}$$]`,
+                `[$$ld:${placeholders[i].name}${index}$$]`,
                 replace,
               );
             }
