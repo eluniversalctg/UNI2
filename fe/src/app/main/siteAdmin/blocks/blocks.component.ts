@@ -150,13 +150,10 @@ export class BlockComponent {
     let control = this.blocksForm.controls;
     for (let i = 0; i < control.sizes.value.length; i++) {
       const element = control.sizes.value[i];
+      const testx = /^[0-9999]{1,16}x[0-9999]{1,16}$/.test(element);
+      const testX = /^[0-9999]{1,16}X[0-9999]{1,16}$/.test(element);
       const split = element.split('x');
-      if (
-        !/^[0-9999]{1,16}x[0-9999]{1,16}$/.test(element) ||
-        !/^[0-9999]{1,16}X[0-9999]{1,16}$/.test(element) ||
-        Number(split[0]) < 1 ||
-        Number(split[1]) < 1
-      ) {
+      if (!testx || !testX || Number(split[0]) < 1 || Number(split[1]) < 1) {
         return this.msg.add({
           severity: MessagesTst.WARNING,
           summary: MessagesTst.SISESNOVALID,
