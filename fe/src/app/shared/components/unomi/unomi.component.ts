@@ -254,7 +254,7 @@ export class UnomiComponent implements OnInit {
     if (!this.newUnomi.metadata.id) {
       return this.msg.add({
         severity: MessagesTst.ERROR,
-        summary: 'Debe arregar el id',
+        summary: 'Debe agregar el id',
       });
     }
 
