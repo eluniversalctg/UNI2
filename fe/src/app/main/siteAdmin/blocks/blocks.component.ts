@@ -148,14 +148,12 @@ export class BlockComponent {
       });
     }
     let control = this.blocksForm.controls;
-    const regex = /^[0-9999]{1,16}x[0-9999]{1,16}$/;
-    const regex2 = /^[0-9999]{1,16}X[0-9999]{1,16}$/;
     for (let i = 0; i < control.sizes.value.length; i++) {
       const element = control.sizes.value[i];
       const split = element.split('x');
       if (
-        !regex.test(element) ||
-        !regex2.test(element) ||
+        !/^[0-9999]{1,16}x[0-9999]{1,16}$/.test(element) ||
+        !/^[0-9999]{1,16}X[0-9999]{1,16}$/.test(element) ||
         Number(split[0]) < 1 ||
         Number(split[1]) < 1
       ) {
