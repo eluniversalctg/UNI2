@@ -281,11 +281,12 @@ export class UnomiComponent implements OnInit {
 
     if (
       this.selectedOption.value === genWord.RULE &&
-      !this.systemTagsSelected
+      this.systemTagsSelected &&
+      this.systemTagsSelected.length === 0
     ) {
       return this.msg.add({
         severity: MessagesTst.ERROR,
-        summary: 'Debe agregar al menos un SystemTags',
+        summary: 'Debe agregar al menos un SystemTag',
       });
     }
     if (this.selectedOption.value === genWord.RULE && !this.newUnomi.priority) {
@@ -298,7 +299,7 @@ export class UnomiComponent implements OnInit {
     if (this.selectedOption.value === genWord.RULE && !this.newUnomi.actions) {
       return this.msg.add({
         severity: MessagesTst.ERROR,
-        summary: 'Debe agregar el scrope',
+        summary: 'Debe agregar al menos una acción',
       });
     }
     // send event to sharedContions to reload the list
@@ -317,12 +318,19 @@ export class UnomiComponent implements OnInit {
               this.newUnomi['startEvent']
             )
           : [];
+      if (this.newUnomi['startEvent'] === null) {
+        return;
+      }
       this.newUnomi['targetEvent'] =
         this.newUnomi['targetEvent'].length > 0
           ? this.conditionSrv.createBooleanConditionObj(
               this.newUnomi['targetEvent']
             )
           : [];
+
+      if (this.newUnomi['targetEvent'] === null) {
+        return;
+      }
       this.tempUnomi['targetEvent'] = { ...this.tempUnomi['firstCondition'] };
       this.tempUnomi['startEvent'] = { ...this.tempUnomi['secondCondition'] };
       delete this.tempUnomi['firstCondition'];
@@ -337,22 +345,34 @@ export class UnomiComponent implements OnInit {
               this.newUnomi['Condition']
             )
           : [];
+      if (this.newUnomi['entryCondition'] === null) {
+        return;
+      }
       this.tempUnomi['entryCondition'] = this.newUnomi['entryCondition'];
 
       delete this.tempUnomi['firstCondition'];
     } else {
+      if (
+        !this.newUnomi['Condition'] ||
+        this.newUnomi['Condition'].length === 0
+      ) {
+        return this.msg.add({
+          severity: MessagesTst.ERROR,
+          summary: 'Debe agregar una condición',
+        });
+      }
       this.newUnomi['conditionString'] = JSON.stringify(
         this.newUnomi['Condition']
       );
-      if(!this.newUnomi['condition']){
-        return;
-      }
       this.newUnomi['condition'] =
         this.newUnomi['Condition'] && this.newUnomi['Condition'].length > 0
           ? this.conditionSrv.createBooleanConditionObj(
               this.newUnomi['Condition']
             )
           : undefined;
+      if (this.newUnomi['condition'] === null) {
+        return;
+      }
       if (this.tempUnomi['firstCondition']) {
         this.tempUnomi['condition'] =
           this.tempUnomi['firstCondition'] &&
@@ -361,6 +381,9 @@ export class UnomiComponent implements OnInit {
                 this.tempUnomi['firstCondition']
               )
             : undefined;
+        if (this.newUnomi['condition'] === null) {
+          return;
+        }
       }
     }
     if (
@@ -375,7 +398,6 @@ export class UnomiComponent implements OnInit {
       }
     }
     if (this.selectedOption.value === genWord.RULE) {
-
       const actions: any[] = [];
 
       this.newUnomi.actions?.forEach((action) => {
