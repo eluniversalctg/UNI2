@@ -66,7 +66,7 @@ export class DashboardComponent {
   transformData(widgets: Widgets[]) {
     const segmentsURL = this.url.split('?');
     widgets.forEach((widget) => {
-      widget.url = `${segmentsURL[0]}${widget.url}${segmentsURL[1]}`;
+      widget.url = `${segmentsURL[0]}?${widget.url}${segmentsURL[1]}`;
     });
     this.widgets = [...widgets];
   }

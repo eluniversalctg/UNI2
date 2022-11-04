@@ -238,12 +238,69 @@ export class UnomiComponent implements OnInit {
     this.isEditing = false;
     this.isDetail = false;
     this.systemTagsSelected = [];
+    if (this.selectedOption.value === genWord.RULE) {
+      this.newUnomi.raiseEventOnlyOnceForProfile = false;
+      this.newUnomi.raiseEventOnlyOnceForSession = false;
+      this.newUnomi.metadata.enabled = false;
+      this.newUnomi.metadata.missingPlugins = false;
+    }
   }
 
   /**
    * description: send request to backend, save a new rule
    */
   register(changeState?: boolean) {
+    //validar que agreguen información
+    if (!this.newUnomi.metadata.id) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'Debe arregar el id',
+      });
+    }
+
+    if (!this.newUnomi.metadata.name) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'Debe agregar el nombre',
+      });
+    }
+
+    if (!this.newUnomi.metadata.description) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'Debe agregar la descripción',
+      });
+    }
+
+    if (!this.newUnomi.metadata.scope) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'Debe agregar el scope',
+      });
+    }
+
+    if (
+      this.selectedOption.value === genWord.RULE &&
+      !this.systemTagsSelected
+    ) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'Debe agregar al menos un SystemTags',
+      });
+    }
+    if (this.selectedOption.value === genWord.RULE && !this.newUnomi.priority) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'Debe agregar la prioridad',
+      });
+    }
+
+    if (this.selectedOption.value === genWord.RULE && !this.newUnomi.actions) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'Debe agregar el scrope',
+      });
+    }
     // send event to sharedContions to reload the list
     this.conditionSrv.reloadCondition();
 
@@ -287,6 +344,9 @@ export class UnomiComponent implements OnInit {
       this.newUnomi['conditionString'] = JSON.stringify(
         this.newUnomi['Condition']
       );
+      if(!this.newUnomi['condition']){
+        return;
+      }
       this.newUnomi['condition'] =
         this.newUnomi['Condition'] && this.newUnomi['Condition'].length > 0
           ? this.conditionSrv.createBooleanConditionObj(
@@ -315,6 +375,7 @@ export class UnomiComponent implements OnInit {
       }
     }
     if (this.selectedOption.value === genWord.RULE) {
+
       const actions: any[] = [];
 
       this.newUnomi.actions?.forEach((action) => {
