@@ -25,6 +25,12 @@ export class MenuService {
         icon: 'c-iconsMenu menu1-icon',
         children: [
           {
+            key: '1.0',
+            label: 'solicitudes',
+            icon: 'pi pi-users',
+            routerLink: ['/main/register'],
+          },
+          {
             key: '1.1',
             label: 'Usuarios',
             icon: 'pi pi-users',
@@ -240,6 +246,7 @@ export class MenuService {
           },
         ],
       },
+
     ];
   }
 }

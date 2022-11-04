@@ -2534,6 +2534,7 @@ h1{
   .p-button.p-button-icon-only.p-button-rounded {
     height: 23px;
     width: 23px;
+    border-radius: 27% !important;
 }
 .p-datatable .p-datatable-tbody > tr > td {
   font-size: 0.9rem;
@@ -2545,5 +2546,23 @@ h1{
 }
 .field.grid > label {
    font-size: 0.9rem;
+}
+.sspanTipoPlantilla:hover{
+  background:#0560aa00;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  border-radius: 5px;
+  border: 1px solid #033863;
+  margin-left: 12px;
+}
+tr:hover{
+  background:#006dff12 !important;
+}
+.cerrar-sesion{
+  height: 40px !important;
+  width: 40px !important;
+}
+.pi-sign-out{
+  font-size: 1.2rem !important;
 }
 }
