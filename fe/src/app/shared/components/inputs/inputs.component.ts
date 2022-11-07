@@ -1,6 +1,6 @@
-import { Input, Component, OnChanges } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 import { RuleService } from 'src/app/shared/services';
+import { Input, Component, OnChanges } from '@angular/core';
 import { Condition, ParentCondition } from 'src/app/shared/models';
 
 @Component({

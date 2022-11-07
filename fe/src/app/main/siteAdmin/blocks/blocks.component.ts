@@ -152,7 +152,13 @@ export class BlockComponent {
       const element = control.sizes.value[i];
       const testx = /^[0-9999]{1,16}x[0-9999]{1,16}$/.test(element);
       const testX = /^[0-9999]{1,16}X[0-9999]{1,16}$/.test(element);
-      const split = element.split('x');
+      let splitter = '';
+      if (element.includes('x')) {
+        splitter = 'x';
+      } else {
+        splitter = 'X';
+      }
+      const split = element.split(splitter);
       if (isNaN(Number(split[0])) || isNaN(Number(split[1]))) {
         return this.msg.add({
           severity: MessagesTst.WARNING,
