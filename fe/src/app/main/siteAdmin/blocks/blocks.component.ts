@@ -153,7 +153,7 @@ export class BlockComponent {
       const testx = /^[0-9999]{1,16}x[0-9999]{1,16}$/.test(element);
       const testX = /^[0-9999]{1,16}X[0-9999]{1,16}$/.test(element);
       const split = element.split('x');
-      if (isNaN(Number(split[0])) || isNaN(Number(split[0]))) {
+      if (isNaN(Number(split[0])) || isNaN(Number(split[1]))) {
         return this.msg.add({
           severity: MessagesTst.WARNING,
           summary: 'Los valores deben ser números',
