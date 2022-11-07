@@ -95,8 +95,10 @@ export class PlaceholdersComponent {
     let placeholder: Placeholders = {
       name: control.name.value,
       type: control.type.value,
-      typesMetaData: control.typesMetaData.value,
-      required: control.required.value,
+      typesMetaData:
+        control.type.value === 'Estándar' ? null : control.typesMetaData.value,
+      required:
+        control.type.value === 'Estándar' ? null : control.required.value,
       valueDefault: control.valueDefault.value,
     };
 
@@ -240,7 +242,9 @@ export class PlaceholdersComponent {
     let found = this.placeholders.find(
       (x) =>
         x.name === placeholder.name &&
-        x.typesMetaData === placeholder.typesMetaData
+        x.typesMetaData === placeholder.typesMetaData &&
+        placeholder._id &&
+        x._id !== placeholder._id
     );
 
     if (!found) {
