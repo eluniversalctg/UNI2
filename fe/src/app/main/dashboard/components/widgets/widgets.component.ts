@@ -53,10 +53,12 @@ export class WidgetsComponent {
       url: ['', Validators.required],
     });
 
-    this.widgetsForm.controls.url.setValue(
-      this.utilities.decryptSite().matomoUrl
-    );
-    this.url = this.utilities.decryptSite().matomoUrl;
+    if (this.utilities.decryptSite()) {
+      this.widgetsForm.controls.url.setValue(
+        this.utilities.decryptSite().matomoUrl
+      );
+      this.url = this.utilities.decryptSite().matomoUrl;
+    }
 
     // get widgets saved
     this.getWidgets();

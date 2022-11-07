@@ -306,9 +306,21 @@ export class UnomiComponent implements OnInit {
     this.conditionSrv.reloadCondition();
 
     if (this.selectedOption.value === genWord.GOAL) {
+      if (this.newUnomi['startEvent'].length === 0) {
+        return this.msg.add({
+          severity: MessagesTst.ERROR,
+          summary: 'Debe crear la condición para el StartEvent',
+        });
+      }
       this.newUnomi['conditionString'] = JSON.stringify(
         this.newUnomi['startEvent']
       );
+      if (this.newUnomi['targetEvent'].length === 0) {
+        return this.msg.add({
+          severity: MessagesTst.ERROR,
+          summary: 'Debe crear la condición para el TargetEvent ',
+        });
+      }
       this.newUnomi['secConditionString'] = JSON.stringify(
         this.newUnomi['targetEvent']
       );
