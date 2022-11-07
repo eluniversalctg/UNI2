@@ -164,6 +164,7 @@ export class UnomiComponent implements OnInit {
     delete this.newUnomi.metadata.id;
     this.addNew = true;
     this.isDetail = false;
+    this.isEditing = false;
   }
 
   loadUnomiData(rule) {

@@ -84,6 +84,7 @@ export class RuleService {
       delete createRuleDto[0]['objectModified'];
       if (createRuleDto[0]['secConditionString']) {
         delete createRuleDto[0]['secConditionString'];
+        delete createRuleDto[0]['secondCondition'];
       }
 
       //create configuration and autorization to access server
