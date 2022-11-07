@@ -263,8 +263,8 @@ export class ConditionsComponent {
     );
 
     if (findCondition) {
-      this.createParentCondition = true;
       if (findCondition.treeParentCondition) {
+        this.createParentCondition = true;
         this.conditionSchema = JSON.parse(findCondition.treeParentCondition);
       }
     }
