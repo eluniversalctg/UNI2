@@ -193,6 +193,7 @@
       [recursiveList]="list.children || []"
       [unomiConditions]="unomiConditions"
       [conditionVariables]="conditionVariables"
+      (SomeChange)="someChanged($event)"
     ></app-recursive>
 
     <!-- #END componente recursive

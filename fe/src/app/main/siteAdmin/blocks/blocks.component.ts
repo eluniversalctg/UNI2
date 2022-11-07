@@ -162,7 +162,7 @@ export class BlockComponent {
       if (isNaN(Number(split[0])) || isNaN(Number(split[1]))) {
         return this.msg.add({
           severity: MessagesTst.WARNING,
-          summary: 'Los valores deben ser números',
+          summary: 'Los valores deben ser números con formato ancho y alto, separados por una X',
         });
       }
       if (

@@ -1,7 +1,13 @@
 import { ConfirmationService } from 'primeng/api';
 import { RuleService } from 'src/app/shared/services';
-import { Input, Component, OnChanges } from '@angular/core';
 import { Condition, ParentCondition } from 'src/app/shared/models';
+import {
+  Input,
+  Component,
+  OnChanges,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 
 @Component({
   selector: 'app-recursive',
@@ -12,6 +18,7 @@ export class InputsTreeComponent implements OnChanges {
   @Input() unomiConditions: any[];
   @Input() conditionVariables: any[];
   @Input() recursiveList: ParentCondition[];
+  @Output() SomeChange = new EventEmitter();
 
   operators: any[] = [];
   getOperatorsBoolean: any[] = [];
@@ -46,6 +53,16 @@ export class InputsTreeComponent implements OnChanges {
   // delete condition
   deleteValue(list, index) {
     list.splice(index, 1);
+    this.SomeChange.emit(true);
+  }
+
+  someChanged(event) {
+    for (let i = this.recursiveList.length - 1; i >= 0; i--) {
+      const element = this.recursiveList[i];
+      if (element.children?.length === 0) {
+        this.recursiveList.splice(i, 1);
+      }
+    }
   }
 
   // set operator
