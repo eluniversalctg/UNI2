@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { MessagesTst } from 'src/app/shared/enums/enumMessage';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -18,6 +18,7 @@ export class PlaceholdersComponent {
   placeholdersForm: FormGroup;
   optionsSelected: boolean = true;
   options: any[];
+  @ViewChild('dt') placeholderTable;
   constructor(
     private msg: MessageService,
     private placeholdersService: PlaceholdersService,
@@ -138,6 +139,7 @@ export class PlaceholdersComponent {
     this.placeholdersDataSource = this.placeholders.filter(
       (x) => x.isActive === this.optionsSelected
     );
+    this.placeholderTable.reset();
   }
 
   changeState(placeholder: Placeholders) {
