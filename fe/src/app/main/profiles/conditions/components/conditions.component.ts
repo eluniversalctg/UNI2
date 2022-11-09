@@ -208,11 +208,18 @@ export class ConditionsComponent {
       delete this.condition.queryBuilder;
       delete this.condition.conditionEvaluator;
 
-      this.condition.treeParentCondition = JSON.stringify(this.conditionSchema);
-      this.condition.parentCondition =
-        this.conditionSrv.createBooleanConditionObj(this.conditionSchema);
-      if (this.condition.parentCondition === null) {
-        return;
+      if(this.conditionSchema.length > 0){
+        this.condition.treeParentCondition = JSON.stringify(this.conditionSchema);
+        this.condition.parentCondition =
+          this.conditionSrv.createBooleanConditionObj(this.conditionSchema);
+          if (this.condition.parentCondition === null) {
+            return;
+          }
+      } else {
+        return this.msg.add({
+          severity: MessagesTst.WARNING,
+          summary: 'Debe agregar al menos una condición',
+        });
       }
     }
 
@@ -257,13 +264,14 @@ export class ConditionsComponent {
     this.condition.metadata.id = condition.id;
     this.condition.metadata.name = condition.name;
 
+    this.setEvalQuery();
     // find if exist condition on mongo
     let findCondition = this.mongoConditions.find(
       (x) => x.conditionId === condition.id
     );
 
     if (findCondition) {
-      if (findCondition.treeParentCondition) {
+      if (findCondition.treeParentCondition && findCondition.treeParentCondition !== "[]" ) {
         this.createParentCondition = true;
         this.conditionSchema = JSON.parse(findCondition.treeParentCondition);
       }
