@@ -71,6 +71,7 @@ export class ConditionsService {
       queryBuilder: createConditionDto.queryBuilder,
       parentCondition: createConditionDto.parentCondition,
       treeParentCondition: createConditionDto.treeParentCondition,
+      hasParentCondition: createConditionDto.treeParentCondition ? true : false,
     };
     delete createConditionDto.treeParentCondition;
 

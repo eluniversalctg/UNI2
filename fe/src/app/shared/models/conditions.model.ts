@@ -10,6 +10,7 @@ export class Condition {
   parentCondition: parentCondition | void | null;
   treeParentCondition: string;
   conditionId?: string;
+  hasParentCondition?: boolean;
 }
 
 export class subCondition {

@@ -271,7 +271,7 @@ export class ConditionsComponent {
     );
 
     if (findCondition) {
-      if (findCondition.treeParentCondition && findCondition.treeParentCondition !== "[]" ) {
+      if (findCondition.treeParentCondition && findCondition.treeParentCondition !== "[]" && findCondition.hasParentCondition) {
         this.createParentCondition = true;
         this.conditionSchema = JSON.parse(findCondition.treeParentCondition);
       }
