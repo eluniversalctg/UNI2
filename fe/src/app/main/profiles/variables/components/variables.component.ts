@@ -225,6 +225,12 @@ export class VariablesComponent {
    */
   register() {
     const optionsValues = this.optionValuesForm.controls.optionValues.value;
+    if(optionsValues.length === 0) {
+      return  this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'Debe agregar al menos un valor',
+      });
+    }
     let control = this.variablesForm.controls;
 
     // map options values

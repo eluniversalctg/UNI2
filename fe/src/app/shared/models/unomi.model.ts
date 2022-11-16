@@ -1,4 +1,4 @@
-import { Actions, Metadata, parentCondition } from './';
+import { Actions, Metadata, parentCondition, ParentCondition } from './';
 
 export class UNOMI {
   metadata: Metadata;
@@ -13,6 +13,7 @@ export class UNOMI {
   timezone?: string;
   condition?: parentCondition | null;
   secCondition?: parentCondition;
+  elements?: ScoringElements[];
   campaignId?: string;
   actions?: Actions[];
   linkedItems?: string[];
@@ -23,4 +24,10 @@ export class UNOMI {
   userId?: string;
   screen?: string;
   action?: string;
+}
+
+export class ScoringElements {
+  value: number;
+  Condition?: ParentCondition[];
+  condition?: parentCondition | null;
 }

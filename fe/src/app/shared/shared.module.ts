@@ -40,6 +40,7 @@ import {
   ConditionsService,
   PermissionsService,
   UnomiProfilesService,
+  ProfileAnaliticService,
 } from './services';
 
 // components
@@ -47,6 +48,7 @@ import { UnomiComponent } from './components/unomi/unomi.component';
 import { IframeComponent } from './components/iframe/iframe.component';
 import { InputsTreeComponent } from './components/inputs/inputs.component';
 import { ActivityLogComponent } from './components/activity-log/activity-log.component';
+import { ProfileAnalitic } from './components/profile-analitic/profile-analitic.component';
 import { SharedConditionsComponent } from './components/conditions/sharedConditions.component';
 import { RecordSegmentsComponent } from './components/recordSegments/recordSegments.component';
 
@@ -115,10 +117,12 @@ const providers = [
   TreeDragDropService,
   ConfirmationService,
   UnomiProfilesService,
+  ProfileAnaliticService,
 ];
 
 const components = [
   UnomiComponent,
+  ProfileAnalitic,
   IframeComponent,
   InputsTreeComponent,
   UserDetailsComponent,

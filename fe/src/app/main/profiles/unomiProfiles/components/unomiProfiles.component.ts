@@ -39,6 +39,7 @@ export class UnomiProfilesComponent {
   visualizing: boolean = false;
   editing: boolean = false;
   advancedSearch: boolean = false;
+  showAnalitic: boolean = false;
   showSessions: boolean = false;
   userSessions: any[] = [];
   schema: ParentCondition[] = [];

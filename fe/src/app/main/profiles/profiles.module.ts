@@ -47,6 +47,11 @@ const routes: Routes = [
   {
     path: '',
     loadChildren: () =>
+      import('./scoring/scoring.module').then((m) => m.ScoringModule),
+  },
+  {
+    path: '',
+    loadChildren: () =>
       import('./userFields/userFields.module').then((m) => m.UserFieldsModule),
   },
   {

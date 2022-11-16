@@ -203,15 +203,17 @@ export class SharedConditionsComponent implements OnChanges {
   }
 
   verifyCondition() {
-    let objectCondition = {
-      offset: 0,
-      limit: 5,
-      condition: this.conditionSrv.createBooleanConditionObj(this.schema),
-    };
-    this.ruleSrv.addByURL('verify/Condition', objectCondition).subscribe({
-      next: (data) => (this.response = data),
-      error: (err) => (this.response = { error: err.statusText }),
-    });
+    if(this.schema.length > 0){
+      let objectCondition = {
+        offset: 0,
+        limit: 5,
+        condition: this.conditionSrv.createBooleanConditionObj(this.schema),
+      };
+      this.ruleSrv.addByURL('verify/Condition', objectCondition).subscribe({
+        next: (data) => (this.response = data),
+        error: (err) => (this.response = { error: err.statusText }),
+      });
+    }
   }
 
   isEmpty(obj) {

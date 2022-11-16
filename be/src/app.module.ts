@@ -30,6 +30,7 @@ import { PersonalizationModule } from './personalization/personalization.module'
 import { PropertiesUnomiModule } from './properties-unomi/properties-unomi.module';
 import { PlaceholderUnomiModule } from './placeholder-unomi/placeholder-unomi.module';
 import { TemplatePersonalizationModule } from './template-personalization/template-personalization.module';
+import { ProfileAnaliticModule } from './profile-analitic/profile-analitic.module';
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { TemplatePersonalizationModule } from './template-personalization/templa
     PersonalizationModule,
     PlaceholderUnomiModule,
     TemplatePersonalizationModule,
+    ProfileAnaliticModule,
   ],
   controllers: [AppController],
   providers: [AppService],

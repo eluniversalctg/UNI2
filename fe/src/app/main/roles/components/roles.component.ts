@@ -33,7 +33,7 @@ export class RolesComponent {
     private confirmationService: ConfirmationService
   ) {
     this.usersSrv.getList().subscribe({
-      next: (data) => ((this.users = data), console.log(data)),
+      next: (data) => ((this.users = data)),
     });
 
     this.options = [

@@ -95,9 +95,16 @@
   justify-content: flex-end;
 }
 
-
-.disabled
-{
+.disabled {
   pointer-events: none;
   opacity: 0.5;
+}
+
+.elementLabel {
+  padding-left: 0px;
+}
+
+.floatBtnDeleteRight{
+  top: 10px;
+    float: right;
 }

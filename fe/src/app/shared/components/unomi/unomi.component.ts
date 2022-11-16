@@ -4,6 +4,7 @@ import {
   Options,
   Metadata,
   ParentCondition,
+  ScoringElements,
 } from 'src/app/shared/models';
 import { forkJoin } from 'rxjs';
 import {
@@ -11,8 +12,8 @@ import {
   ExportService,
   ActionsService,
   VariableService,
-  ConditionsService,
   UtilitiesService,
+  ConditionsService,
 } from 'src/app/shared/services';
 import { Router } from '@angular/router';
 import { genWord } from 'src/app/shared/enums/genericWords';
@@ -56,6 +57,7 @@ export class UnomiComponent implements OnInit {
   ruleComponent: string = genWord.SEGMENT;
   conditionSchema: ParentCondition[] = [];
   conditionSchema2: ParentCondition[] = [];
+  elements: ScoringElements[] = [];
 
   constructor(
     private router: Router,
@@ -95,6 +97,24 @@ export class UnomiComponent implements OnInit {
       { name: 'Activos', value: true },
       { name: 'Inactivos', value: false },
     ];
+
+    this.elements.push(this.createElement());
+  }
+
+  createElement() {
+    const element: ScoringElements = {
+      Condition: [],
+      value: 0,
+    };
+    return element;
+  }
+
+  addElementCondition() {
+    this.elements.push(this.createElement());
+  }
+
+  deleteElemet(i) {
+    this.elements.splice(i, 1);
   }
 
   ngOnInit(): void {
@@ -167,7 +187,12 @@ export class UnomiComponent implements OnInit {
     this.isEditing = false;
   }
 
+  createCondition(event, i) {
+    this.elements[i].Condition = JSON.parse(event);
+  }
+
   loadUnomiData(rule) {
+    this.elements = [];
     let editUnom = new UNOMI();
     editUnom.metadata = new Metadata();
     editUnom.metadata.id = rule.id;
@@ -186,6 +211,9 @@ export class UnomiComponent implements OnInit {
       this.conditionSchema2 = JSON.parse(findCondition.secCondition);
       editUnom['firstCondition'] = JSON.parse(findCondition.condition);
       editUnom['secondCondition'] = JSON.parse(findCondition.secCondition);
+    } else if (findCondition && this.selectedOption.value === genWord.SCORING) {
+      this.elements = JSON.parse(findCondition.condition);
+      editUnom['elements'] = this.elements;
     } else if (findCondition) {
       this.conditionSchema = JSON.parse(findCondition.condition);
       editUnom['firstCondition'] = JSON.parse(findCondition.condition);
@@ -220,6 +248,10 @@ export class UnomiComponent implements OnInit {
         findCondition.raiseEventOnlyOnceForProfile;
       editUnom.priority = findCondition.priority;
     }
+    if (this.elements.length === 0) {
+      this.elements.push(this.createElement());
+      editUnom['elements'] = this.elements;
+    }
 
     this.tempUnomi = { ...editUnom };
     this.tempUnomi.metadata = { ...editUnom.metadata };
@@ -237,6 +269,8 @@ export class UnomiComponent implements OnInit {
     this.conditionSchema2 = [];
     this.addNew = true;
     this.isEditing = false;
+    this.elements = [];
+    this.elements.push(this.createElement());
     this.isDetail = false;
     this.systemTagsSelected = [];
     if (this.selectedOption.value === genWord.RULE) {
@@ -364,6 +398,33 @@ export class UnomiComponent implements OnInit {
       this.tempUnomi['entryCondition'] = this.newUnomi['entryCondition'];
 
       delete this.tempUnomi['firstCondition'];
+    } else if (this.selectedOption.value === genWord.SCORING) {
+      for (let i = 0; i < this.elements.length; i++) {
+        const element = this.elements[i];
+        if (!element.value || element.value < 0) {
+          return this.msg.add({
+            severity: MessagesTst.ERROR,
+            summary: 'Debe agregar un valor mayor que cero',
+          });
+        }
+        if (!element.Condition || element.Condition.length === 0) {
+          return this.msg.add({
+            severity: MessagesTst.ERROR,
+            summary: 'Debe agregar una condición',
+          });
+        }
+        element.condition = this.conditionSrv.createBooleanConditionObj(
+          element.Condition!
+        );
+      }
+      this.newUnomi['elements'] = this.elements.map((x) => {
+        const obj = {
+          condition: x.condition,
+          value: x.value,
+        };
+        return obj;
+      });
+      this.newUnomi['conditionString'] = JSON.stringify(this.elements);
     } else {
       if (
         !this.newUnomi['Condition'] ||
@@ -410,6 +471,7 @@ export class UnomiComponent implements OnInit {
         return;
       }
     }
+
     if (this.selectedOption.value === genWord.RULE) {
       const actions: any[] = [];
 
@@ -545,7 +607,8 @@ export class UnomiComponent implements OnInit {
       (this.newUnomi['startEvent'] && this.newUnomi['startEvent'].length > 0) ||
       (this.newUnomi['targetEvent'] &&
         this.newUnomi['targetEvent'].length > 0) ||
-      (this.newUnomi['Condition'] && this.newUnomi['Condition'].length > 0)
+      (this.newUnomi['Condition'] && this.newUnomi['Condition'].length > 0) ||
+      (this.newUnomi['elements'] && this.newUnomi['elements'].length > 0)
     ) {
       this.conditionSrv.verifyCondition();
     } else {

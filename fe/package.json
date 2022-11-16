@@ -32,6 +32,7 @@
     "@fullcalendar/core": "^5.10.1",
     "@kolkov/angular-editor": "^2.0.0",
     "@molteni/export-csv": "^0.0.8",
+    "@nestjs/mapped-types": "*",
     "chart.js": "^3.7.1",
     "crypto-js": "^4.1.1",
     "file-saver": "^2.0.5",

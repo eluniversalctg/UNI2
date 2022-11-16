@@ -164,4 +164,59 @@
       </div>
     </div>
   </div>
+
+  <div class="p-col-12 card">
+    <div class="top-bar">
+      <div class="p-grid justify-content-center">
+        <div class="sm:col-12 md:col-6 lg:col-6">
+          <h1 class="text-center">Analítica de Segmentos UNOMI</h1>
+        </div>
+        <div class="sm:col-12 md:col-6 lg:col-6">
+          <p-multiSelect
+            [options]="segments"
+            [(ngModel)]="selectedSegment"
+            optionLabel="name"
+            [style]="{
+              width: '-webkit-fill-available',
+              margin: '1rem 2rem 1rem 2rem'
+            }"
+            (onChange)="widgetsSelected()"
+            placeholder="Seleccione los segmentos que desea ver"
+          ></p-multiSelect>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-grid">
+      <div
+        *ngFor="let segment of selectedSegment"
+        class="sm:col-12 md:col-6 lg:col-4 xl:col-4"
+        style="padding: 2rem"
+      >
+        <h3 tooltipPosition="top"
+        [pTooltip]="segment.description" >{{ segment.id }}</h3>
+
+        <app-recordSegments [idSegment]="segment.id"></app-recordSegments>
+      </div>
+    </div>
+  </div>
+  <div class="p-col-12 card">
+    <div class="top-bar">
+      <div class="p-grid justify-content-center">
+        <div class="sm:col-12 md:col-6 lg:col-6">
+          <h1 class="text-center">Analítica de Perfiles UNOMI</h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-grid">
+      <div
+        class="sm:col-12 md:col-6 lg:col-4 xl:col-4"
+        style="padding: 2rem"
+      >
+      <!-- AGREGAR EL COMPONENTE DONDE VA A HACER LA ANALÍTICA DE LOS PERFILES -->
+      <app-profile-analitic></app-profile-analitic>
+      </div>
+    </div>
+  </div>
 </div>

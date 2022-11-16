@@ -141,6 +141,12 @@ export class MenuService {
             icon: 'c-icons campanas-icon',
             routerLink: ['/main/profiles/campaigns'],
           },
+          {
+            key: '3.4',
+            label: 'Puntuación',
+            icon: 'pi pi-sort-numeric-up',
+            routerLink: ['/main/profiles/scoring'],
+          },
         ],
       },
       {

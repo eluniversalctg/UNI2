@@ -138,7 +138,6 @@ export class ActivityLogService {
 
       return paths(obj);
     } catch (error) {
-      console.log(error);
       return error;
     }
   }
@@ -168,7 +167,6 @@ export class ActivityLogService {
       });
       return changes;
     } catch (error) {
-      console.log(error);
       return error;
     }
   }

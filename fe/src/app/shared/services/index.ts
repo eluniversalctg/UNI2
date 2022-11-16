@@ -29,6 +29,7 @@ export * from './permissions.service';
 export * from './placeholders.service';
 export * from './unomiProfiles.service';
 export * from './paramsWidgets.service';
+export * from './ProfileAnalitic.service';
 export * from './propertiesUnomi.service';
 export * from './personalization.service';
 export * from './placeholderUnomi.service';

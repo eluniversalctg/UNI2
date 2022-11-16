@@ -24,6 +24,7 @@ export * from './activity-log.model';
 export * from './userProfiles.model';
 export * from './placeholders.model';
 export * from './paramsWidgets.model';
+export * from './profileAnalitic.model';
 export * from './propertiesUnomi.model';
 export * from './parentCondition.model';
 export * from './personalization.model';
