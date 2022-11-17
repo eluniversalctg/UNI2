@@ -248,7 +248,10 @@ export class UnomiComponent implements OnInit {
         findCondition.raiseEventOnlyOnceForProfile;
       editUnom.priority = findCondition.priority;
     }
-    if (this.elements.length === 0) {
+    if (
+      this.elements.length === 0 &&
+      this.selectedOption.value === genWord.SCORING
+    ) {
       this.elements.push(this.createElement());
       editUnom['elements'] = this.elements;
     }
@@ -284,7 +287,7 @@ export class UnomiComponent implements OnInit {
   /**
    * description: send request to backend, save a new rule
    */
-  register(changeState?: boolean) {
+  async register(changeState?: boolean) {
     //validar que agreguen información
     if (!this.newUnomi.metadata.id) {
       return this.msg.add({
@@ -338,7 +341,9 @@ export class UnomiComponent implements OnInit {
       });
     }
     // send event to sharedContions to reload the list
-    this.conditionSrv.reloadCondition();
+    if (!changeState) {
+      await this.conditionSrv.reloadCondition();
+    }
 
     if (this.selectedOption.value === genWord.GOAL) {
       if (this.newUnomi['startEvent'].length === 0) {
@@ -426,6 +431,13 @@ export class UnomiComponent implements OnInit {
       });
       this.newUnomi['conditionString'] = JSON.stringify(this.elements);
     } else {
+      if (this.selectedOption.value === genWord.SEGMENT && changeState) {
+        this.newUnomi['Condition'] = this.newUnomi['firstCondition'];
+        this.newUnomi['condition'] =
+          this.conditionSrv.createBooleanConditionObj(
+            this.newUnomi['firstCondition']
+          );
+      }
       if (
         !this.newUnomi['Condition'] ||
         this.newUnomi['Condition'].length === 0
