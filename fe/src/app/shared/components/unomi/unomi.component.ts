@@ -620,7 +620,7 @@ export class UnomiComponent implements OnInit {
       (this.newUnomi['targetEvent'] &&
         this.newUnomi['targetEvent'].length > 0) ||
       (this.newUnomi['Condition'] && this.newUnomi['Condition'].length > 0) ||
-      (this.newUnomi['elements'] && this.newUnomi['elements'].length > 0)
+      (this.elements && this.elements.length > 0)
     ) {
       this.conditionSrv.verifyCondition();
     } else {
