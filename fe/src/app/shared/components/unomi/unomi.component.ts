@@ -391,6 +391,9 @@ export class UnomiComponent implements OnInit {
       this.newUnomi['conditionString'] = JSON.stringify(
         this.newUnomi['Condition']
       );
+      if(changeState) {
+        this.newUnomi['Condition'] =  this.newUnomi['firstCondition']
+      }
       this.newUnomi['entryCondition'] =
         this.newUnomi['Condition'].length > 0
           ? this.conditionSrv.createBooleanConditionObj(
