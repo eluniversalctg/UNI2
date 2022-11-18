@@ -296,10 +296,24 @@ export class UnomiComponent implements OnInit {
       });
     }
 
+    if(!/^[a-zA-Z0-9_]+$/.test(this.newUnomi.metadata.id)){
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'El id no debe tener caracteres especiales',
+      });
+    }
+
     if (!this.newUnomi.metadata.name) {
       return this.msg.add({
         severity: MessagesTst.ERROR,
         summary: 'Debe agregar el nombre',
+      });
+    }
+
+    if(!/^[a-zA-Z0-9 _]+$/.test(this.newUnomi.metadata.name)){
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'El nombre no debe tener caracteres especiales',
       });
     }
 
@@ -309,11 +323,24 @@ export class UnomiComponent implements OnInit {
         summary: 'Debe agregar la descripción',
       });
     }
+    if(!/^[a-zA-Z0-9 _]+$/.test(this.newUnomi.metadata.description)){
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'La descripción no debe tener caracteres especiales',
+      });
+    }
 
     if (!this.newUnomi.metadata.scope) {
       return this.msg.add({
         severity: MessagesTst.ERROR,
         summary: 'Debe agregar el scope',
+      });
+    }
+
+    if(!/^[a-zA-Z0-9 _]+$/.test(this.newUnomi.metadata.scope)){
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'El scope no debe tener caracteres especiales',
       });
     }
 
@@ -391,8 +418,8 @@ export class UnomiComponent implements OnInit {
       this.newUnomi['conditionString'] = JSON.stringify(
         this.newUnomi['Condition']
       );
-      if(changeState) {
-        this.newUnomi['Condition'] =  this.newUnomi['firstCondition']
+      if (changeState) {
+        this.newUnomi['Condition'] = this.newUnomi['firstCondition'];
       }
       this.newUnomi['entryCondition'] =
         this.newUnomi['Condition'].length > 0
@@ -808,6 +835,22 @@ export class UnomiComponent implements OnInit {
         severity: MessagesTst.ERROR,
         summary: 'export',
       });
+    }
+  }
+
+  validateInput(event, isId?: boolean) {
+    if (isId) {
+      if (/^[a-zA-Z0-9_]+$/.test(event.key)) {
+        return event.key;
+      } else {
+        return event.preventDefault();
+      }
+    } else {
+      if (/^[a-zA-Z0-9 _]+$/.test(event.key)) {
+        return event.key;
+      } else {
+        return event.preventDefault();
+      }
     }
   }
 }

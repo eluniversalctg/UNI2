@@ -212,7 +212,7 @@
     <label for="id" class="col-12 md:col-4">Id:</label>
     <div class="col-12 md:col-8">
       <input
-        onkeypress="return event.charCode != 32"
+        (keypress)="validateInput($event, true)"
         [(ngModel)]="newUnomi.metadata.id"
         class="fill-available input inputfield"
         type="text"
@@ -227,6 +227,7 @@
     <label for="name" class="col-12 md:col-4">Name:</label>
     <div class="col-12 md:col-8">
       <input
+      (keypress)="validateInput($event)"
         [(ngModel)]="newUnomi.metadata.name"
         class="input inputfield fill-available"
         type="text"
@@ -241,6 +242,7 @@
     <label for="description" class="col-12 md:col-4">Description:</label>
     <div class="col-12 md:col-8">
       <input
+      (keypress)="validateInput($event)"
         [(ngModel)]="newUnomi.metadata.description"
         class="fill-available input inputfield"
         type="text"
@@ -255,6 +257,7 @@
     <label for="scope" class="col-12 md:col-4">Scope:</label>
     <div class="col-12 md:col-8">
       <input
+      (keypress)="validateInput($event)"
         [(ngModel)]="newUnomi.metadata.scope"
         class="fill-available input inputfield"
         type="text"
@@ -381,6 +384,7 @@
     <label for="currency" class="col-12 md:col-4">Currency:</label>
     <div class="col-12 md:col-8">
       <input
+      (keypress)="validateInput($event)"
         [(ngModel)]="newUnomi.currency"
         class="fill-available input inputfield"
         type="text"
