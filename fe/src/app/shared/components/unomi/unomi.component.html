@@ -16,7 +16,7 @@
           <button
             pButton
             type="button"
-            label="Agregar nuevo"
+            label="Agregar regla"
             (click)="createRule()"
           ></button>
         </ng-template>
@@ -209,8 +209,8 @@
   <!-- Metadata information
       ===================================================================-->
   <div class="field grid">
-    <label for="id" class="col-12 md:col-4">Id:</label>
-    <div class="col-12 md:col-8">
+    <label for="id" class="col-12 md:col-3">Id:</label>
+    <div class="col-12 md:col-9">
       <input
         (keypress)="validateInput($event, true)"
         [(ngModel)]="newUnomi.metadata.id"
@@ -224,8 +224,8 @@
   </div>
 
   <div class="field grid">
-    <label for="name" class="col-12 md:col-4">Name:</label>
-    <div class="col-12 md:col-8">
+    <label for="name" class="col-12 md:col-3">Name:</label>
+    <div class="col-12 md:col-9">
       <input
       (keypress)="validateInput($event)"
         [(ngModel)]="newUnomi.metadata.name"
@@ -239,8 +239,8 @@
   </div>
 
   <div class="field grid">
-    <label for="description" class="col-12 md:col-4">Description:</label>
-    <div class="col-12 md:col-8">
+    <label for="description" class="col-12 md:col-3">Description:</label>
+    <div class="col-12 md:col-9">
       <input
       (keypress)="validateInput($event)"
         [(ngModel)]="newUnomi.metadata.description"
@@ -254,8 +254,8 @@
   </div>
 
   <div class="field grid">
-    <label for="scope" class="col-12 md:col-4">Scope:</label>
-    <div class="col-12 md:col-8">
+    <label for="scope" class="col-12 md:col-3">Scope:</label>
+    <div class="col-12 md:col-9">
       <input
       (keypress)="validateInput($event)"
         [(ngModel)]="newUnomi.metadata.scope"
@@ -269,8 +269,8 @@
   </div>
 
   <div class="field grid" *ngIf="selectedOption.value === 'rules'">
-    <label for="priority" class="col-12 md:col-4">Priority:</label>
-    <div class="col-12 md:col-8">
+    <label for="priority" class="col-12 md:col-3">Priority:</label>
+    <div class="col-12 md:col-9">
       <input
         [(ngModel)]="newUnomi.priority"
         class="fill-available input inputfield"
@@ -283,8 +283,8 @@
   </div>
 
   <div class="field grid">
-    <label for="enabled" class="col-12 md:col-4">Enabled:</label>
-    <div class="col-12 md:col-8">
+    <label for="enabled" class="col-12 md:col-3">Enabled:</label>
+    <div class="col-12 md:col-9">
       <p-inputSwitch
         id="enabled"
         [(ngModel)]="newUnomi.metadata.enabled"
@@ -294,8 +294,8 @@
   </div>
 
   <div class="field grid">
-    <label for="missingPlugins" class="col-12 md:col-4">MissingPlugins:</label>
-    <div class="col-12 md:col-8">
+    <label for="missingPlugins" class="col-12 md:col-3">MissingPlugins:</label>
+    <div class="col-12 md:col-9">
       <p-inputSwitch
         id="missingPlugins"
         [(ngModel)]="newUnomi.metadata.missingPlugins"
@@ -305,10 +305,10 @@
   </div>
 
   <div class="field grid" *ngIf="selectedOption.value === 'rules'">
-    <label for="endDate" class="col-12 md:col-4"
+    <label for="endDate" class="col-12 md:col-3"
       >RaiseEventOnlyOnceForProfile:</label
     >
-    <div class="col-12 md:col-8">
+    <div class="col-12 md:col-9">
       <p-inputSwitch
         id="enabled"
         [(ngModel)]="newUnomi.raiseEventOnlyOnceForProfile"
@@ -318,10 +318,10 @@
   </div>
 
   <div class="field grid" *ngIf="selectedOption.value === 'rules'">
-    <label for="endDate" class="col-12 md:col-4"
+    <label for="endDate" class="col-12 md:col-3"
       >RaiseEventOnlyOnceForSession:</label
     >
-    <div class="col-12 md:col-8">
+    <div class="col-12 md:col-9">
       <p-inputSwitch
         id="enabled"
         [(ngModel)]="newUnomi.raiseEventOnlyOnceForSession"
@@ -331,8 +331,8 @@
   </div>
 
   <div class="field grid">
-    <label for="systemTags" class="col-12 md:col-4">SystemTags:</label>
-    <div class="col-12 md:col-8">
+    <label for="systemTags" class="col-12 md:col-3">SystemTags:</label>
+    <div class="col-12 md:col-9">
       <p-multiSelect
         id="systemTags"
         [options]="systemTags"
@@ -349,8 +349,8 @@
   </div>
 
   <div class="field grid" *ngIf="selectedOption.value === 'rules'">
-    <label for="systemTags" class="col-12 md:col-4">Actions:</label>
-    <div class="col-12 md:col-8">
+    <label for="systemTags" class="col-12 md:col-3">Actions:</label>
+    <div class="col-12 md:col-9">
       <p-multiSelect
         id="systemTags"
         [options]="unomiActions"
@@ -367,8 +367,8 @@
   </div>
 
   <div class="field grid" *ngIf="selectedOption.value === 'campaigns'">
-    <label for="cost" class="col-12 md:col-4">Cost:</label>
-    <div class="col-12 md:col-8">
+    <label for="cost" class="col-12 md:col-3">Cost:</label>
+    <div class="col-12 md:col-9">
       <input
         [(ngModel)]="newUnomi.cost"
         class="fill-available input inputfield"
@@ -381,8 +381,8 @@
   </div>
 
   <div class="field grid" *ngIf="selectedOption.value === 'campaigns'">
-    <label for="currency" class="col-12 md:col-4">Currency:</label>
-    <div class="col-12 md:col-8">
+    <label for="currency" class="col-12 md:col-3">Currency:</label>
+    <div class="col-12 md:col-9">
       <input
       (keypress)="validateInput($event)"
         [(ngModel)]="newUnomi.currency"
@@ -396,8 +396,8 @@
   </div>
 
   <div class="field grid" *ngIf="selectedOption.value === 'campaigns'">
-    <label for="timezone" class="col-12 md:col-4">Timezone:</label>
-    <div class="col-12 md:col-8">
+    <label for="timezone" class="col-12 md:col-3">Timezone:</label>
+    <div class="col-12 md:col-9">
       <input
         [(ngModel)]="newUnomi.timezone"
         class="fill-available input inputfield"
@@ -410,8 +410,8 @@
   </div>
 
   <div class="field grid" *ngIf="selectedOption.value === 'campaigns'">
-    <label for="startDate" class="col-12 md:col-4">StartDate:</label>
-    <div class="col-12 md:col-8">
+    <label for="startDate" class="col-12 md:col-3">StartDate:</label>
+    <div class="col-12 md:col-9">
       <p-calendar
         inputId="basic"
         id="startDate"
@@ -423,8 +423,8 @@
   </div>
 
   <div class="field grid" *ngIf="selectedOption.value === 'campaigns'">
-    <label for="endDate" class="col-12 md:col-4">EndDate:</label>
-    <div class="col-12 md:col-8">
+    <label for="endDate" class="col-12 md:col-3">EndDate:</label>
+    <div class="col-12 md:col-9">
       <p-calendar
         inputId="basic"
         id="endDate"

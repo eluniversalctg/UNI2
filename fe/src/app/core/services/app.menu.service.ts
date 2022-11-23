@@ -25,6 +25,12 @@ export class MenuService {
         icon: 'c-iconsMenu menu1-icon',
         children: [
           {
+            key: '1.0',
+            label: 'solicitudes',
+            icon: 'pi pi-users',
+            routerLink: ['/main/register'],
+          },
+          {
             key: '1.1',
             label: 'Usuarios',
             icon: 'pi pi-users',
@@ -50,7 +56,7 @@ export class MenuService {
           },
           {
             key: '1.5',
-            label: 'Parametrización Widgets',
+            label: 'Parametrización widgets',
             icon: 'c-icons parametrizacionWidgets-icon',
             routerLink: ['/main/paramsWidgets'],
           },
@@ -99,19 +105,19 @@ export class MenuService {
           },
           {
             key: '2.6',
-            label: 'Campos de Usuario',
+            label: 'Campos de usuario',
             icon: 'pi pi-user-edit',
             routerLink: ['/main/profiles/userFields'],
           },
           {
             key: '2.7',
-            label: 'Perfiles de Unomi',
+            label: 'Perfiles unomi',
             icon: 'pi pi-user',
             routerLink: ['/main/profiles/unomiProfiles'],
           },
           {
             key: '2.8',
-            label: 'Sesiones de Usuario',
+            label: 'Sesiones de usuario',
             icon: 'pi pi-user',
             routerLink: ['/main/profiles/profilesStatistics'],
           },
@@ -157,7 +163,7 @@ export class MenuService {
         children: [
           {
             key: '4.1',
-            label: 'Matomo Tags',
+            label: 'Matomo tags',
             icon: 'pi pi-tags',
             routerLink: ['/main/matomo/tags'],
           },
@@ -171,7 +177,7 @@ export class MenuService {
         children: [
           {
             key: '5.1',
-            label: 'Croma Tags',
+            label: 'Croma tags',
             icon: 'pi pi-tags',
             routerLink: ['/main/croma/cromatags'],
           },
@@ -198,7 +204,7 @@ export class MenuService {
       },
       {
         key: '7',
-        label: 'Plantillas de Personalización',
+        label: 'Plantillas de personalización',
         icon: 'c-iconsMenu menu7-icon',
         children: [
           {
@@ -209,13 +215,13 @@ export class MenuService {
           },
           {
             key: '7.2',
-            label: 'Creación de placeholders de Unomi',
+            label: 'Creación de placeholders de unomi',
             icon: 'c-icons creacion_placeholders-icon',
             routerLink: ['/main/placeholderUnomi'],
           },
           {
             key: '7.3',
-            label: 'Creación de propiedades de Unomi',
+            label: 'Creación de propiedades de unomi',
             icon: 'c-icons creacion_propiedades-icon',
             routerLink: ['/main/propertiesUnomi'],
           },
@@ -223,7 +229,7 @@ export class MenuService {
       },
       {
         key: '8',
-        label: 'Administrar Web',
+        label: 'Administrar web',
         icon: 'pi pi-globe',
         children: [
           {
@@ -246,6 +252,7 @@ export class MenuService {
           },
         ],
       },
+
     ];
   }
 }

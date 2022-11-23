@@ -89,7 +89,9 @@ export enum MessagesTst {
   VARIABLEERROR = 'No se pudo agregar debido a que la variable no es multivalor o no acepta valores.',
 
   SYSTEM = 'Sistema',
+  SYSTEM2 = 'sistema',
   STANDARD = 'Estándar',
+  STANDARD2 = 'estándar',
   OpenGraph = 'Open Graph',
   JSONLD = 'JSON-LD',
   PERSONALIZATION = 'Personalización',
