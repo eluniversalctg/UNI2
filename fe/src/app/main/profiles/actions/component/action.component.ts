@@ -90,6 +90,56 @@ export class ActionsComponent {
    * @returns saved/updated condition
    */
   saveActions() {
+    if (
+      this.actions.metadata &&
+      (!this.actions.metadata.id ||
+        this.actions.metadata.id === '' ||
+        this.actions.metadata.id === ' ')
+    ) {
+      return this.msg.add({
+        severity: MessagesTst.WARNING,
+        summary: 'Debe agregar el id',
+      });
+    }
+
+    if (
+      this.actions.metadata &&
+      (!this.actions.metadata.name ||
+        this.actions.metadata.name === '' ||
+        this.actions.metadata.name === ' ')
+    ) {
+      return this.msg.add({
+        severity: MessagesTst.WARNING,
+        summary: 'Debe agregar un nombre',
+      });
+    }
+
+    if (
+      this.actions.metadata &&
+      (!this.actions.metadata.description ||
+        this.actions.metadata.description === '' ||
+        this.actions.metadata.description === ' ')
+    ) {
+      return this.msg.add({
+        severity: MessagesTst.WARNING,
+        summary: 'Debe agregar la descripción',
+      });
+    }
+
+    if (this.systemTagsSelected.length === 0) {
+      return this.msg.add({
+        severity: MessagesTst.WARNING,
+        summary: 'Debe seleccionar al menos un SystemTag',
+      });
+    }
+
+    if (this.selectedVariables.length === 0) {
+      return this.msg.add({
+        severity: MessagesTst.WARNING,
+        summary: 'Debe seleccionar al menos una variable',
+      });
+    }
+
     let foundSaved = this.unomiActions.find(
       (x) => x.id.toUpperCase() === this.actions.metadata.id.toUpperCase()
     );
@@ -115,9 +165,7 @@ export class ActionsComponent {
         {
           id: variable.id,
           type: variable.type,
-          isActive: variable.isActive,
           multivalued: variable.multivalued,
-          defaultValue: variable.defaultValue,
         },
       ];
     });

@@ -84,6 +84,7 @@ export class RuleService {
       delete createRuleDto[0]['objectModified'];
       if (createRuleDto[0]['secConditionString']) {
         delete createRuleDto[0]['secConditionString'];
+        delete createRuleDto[0]['secondCondition'];
       }
 
       //create configuration and autorization to access server
@@ -166,9 +167,9 @@ export class RuleService {
   async getSessions(conditionReq) {
     //condition accepted by unomi
     const data = {
-      offset: 0,
-      condition: conditionReq ? conditionReq : {},
-      limit: -1,
+      offset: conditionReq ? conditionReq[1][0] : 0,
+      condition: conditionReq ? conditionReq[0] : {},
+      limit: conditionReq ? conditionReq[1][1] : 10,
     };
 
     //create configuration and autorization to access server
@@ -198,6 +199,43 @@ export class RuleService {
         ),
     );
     return response;
+  }
+
+  async getSessionscount() {
+    try {
+      const configuration = {
+        headers: {
+          Authorization: `Basic ${this.credentialUnomi}`,
+        },
+      };
+      const data = {
+        type: 'sessionPropertyCondition',
+        parameterValues: {
+          comparisonOperator: 'exists',
+          propertyName: 'itemId',
+        },
+      };
+
+      const response = await lastValueFrom(
+        this.httpService
+          .post(
+            `${this.config.get<string>('UNOMI_URL')}/cxs/query/session/count`,
+            data,
+            configuration,
+          )
+          .pipe(
+            map((res) => {
+              return res.data;
+            }),
+            catchError((e) => {
+              throw new HttpException(e.response.data, e.response.status);
+            }),
+          ),
+      );
+      return response;
+    } catch (error) {
+      return undefined;
+    }
   }
 
   async verifyCondition(conditionReq) {

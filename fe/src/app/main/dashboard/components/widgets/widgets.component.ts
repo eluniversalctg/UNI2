@@ -3,7 +3,11 @@ import { ParamsWidgets, Widgets } from 'src/app/shared/models';
 import { MessagesTst } from 'src/app/shared/enums/enumMessage';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ParamsWidgetsService, WidgetsService } from 'src/app/shared/services';
+import {
+  ParamsWidgetsService,
+  UtilitiesService,
+  WidgetsService,
+} from 'src/app/shared/services';
 
 @Component({
   selector: 'app-widgets',
@@ -26,6 +30,7 @@ export class WidgetsComponent {
   constructor(
     private fb: FormBuilder,
     private msg: MessageService,
+    private utilities: UtilitiesService,
     private widgetsService: WidgetsService,
     private paramService: ParamsWidgetsService,
     private confirmationService: ConfirmationService
@@ -47,6 +52,13 @@ export class WidgetsComponent {
       description: ['', Validators.required],
       url: ['', Validators.required],
     });
+
+    if (this.utilities.decryptSite()) {
+      this.widgetsForm.controls.url.setValue(
+        this.utilities.decryptSite().matomoUrl
+      );
+      this.url = this.utilities.decryptSite().matomoUrl;
+    }
 
     // get widgets saved
     this.getWidgets();
@@ -131,26 +143,27 @@ export class WidgetsComponent {
    */
   editWidget(value: Widgets) {
     let paramsSelected: ParamsWidgets[] = [];
-    let parameters: string = value.url.split('?')[1];
-    let allParameters: string[] = parameters.split('&');
+    let allParameters: string[] = value.url.split('&');
 
     // load parameters from value.url
     allParameters.forEach((param) => {
-      let newParam = param.split('=');
+      if (param !== '') {
+        let newParam = param.split('=');
 
-      if (newParam[0] !== 'token_auth') {
-        // find name of parameter
-        let findName = this.parameters.find(
-          (x) => x.parameter === newParam[0] && x.value === newParam[1]
-        );
+        if (newParam[0] !== 'token_auth') {
+          // find name of parameter
+          let findName = this.parameters.find(
+            (x) => x.parameter === newParam[0] && x.value === newParam[1]
+          );
 
-        let parameter: ParamsWidgets = {
-          name: findName ? findName.name : '',
-          parameter: newParam[0],
-          value: newParam[1],
-        };
+          let parameter: ParamsWidgets = {
+            name: findName ? findName.name : '',
+            parameter: newParam[0],
+            value: newParam[1],
+          };
 
-        paramsSelected = [...paramsSelected, parameter];
+          paramsSelected = [...paramsSelected, parameter];
+        }
       }
     });
 
@@ -219,16 +232,14 @@ export class WidgetsComponent {
    * concat the params with token and matomo url
    */
   tryWidget() {
-    let URL = 'index.php?';
+    let URL = '';
     this.paramsSelected.forEach((param) => {
       URL = URL.concat(param.parameter)
         .concat('=')
         .concat(param.value)
         .concat('&');
     });
-    this.testURL = `${
-      this.url.charAt(this.url.length - 1) === '/' ? this.url : this.url + '/'
-    }${URL}token_auth=${this.auth_token}`;
+    this.testURL = `${this.url}&${URL}`;
     this.newWidgetURL = URL;
   }
 }

@@ -99,7 +99,6 @@ export class ConditionsComponent {
     this.conditionSchema = [];
 
     this.isEditing = false;
-    this.tableConditions.reset();
   }
 
   /**
@@ -132,12 +131,44 @@ export class ConditionsComponent {
     //check if missing data
     if (
       !this.condition.metadata.id ||
-      !this.condition.metadata.name ||
-      !this.condition.metadata.description
+      this.condition.metadata.id === '' ||
+      this.condition.metadata.id === ' '
     ) {
       return this.msg.add({
         severity: MessagesTst.WARNING,
-        summary: MessagesTst.MISSINGDATA,
+        summary: 'Debe ingresar el id',
+      });
+    }
+    if (
+      !this.condition.metadata.name ||
+      this.condition.metadata.name === '' ||
+      this.condition.metadata.name === ' '
+    ) {
+      return this.msg.add({
+        severity: MessagesTst.WARNING,
+        summary: 'Debe ingresar el nombre',
+      });
+    }
+    if (
+      !this.condition.metadata.description ||
+      this.condition.metadata.description === '' ||
+      this.condition.metadata.description === ' '
+    ) {
+      return this.msg.add({
+        severity: MessagesTst.WARNING,
+        summary: 'Debe ingresar la descripción',
+      });
+    }
+    if (this.systemTagsSelected.length === 0) {
+      return this.msg.add({
+        severity: MessagesTst.WARNING,
+        summary: 'Debe seleccionar al menos un SystemTag',
+      });
+    }
+    if (this.selectedVariables.length === 0) {
+      return this.msg.add({
+        severity: MessagesTst.WARNING,
+        summary: 'Debe seleccionar al menos una variable',
       });
     }
 
@@ -166,7 +197,6 @@ export class ConditionsComponent {
         {
           id: variable.id,
           type: variable.type,
-          isActive: variable.isActive,
           multivalued: variable.multivalued,
           defaultValue: variable.defaultValue,
         },
@@ -178,9 +208,19 @@ export class ConditionsComponent {
       delete this.condition.queryBuilder;
       delete this.condition.conditionEvaluator;
 
-      this.condition.treeParentCondition = JSON.stringify(this.conditionSchema);
-      this.condition.parentCondition =
-        this.conditionSrv.createBooleanConditionObj(this.conditionSchema);
+      if(this.conditionSchema.length > 0){
+        this.condition.treeParentCondition = JSON.stringify(this.conditionSchema);
+        this.condition.parentCondition =
+          this.conditionSrv.createBooleanConditionObj(this.conditionSchema);
+          if (this.condition.parentCondition === null) {
+            return;
+          }
+      } else {
+        return this.msg.add({
+          severity: MessagesTst.WARNING,
+          summary: 'Debe agregar al menos una condición',
+        });
+      }
     }
 
     //check if creating parent and parentCondition is undefined (is undefined because happened some error)
@@ -224,14 +264,15 @@ export class ConditionsComponent {
     this.condition.metadata.id = condition.id;
     this.condition.metadata.name = condition.name;
 
+    this.setEvalQuery();
     // find if exist condition on mongo
     let findCondition = this.mongoConditions.find(
       (x) => x.conditionId === condition.id
     );
 
     if (findCondition) {
-      this.createParentCondition = true;
-      if (findCondition.treeParentCondition) {
+      if (findCondition.treeParentCondition && findCondition.treeParentCondition !== "[]" && findCondition.hasParentCondition) {
+        this.createParentCondition = true;
         this.conditionSchema = JSON.parse(findCondition.treeParentCondition);
       }
     }

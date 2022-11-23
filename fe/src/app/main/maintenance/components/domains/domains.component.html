@@ -170,7 +170,7 @@
           style="width: -webkit-fill-available"
           formControlName="matomoUrl"
           class="input inputfield"
-          type="text"
+          type="url"
           id="matomoUrl"
           pInputText
         />
@@ -219,7 +219,7 @@
           style="width: -webkit-fill-available"
           formControlName="cromaUrl"
           class="input inputfield"
-          type="text"
+          type="url"
           id="cromaUrl"
           pInputText
         />
@@ -252,6 +252,7 @@
       label="Guardar"
       icon="pi pi-check"
       class="p-button-text"
+      [disabled]="!domainForm.valid"
       (click)="saveDomain()"
     ></button>
   </ng-template>

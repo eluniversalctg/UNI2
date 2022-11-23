@@ -193,6 +193,7 @@
       [recursiveList]="list.children || []"
       [unomiConditions]="unomiConditions"
       [conditionVariables]="conditionVariables"
+      (SomeChange)="someChanged($event)"
     ></app-recursive>
 
     <!-- #END componente recursive
@@ -200,7 +201,7 @@
 
     <!-- BOTONES PARA AGREGAR LAS COSAS
     ========================================================================== -->
-    <div *ngIf="!list.isChildren">
+    <div *ngIf="list.isChildren">
       <button
         pButton
         pRipple

@@ -23,7 +23,12 @@
         responsiveLayout="scroll"
         [showCurrentPageReport]="true"
         styleClass="p-datatable-gridlines"
+        [showCurrentPageReport]="true"
         [rowsPerPageOptions]="[10, 25, 50]"
+        [lazy]="true"
+        (onLazyLoad)="loadSessions($event)"
+        [loading]="loading"
+        [totalRecords]="totalRecords"
         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords}"
       >
         <ng-template pTemplate="caption">

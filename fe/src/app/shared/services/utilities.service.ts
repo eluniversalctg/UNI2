@@ -2,7 +2,6 @@ import * as CryptoJS from 'crypto-js';
 import { Router } from '@angular/router';
 import { EventEmitter, Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { BehaviorSubject } from 'rxjs';
 
 @Injectable()
 export class UtilitiesService {

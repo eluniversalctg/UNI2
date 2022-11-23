@@ -1,3 +1,8 @@
+import {
+  MessageService,
+  LazyLoadEvent,
+  ConfirmationService,
+} from 'primeng/api';
 import * as _ from 'lodash';
 import {
   UserFields,
@@ -8,20 +13,15 @@ import { forkJoin } from 'rxjs';
 import {
   ExportService,
   VariableService,
+  UtilitiesService,
   ConditionsService,
   UserFieldsService,
   UnomiProfilesService,
-  UtilitiesService,
 } from 'src/app/shared/services';
 import { Router } from '@angular/router';
 import { ExportToCSV } from '@molteni/export-csv';
 import { MessagesTst } from 'src/app/shared/enums';
 import { Component, ViewChild } from '@angular/core';
-import {
-  ConfirmationService,
-  MessageService,
-  LazyLoadEvent,
-} from 'primeng/api';
 
 @Component({
   selector: 'app-unomiProfiles',
@@ -39,6 +39,7 @@ export class UnomiProfilesComponent {
   visualizing: boolean = false;
   editing: boolean = false;
   advancedSearch: boolean = false;
+  showAnalitic: boolean = false;
   showSessions: boolean = false;
   userSessions: any[] = [];
   schema: ParentCondition[] = [];
@@ -55,8 +56,8 @@ export class UnomiProfilesComponent {
 
   totalRecords;
   options: any[];
-  limit: any[] = [];
   optionsSelected: boolean = true;
+  limit: any[] = [];
 
   constructor(
     private router: Router,
@@ -76,14 +77,8 @@ export class UnomiProfilesComponent {
     const variablesReq = this.variableService.getList();
     const conditiosReq = this.conditionSrv.getList();
     const userFieldsReq = this.userFieldsSrv.getList();
-    const totalRecordsReq = this.unomiProfilesSrv.getList();
 
-    forkJoin([
-      variablesReq,
-      conditiosReq,
-      userFieldsReq,
-      totalRecordsReq,
-    ]).subscribe({
+    forkJoin([variablesReq, conditiosReq, userFieldsReq]).subscribe({
       next: (response) => (
         (this.userFields = _.filter(response[2], ['isActive', true])),
         (this.userUnomiFieldsMasiveEdit = _.filter(response[2], [
@@ -97,8 +92,7 @@ export class UnomiProfilesComponent {
         (this.unomiConditions = response[1]),
         (this.conditionVariables = response[0].sort((a, b) =>
           a.id.toUpperCase() > b.id.toUpperCase() ? 1 : -1
-        )),
-        (this.totalRecords = response[3])
+        ))
       ),
       error: () =>
         this.msg.add({
@@ -146,12 +140,124 @@ export class UnomiProfilesComponent {
   }
 
   filterDataSource() {
-    this.unomiProfilesDataSource = this.unomiProfiles.filter(
-      (x) =>
-        x.properties.enabled === this.optionsSelected ||
-        (!x.properties.enabled && this.optionsSelected)
-    );
-    this.totalRecords = this.unomiProfilesDataSource.length;
+    let condition;
+    let conditionCount;
+    if (this.schema.length > 0) {
+      condition = this.conditionSrv.createBooleanConditionObj(this.schema);
+    }
+
+    //perfiles activos
+    if (this.optionsSelected) {
+      //si tiene busqueda avanzada solo tendria que hacer push a la condicion existen
+      if (condition !== undefined) {
+        condition.parameterValues.parameterValues.subConditions.push(
+          {
+            type: 'profilePropertyCondition',
+            parameterValues: {
+              propertyName: 'properties.enabled',
+              comparisonOperator: 'equals',
+              propertyValue: 'true',
+            },
+          },
+          {
+            type: 'profilePropertyCondition',
+            parameterValues: {
+              propertyName: 'properties.enabled',
+              comparisonOperator: 'missing',
+            },
+          }
+        );
+      }
+
+      //si no tiene condicion previa por la busqueda avanzada
+      if (!condition) {
+        condition = {
+          type: 'booleanCondition',
+          parameterValues: {
+            operator: 'or',
+            subConditions: [
+              {
+                type: 'profilePropertyCondition',
+                parameterValues: {
+                  propertyName: 'properties.enabled',
+                  comparisonOperator: 'equals',
+                  propertyValue: 'true',
+                },
+              },
+              {
+                type: 'profilePropertyCondition',
+                parameterValues: {
+                  propertyName: 'properties.enabled',
+                  comparisonOperator: 'missing',
+                },
+              },
+            ],
+          },
+        };
+      }
+
+      //condicion para el count de los perfiles activos o que no tengan la priopiedad
+      conditionCount = {
+        type: 'booleanCondition',
+        parameterValues: {
+          operator: 'or',
+          subConditions: [
+            {
+              type: 'profilePropertyCondition',
+              parameterValues: {
+                propertyName: 'properties.enabled',
+                comparisonOperator: 'equals',
+                propertyValue: 'true',
+              },
+            },
+            {
+              type: 'profilePropertyCondition',
+              parameterValues: {
+                propertyName: 'properties.enabled',
+                comparisonOperator: 'missing',
+              },
+            },
+          ],
+        },
+      };
+
+      //perfiles inactivos
+    } else {
+      //si tiene busqueda avanzada solo tendria que hacer push a la condicion existen
+      if (condition !== undefined) {
+        condition.parameterValues.parameterValues.subConditions.push({
+          type: 'profilePropertyCondition',
+          parameterValues: {
+            propertyName: 'properties.enabled',
+            comparisonOperator: 'equals',
+            propertyValue: 'false',
+          },
+        });
+      }
+
+      //si no tiene condicion previa por la busqueda avanzada
+      if (!condition) {
+        condition = {
+          type: 'profilePropertyCondition',
+          parameterValues: {
+            propertyName: 'properties.enabled',
+            comparisonOperator: 'equals',
+            propertyValue: 'false',
+          },
+        };
+      }
+
+      //condicion para el count de los perfiles inactivos
+      conditionCount = {
+        type: 'profilePropertyCondition',
+        parameterValues: {
+          propertyName: 'properties.enabled',
+          comparisonOperator: 'equals',
+          propertyValue: 'false',
+        },
+      };
+    }
+    this.getData(condition, conditionCount);
   }
 
   newProfile() {
@@ -233,25 +339,32 @@ export class UnomiProfilesComponent {
    * get data from unomi, if searchCondition is undefined, it will get all data
    * @param condition - condition to search
    */
-  getData(condition) {
+  getData(condition, conditionCount?) {
     if (this.segmentId != undefined) {
-      let conditionSegment = {
-        type: 'profilePropertyCondition',
+      const conditionSeartch = {
+        type: 'booleanCondition',
         parameterValues: {
-          propertyName: 'segments',
-          propertyValue: `${this.segmentId}`,
-          comparisonOperator: 'equals',
+          operator: 'and',
+          subConditions: [
+            condition,
+            {
+              type: 'profilePropertyCondition',
+              parameterValues: {
+                propertyName: 'segments',
+                propertyValue: `${this.segmentId}`,
+                comparisonOperator: 'equals',
+              },
+            },
+          ],
         },
       };
-      this.limit[0] = 0;
-      this.limit[1] = 10;
       this.unomiProfilesSrv
-        .addByURL('search', [conditionSegment, this.limit])
+        .addByURL('search', [conditionSeartch, this.limit])
         .subscribe({
           next: (data) => (
             (this.unomiProfiles = data[0].list),
             (this.loading = false),
-            this.filterDataSource()
+            (this.totalRecords = data[0].list.length)
           ),
           error: () =>
             this.msg.add({
@@ -260,22 +373,27 @@ export class UnomiProfilesComponent {
             }),
         });
     } else {
-      this.limit[0] = 0;
-      this.limit[1] = 10;
-      this.unomiProfilesSrv
-        .addByURL('search', [condition, this.limit])
-        .subscribe({
-          next: (data) => (
-            (this.unomiProfiles = data[0].list),
-            (this.loading = false),
-            this.filterDataSource()
-          ),
-          error: () =>
-            this.msg.add({
-              severity: MessagesTst.ERROR,
-              summary: MessagesTst.ERRORGETDATA,
-            }),
-        });
+      const totalRecordsReq = this.unomiProfilesSrv.addByURL(
+        'profiles/count',
+        conditionCount
+      );
+      const unomiProfileReq = this.unomiProfilesSrv.addByURL('search', [
+        condition,
+        this.limit,
+      ]);
+
+      forkJoin([unomiProfileReq, totalRecordsReq]).subscribe({
+        next: (response) => (
+          (this.unomiProfiles = response[0][0].list),
+          (this.loading = false),
+          (this.totalRecords = response[1])
+        ),
+        error: () =>
+          this.msg.add({
+            severity: MessagesTst.ERROR,
+            summary: MessagesTst.ERRORGETDATA,
+          }),
+      });
     }
   }
 
@@ -562,42 +680,12 @@ export class UnomiProfilesComponent {
   }
 
   loadProfiles(event: LazyLoadEvent) {
+    this.totalRecords = 0;
     this.loading = true;
-
     this.limit[0] = event.first;
     this.limit[1] = event.rows;
-    if (this.schema.length > 0) {
-      let condition = this.conditionSrv.createBooleanConditionObj(this.schema);
-      this.unomiProfilesSrv
-        .addByURL('search', [condition, this.limit])
-        .subscribe({
-          next: (data) => {
-            this.unomiProfiles = data[0].list;
-            this.filterDataSource();
-            this.loading = false;
-          },
-          error: () =>
-            this.msg.add({
-              severity: MessagesTst.ERROR,
-              summary: MessagesTst.ERRORGETDATA,
-            }),
-        });
-    } else {
-      this.unomiProfilesSrv
-        .addByURL('search', [undefined, this.limit])
-        .subscribe({
-          next: (data) => (
-            (this.unomiProfiles = data[0].list),
-            (this.loading = false),
-            this.filterDataSource()
-          ),
-          error: () =>
-            this.msg.add({
-              severity: MessagesTst.ERROR,
-              summary: MessagesTst.ERRORGETDATA,
-            }),
-        });
-    }
+
+    this.filterDataSource();
   }
   refreshData() {
     this.schema = [];

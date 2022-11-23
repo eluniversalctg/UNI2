@@ -5,7 +5,7 @@ export class Variable {
   id: string;
   type: string;
   multivalued: boolean;
-  isActive: boolean;
+  isActive?: boolean;
   defaultValue?: string | null;
   optionValues?: optionValues[];
 }

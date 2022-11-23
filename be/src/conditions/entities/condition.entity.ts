@@ -15,6 +15,8 @@ export class Condition {
   queryBuilder: string;
   @Prop()
   treeParentCondition: string;
+  @Prop()
+  hasParentCondition: boolean;
 }
 
 export const ConditionSchema = SchemaFactory.createForClass(Condition);

@@ -2,12 +2,12 @@ import { JSDOM } from 'jsdom';
 import * as _ from 'lodash';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-import { catchError, forkJoin, lastValueFrom, map } from 'rxjs';
 import { CreateCromaDto } from './dto/create-croma.dto';
 import { MatomoService } from 'src/matomo/matomo.service';
 import { RelatedCromaDto } from './dto/related-croma.dto';
 import { HttpException, Injectable } from '@nestjs/common';
 import { DomainsService } from 'src/domains/domains.service';
+import { catchError, forkJoin, lastValueFrom, map } from 'rxjs';
 import { PlaceholdersService } from 'src/placeholders/placeholders.service';
 
 @Injectable()

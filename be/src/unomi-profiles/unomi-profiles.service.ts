@@ -21,9 +21,9 @@ export class UnomiProfilesService {
   async findAll(conditionReq) {
     try {
       const data = {
-        offset: conditionReq[1][0],
+        offset: conditionReq[1] ? conditionReq[1][0] : 0,
         condition: conditionReq[0] ? conditionReq[0] : {},
-        limit: conditionReq[1][1],
+        limit: conditionReq[1] ? conditionReq[1][1] : 10,
       };
       const configuration = {
         headers: {
@@ -163,7 +163,7 @@ export class UnomiProfilesService {
     }
   }
 
-  async getCountProfiles() {
+  async getCountProfiles(condition) {
     try {
       const configuration = {
         headers: {
@@ -173,8 +173,9 @@ export class UnomiProfilesService {
 
       const response = await lastValueFrom(
         this.httpService
-          .get(
-            `${this.config.get<string>('UNOMI_URL')}/cxs/profiles/count/`,
+          .post(
+            `${this.config.get<string>('UNOMI_URL')}/cxs/query/profile/count`,
+            condition ? condition : {},
             configuration,
           )
           .pipe(

@@ -4,6 +4,7 @@ import {
   Options,
   Metadata,
   ParentCondition,
+  ScoringElements,
 } from 'src/app/shared/models';
 import { forkJoin } from 'rxjs';
 import {
@@ -11,8 +12,8 @@ import {
   ExportService,
   ActionsService,
   VariableService,
-  ConditionsService,
   UtilitiesService,
+  ConditionsService,
 } from 'src/app/shared/services';
 import { Router } from '@angular/router';
 import { genWord } from 'src/app/shared/enums/genericWords';
@@ -56,6 +57,7 @@ export class UnomiComponent implements OnInit {
   ruleComponent: string = genWord.SEGMENT;
   conditionSchema: ParentCondition[] = [];
   conditionSchema2: ParentCondition[] = [];
+  elements: ScoringElements[] = [];
 
   constructor(
     private router: Router,
@@ -95,6 +97,24 @@ export class UnomiComponent implements OnInit {
       { name: 'Activos', value: true },
       { name: 'Inactivos', value: false },
     ];
+
+    this.elements.push(this.createElement());
+  }
+
+  createElement() {
+    const element: ScoringElements = {
+      Condition: [],
+      value: 0,
+    };
+    return element;
+  }
+
+  addElementCondition() {
+    this.elements.push(this.createElement());
+  }
+
+  deleteElemet(i) {
+    this.elements.splice(i, 1);
   }
 
   ngOnInit(): void {
@@ -164,9 +184,15 @@ export class UnomiComponent implements OnInit {
     delete this.newUnomi.metadata.id;
     this.addNew = true;
     this.isDetail = false;
+    this.isEditing = false;
+  }
+
+  createCondition(event, i) {
+    this.elements[i].Condition = JSON.parse(event);
   }
 
   loadUnomiData(rule) {
+    this.elements = [];
     let editUnom = new UNOMI();
     editUnom.metadata = new Metadata();
     editUnom.metadata.id = rule.id;
@@ -185,6 +211,9 @@ export class UnomiComponent implements OnInit {
       this.conditionSchema2 = JSON.parse(findCondition.secCondition);
       editUnom['firstCondition'] = JSON.parse(findCondition.condition);
       editUnom['secondCondition'] = JSON.parse(findCondition.secCondition);
+    } else if (findCondition && this.selectedOption.value === genWord.SCORING) {
+      this.elements = JSON.parse(findCondition.condition);
+      editUnom['elements'] = this.elements;
     } else if (findCondition) {
       this.conditionSchema = JSON.parse(findCondition.condition);
       editUnom['firstCondition'] = JSON.parse(findCondition.condition);
@@ -219,6 +248,13 @@ export class UnomiComponent implements OnInit {
         findCondition.raiseEventOnlyOnceForProfile;
       editUnom.priority = findCondition.priority;
     }
+    if (
+      this.elements.length === 0 &&
+      this.selectedOption.value === genWord.SCORING
+    ) {
+      this.elements.push(this.createElement());
+      editUnom['elements'] = this.elements;
+    }
 
     this.tempUnomi = { ...editUnom };
     this.tempUnomi.metadata = { ...editUnom.metadata };
@@ -236,21 +272,122 @@ export class UnomiComponent implements OnInit {
     this.conditionSchema2 = [];
     this.addNew = true;
     this.isEditing = false;
+    this.elements = [];
+    this.elements.push(this.createElement());
     this.isDetail = false;
     this.systemTagsSelected = [];
+    if (this.selectedOption.value === genWord.RULE) {
+      this.newUnomi.raiseEventOnlyOnceForProfile = false;
+      this.newUnomi.raiseEventOnlyOnceForSession = false;
+      this.newUnomi.metadata.enabled = false;
+      this.newUnomi.metadata.missingPlugins = false;
+    }
   }
 
   /**
    * description: send request to backend, save a new rule
    */
-  register(changeState?: boolean) {
+  async register(changeState?: boolean) {
+    //validar que agreguen información
+    if (!this.newUnomi.metadata.id) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'Debe agregar el id',
+      });
+    }
+
+    if(!/^[a-zA-Z0-9_]+$/.test(this.newUnomi.metadata.id)){
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'El id no debe tener caracteres especiales',
+      });
+    }
+
+    if (!this.newUnomi.metadata.name) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'Debe agregar el nombre',
+      });
+    }
+
+    if(!/^[a-zA-Z0-9 _]+$/.test(this.newUnomi.metadata.name)){
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'El nombre no debe tener caracteres especiales',
+      });
+    }
+
+    if (!this.newUnomi.metadata.description) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'Debe agregar la descripción',
+      });
+    }
+    if(!/^[a-zA-Z0-9 _]+$/.test(this.newUnomi.metadata.description)){
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'La descripción no debe tener caracteres especiales',
+      });
+    }
+
+    if (!this.newUnomi.metadata.scope) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'Debe agregar el scope',
+      });
+    }
+
+    if(!/^[a-zA-Z0-9 _]+$/.test(this.newUnomi.metadata.scope)){
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'El scope no debe tener caracteres especiales',
+      });
+    }
+
+    if (
+      this.selectedOption.value === genWord.RULE &&
+      this.systemTagsSelected &&
+      this.systemTagsSelected.length === 0
+    ) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'Debe agregar al menos un SystemTag',
+      });
+    }
+    if (this.selectedOption.value === genWord.RULE && !this.newUnomi.priority) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'Debe agregar la prioridad',
+      });
+    }
+
+    if (this.selectedOption.value === genWord.RULE && !this.newUnomi.actions) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'Debe agregar al menos una acción',
+      });
+    }
     // send event to sharedContions to reload the list
-    this.conditionSrv.reloadCondition();
+    if (!changeState) {
+      await this.conditionSrv.reloadCondition();
+    }
 
     if (this.selectedOption.value === genWord.GOAL) {
+      if (this.newUnomi['startEvent'].length === 0) {
+        return this.msg.add({
+          severity: MessagesTst.ERROR,
+          summary: 'Debe crear la condición para el StartEvent',
+        });
+      }
       this.newUnomi['conditionString'] = JSON.stringify(
         this.newUnomi['startEvent']
       );
+      if (this.newUnomi['targetEvent'].length === 0) {
+        return this.msg.add({
+          severity: MessagesTst.ERROR,
+          summary: 'Debe crear la condición para el TargetEvent ',
+        });
+      }
       this.newUnomi['secConditionString'] = JSON.stringify(
         this.newUnomi['targetEvent']
       );
@@ -260,12 +397,19 @@ export class UnomiComponent implements OnInit {
               this.newUnomi['startEvent']
             )
           : [];
+      if (this.newUnomi['startEvent'] === null) {
+        return;
+      }
       this.newUnomi['targetEvent'] =
         this.newUnomi['targetEvent'].length > 0
           ? this.conditionSrv.createBooleanConditionObj(
               this.newUnomi['targetEvent']
             )
           : [];
+
+      if (this.newUnomi['targetEvent'] === null) {
+        return;
+      }
       this.tempUnomi['targetEvent'] = { ...this.tempUnomi['firstCondition'] };
       this.tempUnomi['startEvent'] = { ...this.tempUnomi['secondCondition'] };
       delete this.tempUnomi['firstCondition'];
@@ -274,20 +418,65 @@ export class UnomiComponent implements OnInit {
       this.newUnomi['conditionString'] = JSON.stringify(
         this.newUnomi['Condition']
       );
+      if (changeState) {
+        this.newUnomi['Condition'] = this.newUnomi['firstCondition'];
+      }
       this.newUnomi['entryCondition'] =
         this.newUnomi['Condition'].length > 0
           ? this.conditionSrv.createBooleanConditionObj(
               this.newUnomi['Condition']
             )
           : [];
-      this.tempUnomi['entryCondition'] =
-        this.tempUnomi['firstCondition'].length > 0
-          ? this.conditionSrv.createBooleanConditionObj(
-              this.tempUnomi['firstCondition']
-            )
-          : [];
+      if (this.newUnomi['entryCondition'] === null) {
+        return;
+      }
+      this.tempUnomi['entryCondition'] = this.newUnomi['entryCondition'];
+
       delete this.tempUnomi['firstCondition'];
+    } else if (this.selectedOption.value === genWord.SCORING) {
+      for (let i = 0; i < this.elements.length; i++) {
+        const element = this.elements[i];
+        if (!element.value || element.value < 0) {
+          return this.msg.add({
+            severity: MessagesTst.ERROR,
+            summary: 'Debe agregar un valor mayor que cero',
+          });
+        }
+        if (!element.Condition || element.Condition.length === 0) {
+          return this.msg.add({
+            severity: MessagesTst.ERROR,
+            summary: 'Debe agregar una condición',
+          });
+        }
+        element.condition = this.conditionSrv.createBooleanConditionObj(
+          element.Condition!
+        );
+      }
+      this.newUnomi['elements'] = this.elements.map((x) => {
+        const obj = {
+          condition: x.condition,
+          value: x.value,
+        };
+        return obj;
+      });
+      this.newUnomi['conditionString'] = JSON.stringify(this.elements);
     } else {
+      if (this.selectedOption.value === genWord.SEGMENT && changeState) {
+        this.newUnomi['Condition'] = this.newUnomi['firstCondition'];
+        this.newUnomi['condition'] =
+          this.conditionSrv.createBooleanConditionObj(
+            this.newUnomi['firstCondition']
+          );
+      }
+      if (
+        !this.newUnomi['Condition'] ||
+        this.newUnomi['Condition'].length === 0
+      ) {
+        return this.msg.add({
+          severity: MessagesTst.ERROR,
+          summary: 'Debe agregar una condición',
+        });
+      }
       this.newUnomi['conditionString'] = JSON.stringify(
         this.newUnomi['Condition']
       );
@@ -297,6 +486,9 @@ export class UnomiComponent implements OnInit {
               this.newUnomi['Condition']
             )
           : undefined;
+      if (this.newUnomi['condition'] === null) {
+        return;
+      }
       if (this.tempUnomi['firstCondition']) {
         this.tempUnomi['condition'] =
           this.tempUnomi['firstCondition'] &&
@@ -305,6 +497,9 @@ export class UnomiComponent implements OnInit {
                 this.tempUnomi['firstCondition']
               )
             : undefined;
+        if (this.newUnomi['condition'] === null) {
+          return;
+        }
       }
     }
     if (
@@ -318,6 +513,7 @@ export class UnomiComponent implements OnInit {
         return;
       }
     }
+
     if (this.selectedOption.value === genWord.RULE) {
       const actions: any[] = [];
 
@@ -453,7 +649,8 @@ export class UnomiComponent implements OnInit {
       (this.newUnomi['startEvent'] && this.newUnomi['startEvent'].length > 0) ||
       (this.newUnomi['targetEvent'] &&
         this.newUnomi['targetEvent'].length > 0) ||
-      (this.newUnomi['Condition'] && this.newUnomi['Condition'].length > 0)
+      (this.newUnomi['Condition'] && this.newUnomi['Condition'].length > 0) ||
+      (this.elements && this.elements.length > 0)
     ) {
       this.conditionSrv.verifyCondition();
     } else {
@@ -638,6 +835,22 @@ export class UnomiComponent implements OnInit {
         severity: MessagesTst.ERROR,
         summary: 'export',
       });
+    }
+  }
+
+  validateInput(event, isId?: boolean) {
+    if (isId) {
+      if (/^[a-zA-Z0-9_]+$/.test(event.key)) {
+        return event.key;
+      } else {
+        return event.preventDefault();
+      }
+    } else {
+      if (/^[a-zA-Z0-9 _]+$/.test(event.key)) {
+        return event.key;
+      } else {
+        return event.preventDefault();
+      }
     }
   }
 }

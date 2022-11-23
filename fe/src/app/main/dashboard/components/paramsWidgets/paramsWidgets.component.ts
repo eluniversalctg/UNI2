@@ -49,6 +49,36 @@ export class ParamsWidgetsComponent {
    * save and update the params
    */
   saveParameter() {
+    if (
+      !this.paramsForm.controls.name.value ||
+      this.paramsForm.controls.name.value === '' ||
+      this.paramsForm.controls.name.value === ' '
+    ) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'Debe ingresar el nombre',
+      });
+    }
+    if (
+      !this.paramsForm.controls.parameter.value ||
+      this.paramsForm.controls.parameter.value === '' ||
+      this.paramsForm.controls.parameter.value === ' '
+    ) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'Debe ingresar un parámetro',
+      });
+    }
+    if (
+      !this.paramsForm.controls.value.value ||
+      this.paramsForm.controls.value.value === '' ||
+      this.paramsForm.controls.value.value === ' '
+    ) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'Debe ingresar un valor',
+      });
+    }
     if (this.paramsForm.value._id) {
       // update param
       this.paramsService.update(this.paramsForm.value).subscribe({

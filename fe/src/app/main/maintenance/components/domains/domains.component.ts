@@ -62,6 +62,40 @@ export class DomainsComponent {
    * save and update the domains
    */
   saveDomain() {
+    const testDomain =
+      /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?|^((http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/gm.test(
+        this.domainForm.controls.domain.value
+      );
+
+    const testCroma =
+      /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?|^((http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/gm.test(
+        this.domainForm.controls.cromaUrl.value
+      );
+
+    const testMatomo =
+      /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?|^((http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/gm.test(
+        this.domainForm.controls.matomoUrl.value
+      );
+
+    if (!testDomain) {
+      return this.msg.add({
+        severity: MessagesTst.WARNING,
+        summary: 'El link del domino no es válido.',
+      });
+    }
+    if (!testMatomo) {
+      return this.msg.add({
+        severity: MessagesTst.WARNING,
+        summary: 'El link de matomo no es válido.',
+      });
+    }
+    if (!testCroma) {
+      return this.msg.add({
+        severity: MessagesTst.WARNING,
+        summary: 'El link de croma no es válido.',
+      });
+    }
+
     if (this.domainForm.value._id) {
       // update widget
       this.domainService.update(this.domainForm.value).subscribe({

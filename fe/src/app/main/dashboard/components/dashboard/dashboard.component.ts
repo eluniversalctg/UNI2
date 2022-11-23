@@ -1,9 +1,12 @@
 import moment from 'moment';
+import {
+  RuleService,
+  UtilitiesService,
+  WidgetsService,
+} from 'src/app/shared/services';
 import { Component } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { Widgets } from 'src/app/shared/models';
-import { UtilitiesService, WidgetsService } from 'src/app/shared/services';
-import { environment } from 'src/environments/environment';
 import { MessagesTst } from 'src/app/shared/enums/enumMessage';
 
 @Component({
@@ -14,29 +17,47 @@ import { MessagesTst } from 'src/app/shared/enums/enumMessage';
 export class DashboardComponent {
   periodSelectedArray: string[] = [];
   dateSelectedArray: Date[] = [];
-  url : string = "";
+  url: string = '';
   widgets: Widgets[] = [];
   selectedWidgets: Widgets[] = [];
+  selectedSegment: any;
+  segments: any[] = [];
 
   constructor(
     private msg: MessageService,
+    private ruleSrv: RuleService,
     private utilities: UtilitiesService,
     private widgetService: WidgetsService
   ) {
-    if(this.utilities.decryptSite()){
-      this.url = this.utilities.decryptSite().matomoUrl
+    if (this.utilities.decryptSite()) {
+      this.url = this.utilities.decryptSite().matomoUrl;
       this.getData();
+      this.getDataSegments();
     }
-    this.utilities.changeSite.subscribe(()=>{
+    this.utilities.changeSite.subscribe(() => {
       this.getData();
-    })
+      this.getDataSegments();
+    });
   }
 
   resetDate(index) {
     this.dateSelectedArray[index] = new Date();
   }
 
-  getData(){
+  getDataSegments() {
+    this.ruleSrv.getList('segments').subscribe({
+      next: (data) => {
+        this.segments = data;
+      },
+      error: () =>
+        this.msg.add({
+          severity: MessagesTst.ERROR,
+          summary: MessagesTst.ERRORLIST,
+        }),
+    });
+  }
+
+  getData() {
     this.widgetService.getList().subscribe({
       next: (data) => this.transformData(data),
       error: () =>
@@ -66,7 +87,7 @@ export class DashboardComponent {
   transformData(widgets: Widgets[]) {
     const segmentsURL = this.url.split('?');
     widgets.forEach((widget) => {
-      widget.url = `${segmentsURL[0]}${widget.url}${segmentsURL[1]}`;
+      widget.url = `${segmentsURL[0]}?${widget.url}${segmentsURL[1]}`;
     });
     this.widgets = [...widgets];
   }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { MessagesTst } from 'src/app/shared/enums/enumMessage';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -18,6 +18,7 @@ export class PlaceholdersComponent {
   placeholdersForm: FormGroup;
   optionsSelected: boolean = true;
   options: any[];
+  @ViewChild('dt') placeholderTable;
   constructor(
     private msg: MessageService,
     private placeholdersService: PlaceholdersService,
@@ -95,8 +96,10 @@ export class PlaceholdersComponent {
     let placeholder: Placeholders = {
       name: control.name.value,
       type: control.type.value,
-      typesMetaData: control.typesMetaData.value,
-      required: control.required.value,
+      typesMetaData:
+        control.type.value === 'Estándar' ? null : control.typesMetaData.value,
+      required:
+        control.type.value === 'Estándar' ? null : control.required.value,
       valueDefault: control.valueDefault.value,
     };
 
@@ -136,6 +139,7 @@ export class PlaceholdersComponent {
     this.placeholdersDataSource = this.placeholders.filter(
       (x) => x.isActive === this.optionsSelected
     );
+    this.placeholderTable.reset();
   }
 
   changeState(placeholder: Placeholders) {
@@ -191,9 +195,13 @@ export class PlaceholdersComponent {
   save(placeholder: Placeholders) {
     let found;
     if (this.placeholders) {
-      found = this.placeholders.find((x) => x.name === placeholder.name);
+      found = this.placeholders.find(
+        (x) =>
+          x.name === placeholder.name &&
+          x.typesMetaData === placeholder.typesMetaData
+      );
     }
-    if (!found || placeholder.typesMetaData !== found.typesMetaData) {
+    if (!found) {
       this.placeholdersService.add(placeholder).subscribe(
         (data) => {
           if (data) {
@@ -233,13 +241,15 @@ export class PlaceholdersComponent {
    */
   update(placeholder: Placeholders) {
     placeholder._id = this.placeholdersUpdate._id;
-    let found = this.placeholders.find((x) => x.name === placeholder.name);
+    let found = this.placeholders.find(
+      (x) =>
+        x.name === placeholder.name &&
+        x.typesMetaData === placeholder.typesMetaData &&
+        placeholder._id &&
+        x._id !== placeholder._id
+    );
 
-    if (
-      !found ||
-      found.name === this.placeholdersUpdate.name ||
-      placeholder.typesMetaData !== found.typesMetaData
-    ) {
+    if (!found) {
       this.placeholdersService.update(placeholder).subscribe(
         (data) => {
           if (data) {

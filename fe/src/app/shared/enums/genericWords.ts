@@ -27,6 +27,8 @@ export enum genWord {
   GOAL = 'goals',
   RULE = 'rules',
   SEGMENT = 'segments',
+  SCORING = 'scoring',
+  SCORINGLABEL = 'Puntuación',
   CAMPAIGNLABEL = 'Campañas',
   CAMPAIGNLABEL2 = 'campañas',
   GOALLABEL = 'Metas',

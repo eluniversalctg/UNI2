@@ -19,6 +19,13 @@
             label="Agregar perfil"
             (click)="newProfile()"
           ></button>
+          <button
+            style="margin-left: 2rem"
+            pButton
+            type="button"
+            label="Analítica de perfiles"
+            (click)="showAnalitic = true"
+          ></button>
         </ng-template>
       </p-toolbar>
       <p-selectButton
@@ -34,7 +41,7 @@
         [columns]="cols"
         dataKey="itemId"
         [paginator]="true"
-        [value]="unomiProfilesDataSource"
+        [value]="unomiProfiles"
         [globalFilterFields]="[
           'properties.email',
           'properties.firstName',
@@ -420,6 +427,32 @@
       icon="pi pi-times"
       class="p-button-text"
       (click)="showSessions = false"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  [(visible)]="showAnalitic"
+  [contentStyle]="{ overflow: 'visible' }"
+  [style]="{
+    overflow: 'auto',
+    'min-width': '70%',
+    'min-height': '40vh'
+  }"
+  [modal]="true"
+  [draggable]="false"
+  [maximizable]="true"
+>
+  <app-profile-analitic></app-profile-analitic>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="showAnalitic = false"
     ></button>
   </ng-template>
 </p-dialog>

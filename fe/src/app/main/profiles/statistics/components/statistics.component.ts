@@ -11,6 +11,7 @@ import {
   VariableService,
 } from 'src/app/shared/services';
 import { forkJoin } from 'rxjs';
+import { LazyLoadEvent } from 'primeng/api';
 
 @Component({
   selector: 'app-statistics',
@@ -28,6 +29,9 @@ export class StatisticsComponent implements OnChanges {
   conditionVariables: any[] = [];
   exportOptions: any[] = [];
   @Input() sessions: any[] = [];
+  loading: boolean;
+  limit: any[] = [];
+  totalRecords = 1000;
   constructor(
     private msg: MessageService,
     private ruleService: RuleService,
@@ -37,13 +41,16 @@ export class StatisticsComponent implements OnChanges {
   ) {
     const conditiosReq = this.conditionSrv.getList();
     const variablesReq = this.variableService.getList();
-    forkJoin([variablesReq, conditiosReq]).subscribe({
+    const totalRecords = this.ruleService.getByURL('sessions/count');
+    forkJoin([variablesReq, conditiosReq, totalRecords]).subscribe({
       next: (response) => (
         (this.unomiConditions = response[1]),
         (this.conditionVariables = response[0].sort((a, b) =>
           a.id.toUpperCase() > b.id.toUpperCase() ? 1 : -1
         )),
-        this.getData(undefined)
+        this.getData(undefined),
+        (this.totalRecords = response[2]),
+        (this.loading = false)
       ),
       error: () =>
         this.msg.add({
@@ -115,14 +122,55 @@ export class StatisticsComponent implements OnChanges {
    * @param condition - condition to search
    */
   getData(condition) {
-    this.ruleService.addByURL('sessions/get', condition).subscribe({
-      next: (data) => (this.statisticsProfiles = data.list),
-      error: () =>
-        this.msg.add({
-          severity: MessagesTst.ERROR,
-          summary: MessagesTst.ERRORGETDATA,
-        }),
-    });
+    this.limit[0] = 0;
+    this.limit[1] = 10;
+    this.ruleService
+      .addByURL('sessions/get', [condition, this.limit])
+      .subscribe({
+        next: (data) => (this.statisticsProfiles = data.list),
+        error: () =>
+          this.msg.add({
+            severity: MessagesTst.ERROR,
+            summary: MessagesTst.ERRORGETDATA,
+          }),
+      });
+  }
+
+  loadSessions(event: LazyLoadEvent) {
+    this.loading = true;
+
+    this.limit[0] = event.first;
+    this.limit[1] = event.rows;
+    if (this.schema.length > 0) {
+      let condition = this.conditionSrv.createBooleanConditionObj(this.schema);
+      this.ruleService
+        .addByURL('sessions/get', [condition, this.limit])
+        .subscribe({
+          next: (data) => {
+            this.statisticsProfiles = data.list;
+            this.loading = false;
+          },
+          error: () =>
+            this.msg.add({
+              severity: MessagesTst.ERROR,
+              summary: MessagesTst.ERRORGETDATA,
+            }),
+        });
+    } else {
+      this.ruleService
+        .addByURL('sessions/get', [undefined, this.limit])
+        .subscribe({
+          next: (data) => {
+            this.statisticsProfiles = data.list;
+            this.loading = false;
+          },
+          error: () =>
+            this.msg.add({
+              severity: MessagesTst.ERROR,
+              summary: MessagesTst.ERRORGETDATA,
+            }),
+        });
+    }
   }
 
   /**

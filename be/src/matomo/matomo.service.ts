@@ -74,20 +74,16 @@ export class MatomoService {
    */
   getMatomoInfo(params, matomoUrl, idSite) {
     const response = this.httpService
-      .get(
-        `${matomoUrl}&module=API&${params}format=JSON&idSite=${idSite}`,
-        {
-          // para produccion quitar esto del httpsAgent debido a que debemos de tener un certificado de verdad
-          httpsAgent: new https.Agent({
-            rejectUnauthorized: false,
-          }),
-        },
-      )
+      .get(`${matomoUrl}&module=API&${params}format=JSON&idSite=${idSite}`, {
+        // para produccion quitar esto del httpsAgent debido a que debemos de tener un certificado de verdad
+        httpsAgent: new https.Agent({
+          rejectUnauthorized: false,
+        }),
+      })
       .pipe(
         map((response) => response.data),
         catchError((e) => {
           return [];
-          // throw new HttpException(e.response.data, e.response.status);
         }),
       );
     return response;

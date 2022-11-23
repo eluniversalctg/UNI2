@@ -45,6 +45,14 @@
       >
         <ng-template pTemplate="caption">
           <div class="flex">
+            <button
+              pButton
+              type="button"
+              icon="pi pi-refresh"
+              pTooltip="Refrescar información."
+              class="p-button-rounded p-button-success p-mt-1 p-ml-2"
+              (click)="getData()"
+            ></button>
             <span class="p-input-icon-left ml-auto">
               <i class="pi pi-search"></i>
               <input
@@ -195,7 +203,7 @@
   [contentStyle]="{ overflow: 'visible' }"
 >
   <ng-template pTemplate="header">
-    <p>{{isEditing ? 'Editar ':'Crear'}} {{ selectedOption.label }}</p>
+    <p>{{ isEditing ? "Editar " : "Crear" }} {{ selectedOption.label }}</p>
   </ng-template>
 
   <!-- Metadata information
@@ -204,7 +212,7 @@
     <label for="id" class="col-12 md:col-3">Id:</label>
     <div class="col-12 md:col-9">
       <input
-        onkeypress="return event.charCode != 32"
+        (keypress)="validateInput($event, true)"
         [(ngModel)]="newUnomi.metadata.id"
         class="fill-available input inputfield"
         type="text"
@@ -219,6 +227,7 @@
     <label for="name" class="col-12 md:col-3">Name:</label>
     <div class="col-12 md:col-9">
       <input
+      (keypress)="validateInput($event)"
         [(ngModel)]="newUnomi.metadata.name"
         class="input inputfield fill-available"
         type="text"
@@ -233,6 +242,7 @@
     <label for="description" class="col-12 md:col-3">Description:</label>
     <div class="col-12 md:col-9">
       <input
+      (keypress)="validateInput($event)"
         [(ngModel)]="newUnomi.metadata.description"
         class="fill-available input inputfield"
         type="text"
@@ -247,6 +257,7 @@
     <label for="scope" class="col-12 md:col-3">Scope:</label>
     <div class="col-12 md:col-9">
       <input
+      (keypress)="validateInput($event)"
         [(ngModel)]="newUnomi.metadata.scope"
         class="fill-available input inputfield"
         type="text"
@@ -373,6 +384,7 @@
     <label for="currency" class="col-12 md:col-3">Currency:</label>
     <div class="col-12 md:col-9">
       <input
+      (keypress)="validateInput($event)"
         [(ngModel)]="newUnomi.currency"
         class="fill-available input inputfield"
         type="text"
@@ -424,10 +436,13 @@
   </div>
   <!-- #end System tags
       ===================================================================-->
-  <label class="p-mb-2">
+  <label class="p-mb-2" *ngIf="selectedOption.value !== 'scoring'">
     {{ selectedOption.value === "goals" ? "StartEvent:" : "Condition:" }}</label
   >
-  <div [ngClass]="{ disabled: isDetail }">
+  <div
+    [ngClass]="{ disabled: isDetail }"
+    *ngIf="selectedOption.value !== 'scoring'"
+  >
     <app-sharedConditions
       [schema]="conditionSchema"
       [unomiConditions]="unomiConditions"
@@ -444,6 +459,55 @@
         (childEvent)="emmit2($event)"
       ></app-sharedConditions>
     </div>
+  </div>
+
+  <div
+    [ngClass]="{ disabled: isDetail }"
+    *ngIf="selectedOption.value === 'scoring'"
+  >
+    <label for="startDate" class="col-12 elementLabel">Elementos:</label>
+
+    <div *ngFor="let item of elements; let i = index" style="margin-top: 2rem">
+      <div class="field grid" *ngIf="selectedOption.value === 'scoring'">
+        <label for="value" class="col-12 md:col-4">Valor:</label>
+        <div class="col-12 md:col-8">
+          <input
+            [(ngModel)]="item.value"
+            class="fill-available input inputfield"
+            type="number"
+            id="value"
+            pInputText
+            [disabled]="isDetail"
+          />
+        </div>
+        <div class="col-12">
+          <label>Condicion:</label>
+          <button
+            pButton
+            pRipple
+            type="button"
+            pTooltip="Eliminar elemento"
+            icon="pi pi-times"
+            class="p-button-rounded p-button-danger floatBtnDeleteRight"
+            (click)="deleteElemet(i)"
+            *ngIf="i !== 0"
+          ></button>
+          <app-sharedConditions
+            [schema]="item.Condition!"
+            [unomiConditions]="unomiConditions"
+            [conditionVariables]="conditionVariables"
+            (childEvent)="createCondition($event, i)"
+          ></app-sharedConditions>
+        </div>
+      </div>
+    </div>
+    <button
+      pButton
+      pRipple
+      label="Agregar elemento"
+      class="p-button-text"
+      (click)="addElementCondition()"
+    ></button>
   </div>
   <!-- #End Metadata
       ===================================================================-->
