@@ -4,13 +4,13 @@
     <div class="card">
       <p-toolbar styleClass="p-mb-4">
         <ng-template pTemplate="left">
-          <h1>Agregar rol</h1>
+          <h1>Agregar roles</h1>
         </ng-template>
         <ng-template pTemplate="right">
           <button
             pButton
             type="button"
-            label="Agregar rol"
+            label="Agregar Role"
             (click)="createRole()"
           ></button>
         </ng-template>
@@ -67,7 +67,7 @@
                 pButton
                 pRipple
                 icon="pi pi-pencil"
-                pTooltip="Editar rol"
+                pTooltip="Editar role"
                 class="p-button-rounded p-button-warning p-mr-2"
                 (click)="editRole(role)"
               ></button>
@@ -106,7 +106,7 @@
   [maximizable]="true"
 >
   <ng-template pTemplate="header">
-    <p>{{ isEditing ? "Editar rol" : "Agregar rol" }}</p>
+    <p>{{ isEditing ? "Editar role" : "Agregar role" }}</p>
   </ng-template>
   <form
     name="rolesForm"
@@ -115,7 +115,7 @@
     class="mt-2"
   >
     <div class="field grid">
-      <label for="name" class="col-12 md:col-4">Nombre del rol:</label>
+      <label for="name" class="col-12 md:col-4">Nombre del role:</label>
       <div class="col-12 md:col-8">
         <input
           formControlName="name"
@@ -124,7 +124,7 @@
           id="name"
           class="inputfield"
           pInputText
-          placeholder="Editar rol"
+          placeholder="Nombre del role"
         />
       </div>
       <p-message
@@ -145,7 +145,7 @@
           [options]="roles"
           (onChange)="setPages()"
           optionLabel="name"
-          placeholder="Seleccione un rol"
+          placeholder="Seleccione un role"
           class="sm:p-col-12"
         ></p-dropdown>
       </div>

@@ -5,14 +5,14 @@
     <div class="card">
       <p-toolbar styleClass="p-mb-4">
         <ng-template pTemplate="left">
-          <h1>Administrar widgets</h1>
+          <h1>Administrar Widgets</h1>
         </ng-template>
 
         <ng-template pTemplate="right">
           <button
             pButton
             type="button"
-            label="Agregar widgets"
+            label="Agregar Widgets"
             (click)="createWidget()"
           ></button>
         </ng-template>
@@ -184,7 +184,7 @@
             pButton
             pRipple
             icon="pi pi-plus"
-            pTooltip="Agregar parámetro"
+            pTooltip="Agregar Parámetro"
             class="p-button-rounded p-button-sucess"
             (click)="addParam()"
             [disabled]="!this.paramSelected?.name"

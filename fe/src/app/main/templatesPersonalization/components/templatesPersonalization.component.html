@@ -18,14 +18,14 @@
             class="p-ml-2"
             pButton
             type="button"
-            label="Placeholder unomi"
+            label="Placeholder Unomi"
             (click)="dialogPlaceholder()"
           ></button>
           <button
             class="p-ml-2"
             pButton
             type="button"
-            label="Placeholder estándar"
+            label="Placeholder Estándar"
             (click)="dialogPlaceholderStandard()"
           ></button>
           <button
@@ -33,7 +33,7 @@
             class="p-ml-2"
             pButton
             type="button"
-            label="Placeholder sistema"
+            label="Placeholder Sistema"
             (click)="dialogPlaceholderSystem()"
           ></button>
         </ng-template>
@@ -42,10 +42,9 @@
         styleClass="p-mb-4"
         [style]="{ 'justify-content': 'flex-start' }"
       >
-        <div class="col-12 md:col-12 p-mb-2 lg:col-6">
+        <div class="col-12 md:col-12 p-mb-2 lg:col-3" style="width: 18rem">
           <label for="name">Título:</label>
           <input
-            style="margin-right: 2rem;"
             id="title"
             type="text"
             class="input inputfield p-ml-2"
@@ -54,10 +53,11 @@
             autocomplete="off"
             [disabled]="template.inUse ? template.inUse : false"
           />
-
-          <label for="name">Medidas:</label>
+        </div>
+        <div class="col-12 md:col-12 p-mb-2 lg:col-3">
+          <label for="name">Medidas en pixeles:</label>
           <input
-            style="width: 5rem; font-size: 14px;"
+            style="width: 6rem"
             id="title"
             type="number"
             class="input inputfield p-ml-2"
@@ -66,12 +66,12 @@
             oninput="validity.valid||(value = 0);"
             [(ngModel)]="template.high"
             autocomplete="off"
-            placeholder="Alto px"
+            placeholder="Alto"
             [disabled]="template.inUse ? template.inUse : false"
           />
           x
           <input
-            style="width: 6rem; font-size: 14px;"
+            style="width: 6rem"
             id="title"
             type="number"
             min="0"
@@ -80,14 +80,12 @@
             pInputText
             [(ngModel)]="template.width"
             autocomplete="off"
-            placeholder="Ancho px"
+            placeholder="Ancho"
             [disabled]="template.inUse ? template.inUse : false"
           />
         </div>
         <div class="col-12 md:col-12 p-mb-2 lg:col-3">
           <label for="name">Tipo:</label>
-          <span class="spanTipoPlantilla">
-          <label for="state" class="p-ml-2">Editorial</label>
           <p-radioButton
             class="p-ml-2"
             id="state"
@@ -97,9 +95,7 @@
             [disabled]="template.inUse ? template.inUse : false"
             (onClick)="changeType(template.typeTemplate)"
           ></p-radioButton>
-          </span>
-          <span class="spanTipoPlantilla">
-          <label for="ambit" class="p-ml-2">Personalización</label>
+          <label for="text" class="p-ml-2">Editorial</label>
           <p-radioButton
             class="p-ml-2"
             id="state"
@@ -109,11 +105,12 @@
             [disabled]="template.inUse ? template.inUse : false"
             (onClick)="changeType(template.typeTemplate)"
           ></p-radioButton>
-          </span>
+          <label for="text" class="p-ml-2">Personalización</label>
         </div>
-        
-        <div class="col-12 md:col-12 p-mb-2 lg:col-3"  style="text-align: right;" *ngIf="typePersonalization">
- 
+        <div
+          class="col-12 md:col-12 p-mb-2 lg:col-3"
+          *ngIf="typePersonalization"
+        >
           <label for="name">Número de noticias:</label>
           <input
             id="numNews"
@@ -149,11 +146,11 @@
           <label for="text" class="p-ml-2">Inactivo</label>
         </div>
       </p-toolbar>
-      <div style="background-color: #fffdfd;" class="field grid">
+      <div style="background-color: #fffdfd" class="field grid">
         <div class="col-12 md:col-6">
           <div class="col-12">
             <angular-editor
-              style="resize: none; width: -webkit-fill-available;"
+              style="resize: none; width: -webkit-fill-available"
               id="editor1"
               [(ngModel)]="this.template.htmlContent"
               [config]="config1"
@@ -178,7 +175,7 @@
             ></textarea>
           </div>
         </div>
-        <div style="overflow: auto; max-height: 49vh;" class="col-12 md:col-6">
+        <div style="overflow: auto; max-height: 49vh" class="col-12 md:col-6">
           <app-iframe
             [htmlTemplate]="htmlContentPlaceholder"
             [widthIframe]="template.width"
@@ -259,11 +256,11 @@
   [maximizable]="true"
 >
   <ng-template pTemplate="header">
-    <p>Cargar placeholders de unomi</p>
+    <p>Cargar placeholders de Unomi</p>
   </ng-template>
 
   <div class="field grid">
-    <label for="type" class="col-12 md:col-4">Placeholder unomi:</label>
+    <label for="type" class="col-12 md:col-4">Placeholder Unomi: </label>
     <div class="col-12 md:col-8">
       <p-dropdown
         [options]="placeholdersUnomi"
@@ -300,11 +297,11 @@
   [maximizable]="true"
 >
   <ng-template pTemplate="header">
-    <p>Cargar placeholders estándar</p>
+    <p>Cargar placeholders Estándar</p>
   </ng-template>
 
   <div class="field grid">
-    <label for="type" class="col-12 md:col-4">Placeholder estándar:</label>
+    <label for="type" class="col-12 md:col-4">Placeholder Estándar: </label>
     <div class="col-12 md:col-8">
       <p-dropdown
         [options]="placeholdersStandard"
@@ -380,7 +377,7 @@
   </ng-template>
 
   <div class="field grid">
-    <label for="type" class="col-12 md:col-4">Placeholder sistema:</label>
+    <label for="type" class="col-12 md:col-4">Placeholder Sistema: </label>
     <div class="col-12 md:col-8">
       <p-dropdown
         [options]="placeholdersSystem"

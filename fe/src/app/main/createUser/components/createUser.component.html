@@ -67,12 +67,11 @@
             <th>Acciones</th>
           </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-user >
-          <tr >
+        <ng-template pTemplate="body" let-user>
+          <tr>
             <td>
               {{ user.name }} {{ user.firtSurname }}
               {{ user.secondSurname }}
-              {{user.key}}
             </td>
             <td>
               {{ user.roles.name }}

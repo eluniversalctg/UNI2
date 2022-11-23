@@ -176,7 +176,7 @@
     display: none;
   }
   .layout-wrapper.layout-slim .layout-sidebar {
-    width: 4rem !important;;
+    width: 7rem;
     overflow: visible;
     z-index: 999;
   }
@@ -298,8 +298,8 @@
     background: linear-gradient(147.38deg, $color-white, #9ec4f7);
   }
   .layout-wrapper.layout-slim .layout-content-wrapper {
-    margin-left: 4.3rem !important;
-    width: calc(100% - 4.3rem) !important;
+    margin-left: 7rem;
+    width: calc(100% - 7rem);
   }
 }
 .layout-sidebar {
