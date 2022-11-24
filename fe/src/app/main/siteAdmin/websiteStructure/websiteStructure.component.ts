@@ -14,20 +14,20 @@ import {
   Period,
   Weighing,
   WizardData,
+  MatomoTags,
   WizardModel,
   Placeholders,
   Personalization,
   PlaceholderUnomi,
-  MatomoTags,
 } from 'src/app/shared/models';
 import {
   BlockService,
+  MatomoService,
   WeighingService,
+  UtilitiesService,
   PersonalizationService,
   PlaceholderUnomiService,
   TemplatePersonalizationService,
-  MatomoService,
-  UtilitiesService,
 } from 'src/app/shared/services';
 import { MessagesTst } from 'src/app/shared/enums';
 import { MenuItem, MessageService } from 'primeng/api';
@@ -82,7 +82,7 @@ export class WebsiteStructureComponent implements OnChanges {
     this.loadData();
     this.utilitiesSrv.changeSite.subscribe(() => {
       this.loadData();
-    })
+    });
     this.cols = [
       { field: 'rule.name', header: 'Regla' },
       { field: 'template.title', header: 'Plantilla' },
@@ -123,8 +123,15 @@ export class WebsiteStructureComponent implements OnChanges {
       tagsReq,
     ]).subscribe({
       next: (response) => {
-        response[0] = response[0].filter((x) => x.site._id.toString() === this.utilitiesSrv.decryptSite()._id.toString());
-        response[4] = response[4].filter((x) => x.site.toString() === this.utilitiesSrv.decryptSite()._id.toString());
+        response[0] = response[0].filter(
+          (x) =>
+            x.site._id.toString() ===
+            this.utilitiesSrv.decryptSite()._id.toString()
+        );
+        response[4] = response[4].filter(
+          (x) =>
+            x.site.toString() === this.utilitiesSrv.decryptSite()._id.toString()
+        );
         this.blocksTemp = _.filter(response[0], 'isActive');
         this.templatesTemp = [...response[1]];
         this.templatesTemp = _.filter(this.templatesTemp, 'state');
@@ -510,7 +517,13 @@ export class WebsiteStructureComponent implements OnChanges {
         });
       }
     } else {
-      this.typeIfrmame = this.wizard.iframe;
+      this.typeIfrmame = `
+      <div style="overflow: auto">
+        <iframe
+          id="${this.wizard.divId}"
+          uni2id="${this.wizard.divId}"
+          ></iframe>
+      </div>`;
     }
   }
 
