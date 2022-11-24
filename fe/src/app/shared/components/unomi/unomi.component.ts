@@ -169,10 +169,23 @@ export class UnomiComponent implements OnInit {
    * @param rule - the rule selected
    */
   openUpdateRule(rule) {
+    this.conditionSchema = [];
+    this.conditionSchema2 = [];
     this.newUnomi = this.loadUnomiData(rule);
     this.addNew = true;
+
+    let findCondition = this.unomiMongo.find((x) => x.id === rule.id);
+    if (!findCondition) {
+      this.isDetail = true;
+      this.msg.add({
+        key: 'popUp',
+        severity: MessagesTst.ERROR,
+        summary: `El ítem tipo ${this.selectedOption.value} no fue creado desde el sistema UNI2, por lo cual no se puede modificar`,
+      });
+    } else {
+      this.isDetail = false;
+    }
     this.isEditing = true;
-    this.isDetail = false;
   }
 
   /**
@@ -197,13 +210,14 @@ export class UnomiComponent implements OnInit {
     editUnom.metadata = new Metadata();
     editUnom.metadata.id = rule.id;
     editUnom.metadata.name = rule.name;
+    editUnom.metadata.tags = rule.tags;
     editUnom.metadata.scope = rule.scope;
     editUnom.metadata.hidden = rule.hidden;
     editUnom.metadata.enabled = rule.enabled;
     editUnom.metadata.readOnly = rule.readOnly;
+    editUnom.metadata.systemTags = rule.systemTags;
     editUnom.metadata.description = rule.description;
     editUnom.metadata.missingPlugins = rule.missingPlugins;
-    editUnom.metadata.systemTags = rule.systemTags;
 
     let findCondition = this.unomiMongo.find((x) => x.id === rule.id);
     if (findCondition && this.selectedOption.value === genWord.GOAL) {
@@ -211,6 +225,15 @@ export class UnomiComponent implements OnInit {
       this.conditionSchema2 = JSON.parse(findCondition.secCondition);
       editUnom['firstCondition'] = JSON.parse(findCondition.condition);
       editUnom['secondCondition'] = JSON.parse(findCondition.secCondition);
+    } else if (findCondition && this.selectedOption.value === genWord.RULE) {
+      editUnom.actions = [];
+      for (let i = 0; i < findCondition.actions.length; i++) {
+        const element = findCondition.actions[i];
+        const find = this.unomiActions.find((x) => x.id === element.type);
+        if (find) {
+          editUnom.actions?.push(find);
+        }
+      }
     } else if (findCondition && this.selectedOption.value === genWord.SCORING) {
       this.elements = JSON.parse(findCondition.condition);
       editUnom['elements'] = this.elements;
@@ -226,6 +249,10 @@ export class UnomiComponent implements OnInit {
       return { header: x, field: x };
     });
 
+    if (editUnom.metadata.tags?.length === 0 && findCondition) {
+      editUnom.metadata.tags = findCondition.tags;
+    }
+
     for (let i = 0; i < this.systemTagsSelected.length; i++) {
       const element = this.systemTagsSelected[i];
       let findTag = this.systemTags.find((x) => x.header === element.header);
@@ -240,7 +267,9 @@ export class UnomiComponent implements OnInit {
       editUnom.timezone = findCondition.timezone;
       editUnom.startDate = new Date(findCondition.startDate);
       editUnom.endDate = new Date(findCondition.endDate);
+      editUnom.primaryGoal = findCondition.primaryGoal;
     }
+
     if (findCondition && this.selectedOption.value === genWord.RULE) {
       editUnom.raiseEventOnlyOnceForSession =
         findCondition.raiseEventOnlyOnceForSession;
@@ -261,6 +290,12 @@ export class UnomiComponent implements OnInit {
     return editUnom;
   }
 
+  cancel() {
+    this.conditionSchema = [];
+    this.conditionSchema2 = [];
+    this.addNew = false;
+  }
+
   /**
    * description: open modal with form rule
    */
@@ -276,6 +311,14 @@ export class UnomiComponent implements OnInit {
     this.elements.push(this.createElement());
     this.isDetail = false;
     this.systemTagsSelected = [];
+    if (this.selectedOption.value === genWord.CAMPAIGN) {
+      this.newUnomi.startDate = new Date();
+      this.newUnomi.startDate.setHours(0, 0, 0, 0);
+      this.newUnomi.endDate = new Date();
+      this.newUnomi.endDate.setHours(0, 0, 0, 0);
+      this.newUnomi.timezone = 'America/Bogota';
+      this.newUnomi.currency = 'USD';
+    }
     if (this.selectedOption.value === genWord.RULE) {
       this.newUnomi.raiseEventOnlyOnceForProfile = false;
       this.newUnomi.raiseEventOnlyOnceForSession = false;
@@ -296,10 +339,20 @@ export class UnomiComponent implements OnInit {
       });
     }
 
-    if(!/^[a-zA-Z0-9_]+$/.test(this.newUnomi.metadata.id)){
+    if (!/^[a-zA-Z0-9_]+$/.test(this.newUnomi.metadata.id)) {
       return this.msg.add({
         severity: MessagesTst.ERROR,
         summary: 'El id no debe tener caracteres especiales',
+      });
+    }
+
+    if (
+      this.newUnomi.primaryGoal &&
+      !/^[a-zA-Z0-9_]+$/.test(this.newUnomi.primaryGoal)
+    ) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary: 'El primaryGoal no debe tener caracteres especiales',
       });
     }
 
@@ -310,7 +363,7 @@ export class UnomiComponent implements OnInit {
       });
     }
 
-    if(!/^[a-zA-Z0-9 _]+$/.test(this.newUnomi.metadata.name)){
+    if (!/^[a-zA-Z0-9 _]+$/.test(this.newUnomi.metadata.name)) {
       return this.msg.add({
         severity: MessagesTst.ERROR,
         summary: 'El nombre no debe tener caracteres especiales',
@@ -323,7 +376,7 @@ export class UnomiComponent implements OnInit {
         summary: 'Debe agregar la descripción',
       });
     }
-    if(!/^[a-zA-Z0-9 _]+$/.test(this.newUnomi.metadata.description)){
+    if (!/^[a-zA-Z0-9 _]+$/.test(this.newUnomi.metadata.description)) {
       return this.msg.add({
         severity: MessagesTst.ERROR,
         summary: 'La descripción no debe tener caracteres especiales',
@@ -337,10 +390,34 @@ export class UnomiComponent implements OnInit {
       });
     }
 
-    if(!/^[a-zA-Z0-9 _]+$/.test(this.newUnomi.metadata.scope)){
+    if (!/^[a-zA-Z0-9 _]+$/.test(this.newUnomi.metadata.scope)) {
       return this.msg.add({
         severity: MessagesTst.ERROR,
         summary: 'El scope no debe tener caracteres especiales',
+      });
+    }
+
+    if (
+      this.selectedOption.value === genWord.CAMPAIGN &&
+      this.newUnomi.currency &&
+      !/^[A-Z]{3}$/.test(this.newUnomi.currency)
+    ) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary:
+          'El campo “Currency” debe contener solamente tres caracteres en mayúscula',
+      });
+    }
+
+    if (
+      this.selectedOption.value === genWord.CAMPAIGN &&
+      this.newUnomi.timezone &&
+      !/^[A-Za-z]+\/+[A-Za-z]+$/.test(this.newUnomi.timezone)
+    ) {
+      return this.msg.add({
+        severity: MessagesTst.ERROR,
+        summary:
+          'La zona horaria no debe contener espacios y debe ir separada por un “/”',
       });
     }
 

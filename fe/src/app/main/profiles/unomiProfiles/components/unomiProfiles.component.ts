@@ -141,32 +141,48 @@ export class UnomiProfilesComponent {
 
   filterDataSource() {
     let condition;
+    let conditionCSrv;
     let conditionCount;
     if (this.schema.length > 0) {
-      condition = this.conditionSrv.createBooleanConditionObj(this.schema);
+      conditionCSrv = this.conditionSrv.createBooleanConditionObj(this.schema);
     }
 
     //perfiles activos
     if (this.optionsSelected) {
       //si tiene busqueda avanzada solo tendria que hacer push a la condicion existen
-      if (condition !== undefined) {
-        condition.parameterValues.parameterValues.subConditions.push(
-          {
-            type: 'profilePropertyCondition',
-            parameterValues: {
-              propertyName: 'properties.enabled',
-              comparisonOperator: 'equals',
-              propertyValue: 'true',
-            },
+      if (conditionCSrv !== undefined) {
+        condition = {
+          type: 'booleanCondition',
+          parameterValues: {
+            operator: 'and',
+            subConditions: [
+              {
+                type: 'booleanCondition',
+                parameterValues: {
+                  operator: 'or',
+                  subConditions: [
+                    {
+                      type: 'profilePropertyCondition',
+                      parameterValues: {
+                        propertyName: 'properties.enabled',
+                        comparisonOperator: 'equals',
+                        propertyValue: 'true',
+                      },
+                    },
+                    {
+                      type: 'profilePropertyCondition',
+                      parameterValues: {
+                        propertyName: 'properties.enabled',
+                        comparisonOperator: 'missing',
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
           },
-          {
-            type: 'profilePropertyCondition',
-            parameterValues: {
-              propertyName: 'properties.enabled',
-              comparisonOperator: 'missing',
-            },
-          }
-        );
+        };
+        condition.parameterValues.subConditions.push(conditionCSrv);
       }
 
       //si no tiene condicion previa por la busqueda avanzada
@@ -197,35 +213,36 @@ export class UnomiProfilesComponent {
       }
 
       //condicion para el count de los perfiles activos o que no tengan la priopiedad
-      conditionCount = {
-        type: 'booleanCondition',
-        parameterValues: {
-          operator: 'or',
-          subConditions: [
-            {
-              type: 'profilePropertyCondition',
-              parameterValues: {
-                propertyName: 'properties.enabled',
-                comparisonOperator: 'equals',
-                propertyValue: 'true',
-              },
-            },
-            {
-              type: 'profilePropertyCondition',
-              parameterValues: {
-                propertyName: 'properties.enabled',
-                comparisonOperator: 'missing',
-              },
-            },
-          ],
-        },
-      };
+      conditionCount = condition;
+      //  {
+      //   type: 'booleanCondition',
+      //   parameterValues: {
+      //     operator: 'or',
+      //     subConditions: [
+      //       {
+      //         type: 'profilePropertyCondition',
+      //         parameterValues: {
+      //           propertyName: 'properties.enabled',
+      //           comparisonOperator: 'equals',
+      //           propertyValue: 'true',
+      //         },
+      //       },
+      //       {
+      //         type: 'profilePropertyCondition',
+      //         parameterValues: {
+      //           propertyName: 'properties.enabled',
+      //           comparisonOperator: 'missing',
+      //         },
+      //       },
+      //     ],
+      //   },
+      // };
 
       //perfiles inactivos
     } else {
       //si tiene busqueda avanzada solo tendria que hacer push a la condicion existen
       if (condition !== undefined) {
-        condition.parameterValues.parameterValues.subConditions.push({
+        condition.parameterValues.subConditions.push({
           type: 'profilePropertyCondition',
           parameterValues: {
             propertyName: 'properties.enabled',
@@ -404,7 +421,7 @@ export class UnomiProfilesComponent {
   getSessions(id: string) {
     this.unomiProfilesSrv.get(id).subscribe({
       next: (data) => (
-        (this.showSessions = true), (this.userSessions = data.list)
+        (this.showSessions = true), (this.userSessions = data.message.list)
       ),
       error: () =>
         this.msg.add({

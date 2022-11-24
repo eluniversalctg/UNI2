@@ -1,17 +1,16 @@
 import * as _ from 'lodash';
-import { MessageService } from 'primeng/api';
-import { Component, Input, OnChanges } from '@angular/core';
-import { ExportToCSV } from '@molteni/export-csv';
-import { MessagesTst } from 'src/app/shared/enums';
-import { ParentCondition } from 'src/app/shared/models';
+import { forkJoin } from 'rxjs';
 import {
   RuleService,
   ExportService,
   ConditionsService,
   VariableService,
 } from 'src/app/shared/services';
-import { forkJoin } from 'rxjs';
-import { LazyLoadEvent } from 'primeng/api';
+import { ExportToCSV } from '@molteni/export-csv';
+import { MessagesTst } from 'src/app/shared/enums';
+import { ParentCondition } from 'src/app/shared/models';
+import { MessageService, LazyLoadEvent } from 'primeng/api';
+import { Component, Input, OnChanges } from '@angular/core';
 
 @Component({
   selector: 'app-statistics',
@@ -43,15 +42,15 @@ export class StatisticsComponent implements OnChanges {
     const variablesReq = this.variableService.getList();
     const totalRecords = this.ruleService.getByURL('sessions/count');
     forkJoin([variablesReq, conditiosReq, totalRecords]).subscribe({
-      next: (response) => (
+      next: (response) => {
         (this.unomiConditions = response[1]),
-        (this.conditionVariables = response[0].sort((a, b) =>
-          a.id.toUpperCase() > b.id.toUpperCase() ? 1 : -1
-        )),
-        this.getData(undefined),
-        (this.totalRecords = response[2]),
-        (this.loading = false)
-      ),
+          (this.conditionVariables = response[0].sort((a, b) =>
+            a.id.toUpperCase() > b.id.toUpperCase() ? 1 : -1
+          )),
+          this.getData(undefined),
+          (this.totalRecords = response[2]),
+          (this.loading = false);
+      },
       error: () =>
         this.msg.add({
           severity: MessagesTst.WARNING,
@@ -94,7 +93,9 @@ export class StatisticsComponent implements OnChanges {
 
   ngOnChanges() {
     this.statisticsProfiles = this.sessions;
+    this.totalRecords = this.sessions.length;
   }
+
   showStatistics(statistic) {
     this.sessionSelected = statistic;
     this.showSessions = true;
@@ -124,16 +125,22 @@ export class StatisticsComponent implements OnChanges {
   getData(condition) {
     this.limit[0] = 0;
     this.limit[1] = 10;
-    this.ruleService
-      .addByURL('sessions/get', [condition, this.limit])
-      .subscribe({
-        next: (data) => (this.statisticsProfiles = data.list),
-        error: () =>
-          this.msg.add({
-            severity: MessagesTst.ERROR,
-            summary: MessagesTst.ERRORGETDATA,
-          }),
-      });
+    const totalRecords = this.ruleService.getByURL('sessions/count');
+    const sessions = this.ruleService.addByURL('sessions/get', [
+      condition,
+      this.limit,
+    ]);
+    forkJoin([sessions, totalRecords]).subscribe({
+      next: (data) => {
+        this.statisticsProfiles = data[0].list;
+        this.totalRecords = data[1];
+      },
+      error: () =>
+        this.msg.add({
+          severity: MessagesTst.ERROR,
+          summary: MessagesTst.ERRORGETDATA,
+        }),
+    });
   }
 
   loadSessions(event: LazyLoadEvent) {

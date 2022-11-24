@@ -38,27 +38,19 @@ export class ProfileAnaliticService {
             operator: 'and',
             subConditions: [
               {
-                type: 'profilePropertyCondition',
                 parameterValues: {
                   comparisonOperator: 'exists',
-                  propertyName: 'properties.enabled',
+                  propertyName: 'properties.email',
                 },
+                type: 'profilePropertyCondition',
               },
               {
-                type: 'profilePropertyCondition',
                 parameterValues: {
                   comparisonOperator: 'equals',
                   propertyName: 'properties.enabled',
                   propertyValue: 'true',
                 },
-              },
-              {
                 type: 'profilePropertyCondition',
-                parameterValues: {
-                  comparisonOperator: 'exists',
-                  propertyName: 'properties.email',
-                  propertyValue: 'true',
-                },
               },
             ],
           },

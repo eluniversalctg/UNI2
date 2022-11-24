@@ -47,7 +47,7 @@ export class DashboardComponent {
   getDataSegments() {
     this.ruleSrv.getList('segments').subscribe({
       next: (data) => {
-        this.segments = data;
+        this.segments = data.filter((x) => x.enabled);
       },
       error: () =>
         this.msg.add({

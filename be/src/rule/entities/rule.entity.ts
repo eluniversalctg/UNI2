@@ -29,6 +29,15 @@ export class Rule {
   cost?: number;
 
   @Prop({ required: false, unique: false })
+  primaryGoal?: string;
+
+  @Prop({ required: false, unique: false })
+  tags?: string[];
+
+  @Prop({ required: false, unique: false })
+  actions?: actions[];
+
+  @Prop({ required: false, unique: false })
   currency?: string;
 
   @Prop({ required: false, unique: false })
@@ -39,9 +48,14 @@ export class Rule {
 
   @Prop({ required: false, unique: false })
   endDate?: Date;
-  
+
   @Prop({ required: false, unique: false })
   priority?: number;
+}
+@Schema()
+export class actions {
+  @Prop({ required: false, unique: false })
+  type: string;
 }
 
 export const RuleSchema = SchemaFactory.createForClass(Rule);

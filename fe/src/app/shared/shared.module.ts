@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // PrimeNgModules
-
 import { CardModule } from 'primeng/card';
+import { ChipsModule } from 'primeng/chips';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { ChartModule } from 'primeng/chart';
@@ -82,6 +82,7 @@ const primeNgModules = [
   ButtonModule,
   CardModule,
   ConfirmDialogModule,
+  ChipsModule,
   ConfirmPopupModule,
   DialogModule,
   InputTextModule,

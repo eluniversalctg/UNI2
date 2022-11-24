@@ -227,7 +227,7 @@
     <label for="name" class="col-12 md:col-4">Name:</label>
     <div class="col-12 md:col-8">
       <input
-      (keypress)="validateInput($event)"
+        (keypress)="validateInput($event)"
         [(ngModel)]="newUnomi.metadata.name"
         class="input inputfield fill-available"
         type="text"
@@ -242,7 +242,7 @@
     <label for="description" class="col-12 md:col-4">Description:</label>
     <div class="col-12 md:col-8">
       <input
-      (keypress)="validateInput($event)"
+        (keypress)="validateInput($event)"
         [(ngModel)]="newUnomi.metadata.description"
         class="fill-available input inputfield"
         type="text"
@@ -257,7 +257,7 @@
     <label for="scope" class="col-12 md:col-4">Scope:</label>
     <div class="col-12 md:col-8">
       <input
-      (keypress)="validateInput($event)"
+        (keypress)="validateInput($event)"
         [(ngModel)]="newUnomi.metadata.scope"
         class="fill-available input inputfield"
         type="text"
@@ -288,6 +288,28 @@
       <p-inputSwitch
         id="enabled"
         [(ngModel)]="newUnomi.metadata.enabled"
+        [disabled]="isDetail"
+      ></p-inputSwitch>
+    </div>
+  </div>
+
+  <div class="field grid">
+    <label for="enabled" class="col-12 md:col-4">ReadOnly:</label>
+    <div class="col-12 md:col-8">
+      <p-inputSwitch
+        id="enabled"
+        [(ngModel)]="newUnomi.metadata.readOnly"
+        [disabled]="isDetail"
+      ></p-inputSwitch>
+    </div>
+  </div>
+
+  <div class="field grid">
+    <label for="enabled" class="col-12 md:col-4">Hidden:</label>
+    <div class="col-12 md:col-8">
+      <p-inputSwitch
+        id="enabled"
+        [(ngModel)]="newUnomi.metadata.hidden"
         [disabled]="isDetail"
       ></p-inputSwitch>
     </div>
@@ -344,15 +366,31 @@
           'max-width': '45vw'
         }"
         [disabled]="isDetail"
-      ></p-multiSelect>
+        ></p-multiSelect>
+      </div>
+    </div>
+
+    <div class="field grid">
+      <label for="tags" class="col-12 md:col-4">Tags:</label>
+    <div class="col-12 md:col-8">
+      <p-chips
+      id="tags"
+      [disabled]="isDetail"
+        separator=","
+        [(ngModel)]="newUnomi.metadata.tags"
+        [style]="{
+          width: '-webkit-fill-available',
+          'max-width': '45vw'
+        }"
+      ></p-chips>
     </div>
   </div>
 
   <div class="field grid" *ngIf="selectedOption.value === 'rules'">
-    <label for="systemTags" class="col-12 md:col-4">Actions:</label>
+    <label for="actions" class="col-12 md:col-4">Actions:</label>
     <div class="col-12 md:col-8">
       <p-multiSelect
-        id="systemTags"
+        id="actions"
         [options]="unomiActions"
         [(ngModel)]="newUnomi.actions"
         optionLabel="id"
@@ -384,11 +422,25 @@
     <label for="currency" class="col-12 md:col-4">Currency:</label>
     <div class="col-12 md:col-8">
       <input
-      (keypress)="validateInput($event)"
+        (keypress)="validateInput($event)"
         [(ngModel)]="newUnomi.currency"
         class="fill-available input inputfield"
         type="text"
         id="currency"
+        pInputText
+        [disabled]="isDetail"
+      />
+    </div>
+  </div>
+
+  <div class="field grid" *ngIf="selectedOption.value === 'campaigns'">
+    <label for="primaryGoal" class="col-12 md:col-4">PrimaryGoal:</label>
+    <div class="col-12 md:col-8">
+      <input
+        [(ngModel)]="newUnomi.primaryGoal"
+        class="fill-available input inputfield"
+        type="text"
+        id="primaryGoal"
         pInputText
         [disabled]="isDetail"
       />
@@ -416,6 +468,8 @@
         inputId="basic"
         id="startDate"
         [(ngModel)]="newUnomi.startDate"
+        [showTime]="true"
+        [showSeconds]="true"
         class="fill-available"
         [disabled]="isDetail"
       ></p-calendar>
@@ -431,6 +485,8 @@
         [(ngModel)]="newUnomi.endDate"
         class="fill-available"
         [disabled]="isDetail"
+        [showTime]="true"
+        [showSeconds]="true"
       ></p-calendar>
     </div>
   </div>
@@ -528,7 +584,7 @@
       [label]="isDetail ? 'Aceptar' : 'Cancelar'"
       [icon]="isDetail ? 'pi pi-check' : 'pi pi-times'"
       class="p-button-text"
-      (click)="addNew = false"
+      (click)=" cancel();"
     ></button>
     <button
       *ngIf="!isDetail"
@@ -540,6 +596,7 @@
       (click)="register()"
     ></button>
   </ng-template>
+  <p-toast key="popUp"></p-toast>
 </p-dialog>
 
 <!--==========================  View  statistics ========================= -->

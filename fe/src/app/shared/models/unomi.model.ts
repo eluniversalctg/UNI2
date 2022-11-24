@@ -10,6 +10,7 @@ export class UNOMI {
   currency?: string;
   primaryGoal?: string;
   systemTags?: any[];
+  tags?: string[];
   timezone?: string;
   condition?: parentCondition | null;
   secCondition?: parentCondition;
