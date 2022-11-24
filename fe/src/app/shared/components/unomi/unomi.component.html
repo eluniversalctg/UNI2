@@ -366,17 +366,17 @@
           'max-width': '45vw'
         }"
         [disabled]="isDetail"
-        ></p-multiSelect>
-      </div>
+      ></p-multiSelect>
     </div>
+  </div>
 
-    <div class="field grid">
-      <label for="tags" class="col-12 md:col-4">Tags:</label>
+  <div class="field grid">
+    <label for="tags" class="col-12 md:col-4">Tags:</label>
     <div class="col-12 md:col-8">
       <p-chips
-      #chips
-      id="tags"
-      [disabled]="isDetail"
+        #chips
+        id="tags"
+        [disabled]="isDetail"
         separator=","
         [(ngModel)]="newUnomi.metadata.tags"
         [style]="{
@@ -585,7 +585,7 @@
       [label]="isDetail ? 'Aceptar' : 'Cancelar'"
       [icon]="isDetail ? 'pi pi-check' : 'pi pi-times'"
       class="p-button-text"
-      (click)=" cancel();"
+      (click)="cancel()"
     ></button>
     <button
       *ngIf="!isDetail"
