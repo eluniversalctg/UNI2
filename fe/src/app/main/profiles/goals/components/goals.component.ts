@@ -8,7 +8,7 @@ import { genWord } from 'src/app/shared/enums/genericWords';
 })
 export class GoalsComponent {
   ruleComponent: Options = {
-    label: genWord.GOALLABEL,
+    label: genWord.GOALLABEL2,
     value: genWord.GOAL,
   };
   constructor() {}

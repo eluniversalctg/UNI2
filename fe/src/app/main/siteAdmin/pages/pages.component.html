@@ -4,13 +4,13 @@
     <div class="card">
       <p-toolbar styleClass="p-mb-4">
         <ng-template pTemplate="left">
-          <h1>Agregar Página</h1>
+          <h1>Agregar página</h1>
         </ng-template>
         <ng-template pTemplate="right">
           <button
             pButton
             type="button"
-            label="Agregar Página"
+            label="página"
             (click)="createPages()"
           ></button>
         </ng-template>
@@ -120,7 +120,7 @@
                 pButton
                 pRipple
                 icon="pi pi-table"
-                pTooltip="Agregar Bloque"
+                pTooltip="Agregar bloque"
                 (click)="addNewBlock(page)"
                 class="p-button-rounded p-mr-2"
               ></button>
@@ -242,7 +242,7 @@
                           pButton
                           pRipple
                           icon="pi pi-table"
-                          pTooltip="Agregar Bloque"
+                          pTooltip="Agregar bloque"
                           (click)="addNewBlock(children)"
                           class="p-button-rounded p-mr-2"
                         ></button>
@@ -357,7 +357,7 @@
                                     pButton
                                     pRipple
                                     icon="pi pi-table"
-                                    pTooltip="Agregar Bloque"
+                                    pTooltip="Agregar bloque"
                                     (click)="addNewBlock(children)"
                                     class="p-button-rounded p-mr-2"
                                   ></button>
@@ -476,7 +476,7 @@
                                               pButton
                                               pRipple
                                               icon="pi pi-table"
-                                              pTooltip="Agregar Bloque"
+                                              pTooltip="Agregar bloque"
                                               (click)="addNewBlock(children)"
                                               class="p-button-rounded p-mr-2"
                                             ></button>
@@ -556,7 +556,7 @@
   [maximizable]="true"
 >
   <ng-template pTemplate="header">
-    <p>{{ isEditing ? 'Editar página': 'Crear nueva Página' }} </p>
+    <p>{{ isEditing ? 'Editar página': 'Crear nueva página' }} </p>
   </ng-template>
   <form [formGroup]="pagesForm" class="mt-2">
     <div class="field grid">
