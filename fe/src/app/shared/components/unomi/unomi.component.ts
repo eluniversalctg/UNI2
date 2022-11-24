@@ -35,6 +35,7 @@ export class UnomiComponent implements OnInit {
   unomi: UNOMI[] = [];
   unomiDatasource: UNOMI[] = [];
   @ViewChild('dt') dt;
+  @ViewChild('chips') chips;
   unomiMongo: any[] = [];
   addNew: boolean = false;
   isEditing: boolean = false;
@@ -169,6 +170,7 @@ export class UnomiComponent implements OnInit {
    * @param rule - the rule selected
    */
   openUpdateRule(rule) {
+    this.chips.inputViewChild.nativeElement.value = '';
     this.conditionSchema = [];
     this.conditionSchema2 = [];
     this.newUnomi = this.loadUnomiData(rule);
@@ -193,6 +195,7 @@ export class UnomiComponent implements OnInit {
    * * @param rule - the rule selected
    */
   duplicateRule(rule: Rule) {
+    this.chips.inputViewChild.nativeElement.value = '';
     this.newUnomi = this.loadUnomiData(rule);
     delete this.newUnomi.metadata.id;
     this.addNew = true;
@@ -294,12 +297,14 @@ export class UnomiComponent implements OnInit {
     this.conditionSchema = [];
     this.conditionSchema2 = [];
     this.addNew = false;
+    this.chips.inputViewChild.nativeElement.value = '';
   }
 
   /**
    * description: open modal with form rule
    */
   createRule() {
+    this.chips.inputViewChild.nativeElement.value = '';
     this.newUnomi = new UNOMI();
     this.tempUnomi = new UNOMI();
     this.newUnomi.metadata = new Metadata();
@@ -399,7 +404,7 @@ export class UnomiComponent implements OnInit {
 
     if (
       this.selectedOption.value === genWord.CAMPAIGN &&
-      this.newUnomi.currency &&
+      this.newUnomi.currency !== undefined &&
       !/^[A-Z]{3}$/.test(this.newUnomi.currency)
     ) {
       return this.msg.add({
@@ -411,7 +416,7 @@ export class UnomiComponent implements OnInit {
 
     if (
       this.selectedOption.value === genWord.CAMPAIGN &&
-      this.newUnomi.timezone &&
+      this.newUnomi.timezone !== undefined &&
       !/^[A-Za-z]+\/+[A-Za-z]+$/.test(this.newUnomi.timezone)
     ) {
       return this.msg.add({

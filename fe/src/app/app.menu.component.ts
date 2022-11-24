@@ -1,6 +1,6 @@
+import { MenuService } from './core/services';
 import { Component, OnInit } from '@angular/core';
 import { AppMainComponent } from './app.main.component';
-import { MenuService } from './core/services';
 
 @Component({
   selector: 'app-menu',
@@ -12,6 +12,5 @@ export class AppMenuComponent implements OnInit {
   constructor(public app: AppMainComponent, private menuService: MenuService) {}
   ngOnInit() {
     this.model = this.menuService.getMenu();
-    console.log(this.model);
   }
 }
