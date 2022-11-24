@@ -135,9 +135,11 @@ export class VariablesComponent {
     });
 
     variable.optionValues?.forEach((value) => {
-      value.options = value.options.map((obj) => {
-        return obj.value ? obj.value : obj;
-      });
+      if(value.options.length !== 0){
+        value.options = value.options.map((obj) => {
+          return obj.value ? obj.value : obj;
+        });
+      }
       this.addValue(value);
     });
   }
@@ -231,16 +233,7 @@ export class VariablesComponent {
         summary: 'Debe agregar al menos un valor',
       });
     }
-    for (let j = 0; j < optionsValues.length; j++) {
-      const element = optionsValues[j];
 
-      if (element.options.length === 0) {
-        return this.msg.add({
-          severity: MessagesTst.ERROR,
-          summary: 'Debe agregar al menos una opción',
-        });
-      }
-    }
     let control = this.variablesForm.controls;
 
     // map options values
@@ -250,15 +243,20 @@ export class VariablesComponent {
       }
 
       if (Array.isArray(option.options)) {
-        option.options = option.options.map((obj) => {
-          let newObj = {};
-          if (obj.value) {
-            newObj['value'] = obj.value;
-          } else {
-            newObj['value'] = obj;
-          }
-          return newObj;
-        });
+        if(option.options.length === 0) {
+          option.options = [];
+        } else {
+          option.options = option.options.map((obj) => {
+            let newObj = {};
+            if (obj.value) {
+              newObj['value'] = obj.value;
+            } else {
+              newObj['value'] = obj;
+            }
+            return newObj;
+          });
+
+        }
       }
     });
 
