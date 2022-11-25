@@ -229,7 +229,8 @@ export class UnomiComponent implements OnInit {
       editUnom['firstCondition'] = JSON.parse(findCondition.condition);
       editUnom['secondCondition'] = JSON.parse(findCondition.secCondition);
     } else if (findCondition && this.selectedOption.value === genWord.RULE) {
-      editUnom.actions = [];
+      this.conditionSchema = JSON.parse(findCondition.condition);
+      editUnom['firstCondition'] = JSON.parse(findCondition.condition);
       for (let i = 0; i < findCondition.actions.length; i++) {
         const element = findCondition.actions[i];
         const find = this.unomiActions.find((x) => x.id === element.type);

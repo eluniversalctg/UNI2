@@ -115,6 +115,12 @@ export class RolesComponent {
 
       this.parentsChild = [];
 
+      if (this.selectedPages.length === 0){
+        return this.msg.add({
+          severity: MessagesTst.WARNING,
+          summary: "Debe seleccionar al menos una pantalla a asignar",
+        });
+      }
       // function to get all nodes from tree
       this.selectedPages.forEach((node) => {
         this.saveNodes({
@@ -183,7 +189,7 @@ export class RolesComponent {
     } else {
       this.msg.add({
         severity: MessagesTst.WARNING,
-        summary: MessagesTst.ERRORDATA,
+        summary: 'Debe agregar el nombre',
       });
     }
   }

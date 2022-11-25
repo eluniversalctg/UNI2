@@ -150,6 +150,7 @@ export class WebsiteStructureComponent implements OnChanges {
   ngOnChanges() {
     this.blocks = JSON.parse(JSON.stringify(this.blocksTemp));
     if (this.pageAddBlock) {
+      this.stepPage = 0;
       this.pageAddBlock.wizardModel?.forEach((data) => {
         if (data.block) {
           this.blocks = _.differenceBy(

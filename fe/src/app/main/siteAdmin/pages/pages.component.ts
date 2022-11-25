@@ -47,7 +47,7 @@ export class PagesComponent {
 
   selectPageViewBlock: WizardModel[] = [];
   selectPageEditBlock: Pages;
-  selectEditBlock: WizardModel;
+  selectEditBlock: WizardModel | undefined;
 
   constructor(
     private msg: MessageService,
@@ -210,6 +210,7 @@ export class PagesComponent {
   addNewBlock(page) {
     this.pageWithBlock = new Pages();
     this.pageWithBlock = page;
+    this.selectEditBlock = undefined;
     this.addBlock = true;
   }
 
