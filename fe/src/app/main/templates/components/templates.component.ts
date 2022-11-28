@@ -340,7 +340,7 @@ export class TemplatesComponent {
             (x) => x.indexOf(placeholder.name) === 0
           );
           let index = numPlaceholder.length + 1;
-          this.template.htmlContent = `${select[0]}[$$${placeholder.name}${index}$$]${select[1]}`;
+          this.template.htmlContent = `${select[0]}[$$ld:${placeholder.name}${index}$$]${select[1]}`;
         }
       } else {
         this.template.htmlContent = `${select[0]}${placeholder.valueDefault}${select[1]}`;

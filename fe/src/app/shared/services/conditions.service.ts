@@ -80,9 +80,22 @@ export class ConditionsService extends ResourceService<Condition> {
               element['saveValueInto'] &&
               element['variable'] !== element['saveValueInto']
             ) {
-              obj['parameterValues'][element['saveValueInto']] =
-                element['selectedValue'];
-            } else if (element['variable'] !== 'Seleccionar Condición' && element['selectedValue']) {
+              if (
+                element['saveValueInto'] === 'propertyValues' &&
+                !Array.isArray(element['selectedValue'])
+              ) {
+                obj['parameterValues'][element['saveValueInto']] = [];
+                obj['parameterValues'][element['saveValueInto']].push(
+                  element['selectedValue']
+                );
+              } else {
+                obj['parameterValues'][element['saveValueInto']] =
+                  element['selectedValue'];
+              }
+            } else if (
+              element['variable'] !== 'Seleccionar Condición' &&
+              element['selectedValue']
+            ) {
               obj['parameterValues'][element['variable']] =
                 element['selectedValue'];
             }

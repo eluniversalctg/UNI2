@@ -30,13 +30,9 @@ export enum genWord {
   SCORING = 'scoring',
   SCORINGLABEL = 'Puntuación',
   CAMPAIGNLABEL = 'Campañas',
-  CAMPAIGNLABEL2 = 'campañas',
   GOALLABEL = 'Metas',
-  GOALLABEL2 = 'metas',
   RULELABEL = 'Reglas',
-  RULELABEL2 = 'reglas',
   SEGMENTLABEL = 'Segmentos',
-  SEGMENTLABEL2 = 'segmentos',
   NOOPERATOR = 'Debe seleccionar el operador',
   NOVAL = 'No seleccionó ningún valor',
 }

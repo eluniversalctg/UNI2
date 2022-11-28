@@ -8,12 +8,12 @@ import {
 } from './dto/parentCondition';
 import { promisify } from 'util';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { BlocksRepository } from './blocks.repository';
 import { PagesService } from 'src/pages/pages.service';
 import { CreateBlockDto } from './dto/create-block.dto';
 import { UpdateBlockDto } from './dto/update-block.dto';
 import { WeighingService } from 'src/weighing/weighing.service';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class BlocksService {
@@ -24,7 +24,7 @@ export class BlocksService {
     private readonly config: ConfigService,
     private pagesService: PagesService,
     private weighingService: WeighingService,
-  ) { }
+  ) {}
 
   async create(createBlockDto: CreateBlockDto) {
     try {
@@ -37,7 +37,6 @@ export class BlocksService {
 
   async findAll() {
     try {
-      this.createRules();
       return await this.blockRepository.find({});
     } catch (error) {
       return [];
@@ -121,7 +120,9 @@ export class BlocksService {
       for (let i = 0; i < element.length; i++) {
         this.readAllPages([element[i]], element[i]._id);
       }
-      const scriptGraphQl = await this.crearMetadataGraphql();
+      const scriptGraphQl = await this.crearMetadataGraphql(
+        element[0].site._id,
+      );
       const lazyLoading = await this.writeLazyLoading();
       const scriptJsonld = this.crearMetadataJson();
       const loadScript = `
@@ -181,26 +182,26 @@ export class BlocksService {
    * greater than 0
    * @returns an object with the metadata of the page.
    */
-  async crearMetadataGraphql() {
-    let weighing = await this.weighingService.findAll();
+  async crearMetadataGraphql(site) {
+    let weighing = await this.weighingService.findSite(site);
     weighing = JSON.parse(JSON.stringify(weighing));
 
-    const keys = Object.keys(weighing[0]);
+    const keys = Object.keys(weighing);
     let graphQl = '';
     let variable = '';
 
     for (let i = 0; i < keys.length; i++) {
-      if (weighing[0][keys[i]] && weighing[0][keys[i]].luck) {
-        if (weighing[0][keys[i]].luck > 0) {
+      if (weighing[keys[i]] && weighing[keys[i]].luck) {
+        if (weighing[keys[i]].luck > 0) {
           graphQl = `${graphQl}
-         const ${weighing[0][keys[i]].grapgQL} = document
+         const ${weighing[keys[i]].grapgQL} = document
             .querySelector(
-              'meta[property="og:${weighing[0][keys[i]].grapgQL}"]'
+              'meta[property="og:${weighing[keys[i]].grapgQL}"]'
             ) ? document
             .querySelector(
-              'meta[property="og:${weighing[0][keys[i]].grapgQL}"]'
+              'meta[property="og:${weighing[keys[i]].grapgQL}"]'
             ) .getAttribute('content') : "" `;
-          variable = `${variable} ${weighing[0][keys[i]].grapgQL},`;
+          variable = `${variable} ${weighing[keys[i]].grapgQL},`;
         }
       }
     }
@@ -373,7 +374,7 @@ export class BlocksService {
 
     var xhr = new XMLHttpRequest();
 
-    xhr.open("POST", ${this.config.get<string>(
+    xhr.open("POST", "${this.config.get<string>(
       'UNOMI_URL',
     )}/context.json", true);
     xhr.withCredentials = true;

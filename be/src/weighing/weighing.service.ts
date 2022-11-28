@@ -44,6 +44,14 @@ export class WeighingService {
     }
   }
 
+  async findSite(id: string): Promise<Weighing | undefined> {
+    try {
+      return await this.weighingRepository.findOne({ site: id });
+    } catch (error) {
+      return undefined;
+    }
+  }
+
   /**
    * update weighing
    */

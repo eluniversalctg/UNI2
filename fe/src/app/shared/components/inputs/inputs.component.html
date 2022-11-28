@@ -93,6 +93,7 @@
             optionValue="value"
             placeholder="Operator"
             class="p-ml-5"
+            (onChange)="setMultivaluesInput(list)"
           ></p-dropdown>
         </div>
 
@@ -112,7 +113,6 @@
               width: '-webkit-fill-available'
             }"
           ></p-dropdown>
-
           <p-multiSelect
             *ngIf="list.multivalued && list.values && list.values.length > 0"
             [options]="list.values || []"
@@ -125,6 +125,19 @@
             }"
           ></p-multiSelect>
 
+          <p-chips
+            *ngIf="
+              (list.multivalued && !list.values && showList(list)) ||
+              (list.values && list.values.length === 0 && showList(list))
+            "
+            [(ngModel)]="list.selectedValue"
+            separator=","
+            placeholder="Valores a seleccionar"
+            [style]="{
+              width: '-webkit-fill-available'
+            }"
+          ></p-chips>
+
           <input
             [style]="{
               width: '-webkit-fill-available'
@@ -133,7 +146,8 @@
             type="text"
             *ngIf="
               list.variableType === 'string' &&
-              (!list.values || list.values.length === 0)
+              (!list.values || list.values.length === 0) &&
+              operatorList(list) && !list.multivalued
             "
           />
 

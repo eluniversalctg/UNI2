@@ -98,7 +98,7 @@ export class RolesComponent {
   // save the role
   saveRole() {
     // if valid name
-    if (this.rolesForm.controls.name.value !== null) {
+    if (this.rolesForm.controls.name.value !== null && this.rolesForm.controls.name.value !== '') {
       // check if role with same name exist
       let found = this.roles.find(
         (x) =>

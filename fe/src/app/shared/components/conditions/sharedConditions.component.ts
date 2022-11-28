@@ -1,13 +1,13 @@
-import { ParentCondition } from '../../models';
-import { ConfirmationService } from 'primeng/api';
-import { ConditionsService, RuleService } from '../../services';
 import {
   Input,
   Output,
   Component,
-  EventEmitter,
   OnChanges,
+  EventEmitter,
 } from '@angular/core';
+import { ParentCondition } from '../../models';
+import { ConfirmationService } from 'primeng/api';
+import { ConditionsService, RuleService } from '../../services';
 
 @Component({
   selector: 'app-sharedConditions',
@@ -120,7 +120,6 @@ export class SharedConditionsComponent implements OnChanges {
     this.newConditon['variable'] = value.id;
     this.newConditon['multivalued'] = value.multivalued;
     this.newConditon['operator'] = 'or';
-    this.newConditon['variableType'] = value.type.toLowerCase();
 
     if (parameter) {
       this.parameterFiltered = parameter.optionValues;
@@ -143,6 +142,7 @@ export class SharedConditionsComponent implements OnChanges {
     );
 
     if (find) {
+      this.newConditon['variableType'] = find.type.toLowerCase();
       this.newConditon['saveValueInto'] = param.saveInto;
       if (this.newConditon['hasOperator']) {
         this.newConditon['posiblesOperators'] = this.operators.filter((x) => {

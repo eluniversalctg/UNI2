@@ -221,6 +221,7 @@ export class UnomiComponent implements OnInit {
     editUnom.metadata.systemTags = rule.systemTags;
     editUnom.metadata.description = rule.description;
     editUnom.metadata.missingPlugins = rule.missingPlugins;
+    editUnom.actions = [];
 
     let findCondition = this.unomiMongo.find((x) => x.id === rule.id);
     if (findCondition && this.selectedOption.value === genWord.GOAL) {

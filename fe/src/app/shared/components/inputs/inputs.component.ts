@@ -1,13 +1,13 @@
+import {
+  Input,
+  Output,
+  Component,
+  OnChanges,
+  EventEmitter,
+} from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 import { RuleService } from 'src/app/shared/services';
 import { Condition, ParentCondition } from 'src/app/shared/models';
-import {
-  Input,
-  Component,
-  OnChanges,
-  Output,
-  EventEmitter,
-} from '@angular/core';
 
 @Component({
   selector: 'app-recursive',
@@ -47,6 +47,47 @@ export class InputsTreeComponent implements OnChanges {
       for (let i = 0; i < this.recursiveList.length; i++) {
         this.recursiveList[i]['operator'] = operator;
       }
+    }
+  }
+
+  setMultivaluesInput(list) {
+    if (
+      list.operatorCondition === 'all' ||
+      list.operatorCondition === 'notIn' ||
+      list.operatorCondition === 'in' ||
+      list.operatorCondition === 'between'
+    ) {
+      list.multivalued = true;
+      list.selectedValue = undefined;
+    } else {
+      list.multivalued = false;
+      list.selectedValue = undefined;
+    }
+  }
+
+  showList(list) {
+    if (
+      list.operatorCondition === 'all' ||
+      list.operatorCondition === 'notIn' ||
+      list.operatorCondition === 'in' ||
+      list.operatorCondition === 'between'
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  operatorList(list) {
+    if (
+      list.operatorCondition !== 'all' &&
+      list.operatorCondition !== 'notIn' &&
+      list.operatorCondition !== 'in' &&
+      list.operatorCondition !== 'between'
+    ) {
+      return true;
+    } else {
+      return false;
     }
   }
 
