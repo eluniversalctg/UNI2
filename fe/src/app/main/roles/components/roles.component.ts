@@ -33,7 +33,7 @@ export class RolesComponent {
     private confirmationService: ConfirmationService
   ) {
     this.usersSrv.getList().subscribe({
-      next: (data) => ((this.users = data)),
+      next: (data) => (this.users = data),
     });
 
     this.options = [
@@ -81,11 +81,13 @@ export class RolesComponent {
   // opens create role pop up
   createRole() {
     this.resetData();
+    this.selectedPages = [];
     this.isEditing = false;
     this.addNew = true;
   }
 
   editRole(role: Roles) {
+    this.selectedPages = [];
     // load role information pop up
     this.rolesForm.controls._id.setValue(role._id);
     this.rolesForm.controls.isActive.setValue(role.isActive);
@@ -98,7 +100,10 @@ export class RolesComponent {
   // save the role
   saveRole() {
     // if valid name
-    if (this.rolesForm.controls.name.value !== null && this.rolesForm.controls.name.value !== '') {
+    if (
+      this.rolesForm.controls.name.value !== null &&
+      this.rolesForm.controls.name.value !== ''
+    ) {
       // check if role with same name exist
       let found = this.roles.find(
         (x) =>
@@ -115,10 +120,14 @@ export class RolesComponent {
 
       this.parentsChild = [];
 
-      if (this.selectedPages.length === 0){
+      if (
+        this.selectedPages.length === 0 ||
+        (this.selectedPages.length === 1 &&
+          this.selectedPages.filter((x) => x.key === '0'))
+      ) {
         return this.msg.add({
           severity: MessagesTst.WARNING,
-          summary: "Debe seleccionar al menos una pantalla a asignar",
+          summary: 'Debe seleccionar al menos una pantalla a asignar',
         });
       }
       // function to get all nodes from tree
