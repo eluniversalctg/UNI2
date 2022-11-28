@@ -24,7 +24,9 @@ export class BlocksService {
     private readonly config: ConfigService,
     private pagesService: PagesService,
     private weighingService: WeighingService,
-  ) {}
+  ) {
+    this.createRules();
+  }
 
   async create(createBlockDto: CreateBlockDto) {
     try {
@@ -114,11 +116,11 @@ export class BlocksService {
   async createRules() {
     let pages = await this.pagesService.findAll();
     pages = JSON.parse(JSON.stringify(pages));
-    const uniqPages = _.uniqBy(pages, 'site');
+    const uniqPages = _.uniqBy(pages, 'site._id');
     for (let i = 0; i < uniqPages.length; i++) {
-      const element = pages.filter((x) => x.site === uniqPages[i].site);
+      const element = pages.filter((x) => x.site._id === uniqPages[i].site._id);
       for (let i = 0; i < element.length; i++) {
-        this.readAllPages([element[i]], element[i]._id);
+        await this.readAllPages([element[i]], element[i]._id);
       }
       const scriptGraphQl = await this.crearMetadataGraphql(
         element[0].site._id,
@@ -167,13 +169,13 @@ export class BlocksService {
               window.addEventListener("resize", lazyload);
               window.addEventListener("orientationChange", lazyload);
           });
-
+ 
             ${this.finalScript}
             ${scriptGraphQl}
             ${scriptJsonld}
             ${lazyLoading}
             `;
-      this.createFile(loadScript, element[0].site.name);
+      await this.createFile(loadScript, element[0].site.name);
     }
   }
 
@@ -200,7 +202,7 @@ export class BlocksService {
             ) ? document
             .querySelector(
               'meta[property="og:${weighing[keys[i]].grapgQL}"]'
-            ) .getAttribute('content') : "" `;
+            ) .getAttribute('content') : "" ;`;
           variable = `${variable} ${weighing[keys[i]].grapgQL},`;
         }
       }
@@ -232,11 +234,11 @@ export class BlocksService {
    * createScriptOfRule function
    * @param pages - The pages of the form.
    */
-  readAllPages(pages, mainPage) {
+  async readAllPages(pages, mainPage) {
     for (let i = 0; i < pages.length; i++) {
       const element = pages[i];
       if (element.wizardModel) {
-        this.createScriptOfRule(element, mainPage);
+        await this.createScriptOfRule(element, mainPage);
       }
       if (element.children) {
         this.readAllPages(element.children, mainPage);
