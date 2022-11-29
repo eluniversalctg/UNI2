@@ -4,6 +4,7 @@
     *ngFor="let list of recursiveList; let i = index"
     [ngClass]="list.isChildren ? 'p-ml-4' : 'mg-l-0'"
   >
+    {{ list | json }}
     <div *ngIf="list && list.isChildren">
       <div style="display: inline-flex">
         <button
@@ -147,7 +148,8 @@
             *ngIf="
               list.variableType === 'string' &&
               (!list.values || list.values.length === 0) &&
-              operatorList(list) && !list.multivalued
+              operatorList(list) &&
+              !list.multivalued
             "
           />
 
@@ -159,6 +161,7 @@
             type="number"
             *ngIf="
               list.variableType === 'integer' &&
+              !list.multivalued &&
               (!list.values || list.values.length === 0)
             "
           />
