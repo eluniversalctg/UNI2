@@ -221,7 +221,6 @@ export class UnomiComponent implements OnInit {
     editUnom.metadata.systemTags = rule.systemTags;
     editUnom.metadata.description = rule.description;
     editUnom.metadata.missingPlugins = rule.missingPlugins;
-    editUnom.actions = [];
 
     let findCondition = this.unomiMongo.find((x) => x.id === rule.id);
     if (findCondition && this.selectedOption.value === genWord.GOAL) {
@@ -230,6 +229,7 @@ export class UnomiComponent implements OnInit {
       editUnom['firstCondition'] = JSON.parse(findCondition.condition);
       editUnom['secondCondition'] = JSON.parse(findCondition.secCondition);
     } else if (findCondition && this.selectedOption.value === genWord.RULE) {
+      editUnom.actions = [];
       this.conditionSchema = JSON.parse(findCondition.condition);
       editUnom['firstCondition'] = JSON.parse(findCondition.condition);
       for (let i = 0; i < findCondition.actions.length; i++) {
