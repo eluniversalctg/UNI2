@@ -4,7 +4,6 @@
     *ngFor="let list of recursiveList; let i = index"
     [ngClass]="list.isChildren ? 'p-ml-4' : 'mg-l-0'"
   >
-    {{ list | json }}
     <div *ngIf="list && list.isChildren">
       <div style="display: inline-flex">
         <button
