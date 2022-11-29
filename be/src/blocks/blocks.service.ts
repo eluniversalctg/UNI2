@@ -312,7 +312,9 @@ export class BlocksService {
                         JSONLD: getMetadataJSON(),
                     };
 
-                    const response = await fetch("http://localhost:3000/uni2Api/personalization/renderization", {
+                    const response = await fetch("${this.config.get<string>(
+                      'SERVER_IP',
+                    )}/personalization/renderization", {
                         method: "POST",
 
                         headers: {
