@@ -129,11 +129,12 @@ export class PersonalizationService {
     const idBlock = data[3];
     const level = data[4];
     const idRule = data[5];
-    const site = data[6];
 
-    const template = this.templatesPersonalization.find(
+    let template = this.templatesPersonalization.find(
       (x) => x._id === idTemplateRender,
     );
+
+    template = JSON.parse(JSON.stringify(template));
 
     const page = this.pages.find((x) => x._id === idPage);
 

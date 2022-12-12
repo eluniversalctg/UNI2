@@ -10,6 +10,46 @@
     <a href="#" class="menu-button" (click)="appMain.onMenuButtonClick($event)">
       <div class="menu-button-icon"></div>
     </a>
+
+    <ul class="layout-topbar-main-menu">
+      <li>
+        <a
+          [routerLink]="['/']"
+          [routerLinkActiveOptions]="{ exact: true }"
+          routerLinkActive="topbar-active-menuitem-routerlink"
+          >Sales
+          <span class="active-bottom"></span>
+        </a>
+      </li>
+      <li>
+        <a
+          [routerLink]="['/analytics']"
+          routerLinkActive="topbar-active-menuitem-routerlink"
+          >Analytics
+          <span class="active-bottom"></span>
+        </a>
+      </li>
+      <li>
+        <a
+          [routerLink]="['/utilities/widgets']"
+          routerLinkActive="topbar-active-menuitem-routerlink"
+          >Widgets
+          <span class="active-bottom"></span>
+        </a>
+      </li>
+      <li
+        app-topmenu
+        *ngFor="let item of menu; let i = index"
+        [item]="item"
+        [index]="i"
+        [root]="true"
+        class="layout-topbar-menu"
+        (click)="appMain.onTopbarMenuClick()"
+      ></li>
+    </ul>
+    <a href="#" class="menu-button" (click)="appMain.onMenuButtonClick($event)">
+      <div class="menu-button-icon"></div>
+    </a>
   </div>
   <div class="layout-topbar-right">
     <ul class="layout-topbar-actions">
