@@ -608,7 +608,7 @@ export class PersonalizationService {
   }
 
   /**
-   * get all placeholders the unomi
+   * get all placeholders the unomid
    */
   async getPlaceholdersUnomi() {
     this.placeholdersUnomi = [];
@@ -793,7 +793,9 @@ export class PersonalizationService {
                 script = newsystemPlaceholdersOG[0];
               }
 
-              const jsonLD = JSON.parse(script);
+              const jsonLD = this.isJsonString(script)
+                ? JSON.parse(script)
+                : JSON.parse(script.slice(0, 1259) + script.slice(1261));
               const replace = this.searchPlaceholderJsonLd(
                 jsonLD,
                 placeholders[i].name,
@@ -809,6 +811,15 @@ export class PersonalizationService {
       }
     }
     return htmlContentPlaceholder;
+  }
+
+  isJsonString(str) {
+    try {
+      JSON.parse(str);
+    } catch (e) {
+      return false;
+    }
+    return true;
   }
 
   /**

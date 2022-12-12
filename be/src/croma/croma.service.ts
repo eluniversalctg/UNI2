@@ -9,6 +9,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { DomainsService } from 'src/domains/domains.service';
 import { catchError, forkJoin, lastValueFrom, map } from 'rxjs';
 import { PlaceholdersService } from 'src/placeholders/placeholders.service';
+import { response } from 'express';
 
 @Injectable()
 export class CromaService {
@@ -92,6 +93,7 @@ export class CromaService {
     period?: string,
     date?: string,
   ) {
+    let response;
     let searchParams = '';
     const domain = await this.domainService.find(site);
     if (relatedCromaDto && relatedCromaDto.years) {
@@ -106,23 +108,139 @@ export class CromaService {
         .pipe(
           map((response) => (result = response)),
           catchError((e) => {
-            throw new HttpException(e.response.data, e.response.status);
+            return this.searchArticles(
+              {
+                related_articles: [
+                  {
+                    cms_id: relatedCromaDto.id,
+                    similarity: 1,
+                    url: relatedCromaDto['url'],
+                  },
+                ],
+              },
+              tags,
+              period,
+              date,
+              site,
+              true,
+            );
           }),
         ),
     );
 
-    const found = result.data.related_articles.find(
-      (x) => x.cms_id === relatedCromaDto.id,
-    );
+    if (result !== undefined) {
+      const found = result.data.related_articles.find(
+        (x) => x.cms_id === relatedCromaDto.id,
+      );
 
-    if (!found) {
-      result.data.related_articles = [
-        { cms_id: relatedCromaDto.id, similarity: 1 },
-        ...result.data.related_articles,
-      ];
+      if (!found) {
+        result.data.related_articles = [
+          { cms_id: relatedCromaDto.id, similarity: 1 },
+          ...result.data.related_articles,
+        ];
+      }
+      response = this.searchArticles(result.data, tags, period, date, site);
+    } else {
+      const article = await this.searchArticles(
+        {
+          related_articles: [
+            {
+              cms_id: relatedCromaDto.id,
+              similarity: 1,
+              url: relatedCromaDto['url'],
+            },
+          ],
+        },
+        tags,
+        period,
+        date,
+        site,
+        true,
+      );
+      response = this.extractText(article[0]);
     }
 
-    return this.searchArticles(result.data, tags, period, date, site);
+    return response;
+  }
+
+  async extractText(article) {
+    //extrac info from html
+    const response = article.metadata.html;
+    const systemPlaceholders: any[] = [];
+    systemPlaceholders.push(response.split(`="og:title" content="`)[1]);
+    systemPlaceholders.push(response.split(`="og:description" content="`)[1]);
+
+    let newsystemPlaceholdersOG: any[] = [];
+
+    for (let p = 0; p < systemPlaceholders.length; p++) {
+      const indiceOP = systemPlaceholders[p].includes('" />')
+        ? systemPlaceholders[p].indexOf('" />')
+        : systemPlaceholders[p].indexOf('">');
+
+      newsystemPlaceholdersOG.push(
+        systemPlaceholders[p].substring(0, indiceOP),
+      );
+    }
+
+    if (newsystemPlaceholdersOG.length !== 2) {
+      newsystemPlaceholdersOG = [];
+      const scripLD = '<script type="application/ld+json"';
+      // inspect placeholder type jason-LD
+      let systemPlaceholders: string[];
+      if (response.includes(scripLD)) {
+        systemPlaceholders = response.split(scripLD);
+      } else {
+        systemPlaceholders = response.split('scriptJsonLd.innerHTML = `');
+      }
+      const newSystemPlaceholders: any[] = [];
+
+      for (let i = 1; i < systemPlaceholders.length; i++) {
+        const indice = response.includes(scripLD)
+          ? systemPlaceholders[i].indexOf('</script>')
+          : systemPlaceholders[i].indexOf('`;');
+        newSystemPlaceholders.push(systemPlaceholders[i].substring(0, indice));
+      }
+
+      //compare json with placeholders
+      let script;
+      const classExist = newSystemPlaceholders[0].indexOf('class=');
+      if (classExist > 0) {
+        const calssString = response.split('class="');
+        const newcalssString: any[] = [];
+
+        for (let i = 1; i < calssString.length; i++) {
+          const indice = calssString[i].indexOf('">');
+          newcalssString.push(calssString[i].substring(0, indice));
+        }
+        script = newSystemPlaceholders[0].replace(
+          `class="${newcalssString[0]}">`,
+          '',
+        );
+      } else {
+        script = newSystemPlaceholders[0];
+      }
+
+      //convert script to object
+      const objetc = this.isJsonString(script)
+        ? JSON.parse(script)
+        : JSON.parse(script.slice(0, 1259) + script.slice(1261));
+      newsystemPlaceholdersOG.push(_.get(objetc, ['headline']));
+      newsystemPlaceholdersOG.push(_.get(objetc, ['description']));
+    }
+
+    article['title'] = newsystemPlaceholdersOG[0];
+    article['summary'] = newsystemPlaceholdersOG[1];
+
+    return [article];
+  }
+
+  isJsonString(str) {
+    try {
+      JSON.parse(str);
+    } catch (e) {
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -188,10 +306,16 @@ export class CromaService {
         .pipe(
           map((response) => {
             const article = response.data.article;
-            article['_id'] = article._id.$oid;
-            article['publication'] = article.publication.$oid;
-            article['publish_date'] = new Date(article.publish_date.$date);
-            return response.data.article;
+            if (article !== null) {
+              article['_id'] = article ? article._id.$oid : '';
+              article['publication'] = article ? article.publication.$oid : '';
+              article['publish_date'] = article
+                ? new Date(article.publish_date.$date)
+                : '';
+              return response.data.article;
+            } else {
+              return true;
+            }
           }),
           catchError((e) => {
             throw new HttpException(e.response.data, e.response.status);
@@ -233,6 +357,7 @@ export class CromaService {
     period?: string,
     date?: string,
     site?: string,
+    isError?: boolean,
   ) {
     // get placeholders to database
     this.getPlaceholders();
@@ -250,17 +375,22 @@ export class CromaService {
     const reponseToDevolver = await new Promise((resolve, reject) => {
       forkJoin(...request).subscribe({
         next: (req) => {
-          for (let i = 0; i < data.related_articles.length; i++) {
-            const element = data.related_articles[i];
-            const article = req.find(
-              (x) =>
-                x['_id'] === element.article_id ||
-                x['pub_art_id'] === element.cms_id,
-            );
-            data.related_articles[i] = {
-              ...element,
-              ...JSON.parse(JSON.stringify(article)),
-            };
+          if (!isError) {
+            for (let i = 0; i < data.related_articles.length; i++) {
+              const element = data.related_articles[i];
+              const article = req.find(
+                (x) =>
+                  x['_id'] === element.article_id ||
+                  x['pub_art_id'] === element.cms_id,
+              );
+              data.related_articles[i] = {
+                ...element,
+                ...JSON.parse(JSON.stringify(article)),
+              };
+            }
+          } else {
+            data.related_articles[0]['pub_art_id'] =
+              data.related_articles[0].cms_id;
           }
 
           const getHtml = [];
@@ -478,7 +608,9 @@ export class CromaService {
         }
 
         //convert script to object
-        const jsonLD = JSON.parse(script);
+        const jsonLD = this.isJsonString(script)
+          ? JSON.parse(script)
+          : JSON.parse(script.slice(0, 1259) + script.slice(1261));
         const replace = this.searchPlaceholder(jsonLD, placeholder.name);
 
         //find matches
@@ -574,6 +706,7 @@ export class CromaService {
         id: doc.window.document
           .querySelector('meta[name="cmsid"]')
           .getAttribute('content'),
+        url: url,
       };
 
       // cmsid
