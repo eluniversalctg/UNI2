@@ -152,7 +152,10 @@ export class BlocksService {
                       currentIframes.forEach(function (ifm) {
                           if (ifm.offsetTop < window.innerHeight + scrollTop) {
                               const name = ifm.attributes["uni2id"].value + '()';
-                              eval(name);
+                              const validate = 'req' + ifm.attributes["uni2id"].value;
+                              if(eval(validate)){
+                                eval(name);
+                              }
                           }
                       });
                       if (currentIframes.length == 0) {
@@ -163,9 +166,10 @@ export class BlocksService {
                   }, 30);
               }
 
-              document.addEventListener("scroll", lazyload);
-              window.addEventListener("resize", lazyload);
-              window.addEventListener("orientationChange", lazyload);
+                await lazyload();
+                document.addEventListener("scroll", lazyload);
+                window.addEventListener("resize", lazyload);
+                window.addEventListener("orientationChange", lazyload);
           });
  
             ${this.finalScript}
@@ -278,6 +282,7 @@ export class BlocksService {
    */
   writeScript(id, rule) {
     const script = `
+    var req${id} = true;
     function ${id}() {
     var iframe = document.getElementById('${id}');
     var doc;
@@ -288,6 +293,7 @@ export class BlocksService {
         doc = iframe.contentWindow.document;
     }
     if (doc.body.innerHTML === '') {
+        req${id} = false;
         sendContextLazyLoading(
             {
                 id: "testTemplate",
@@ -304,7 +310,6 @@ export class BlocksService {
                 let winningRule = res.personalizations[id];
 
                 if (winningRule && winningRule[0] !== "noMatchFound") {
-
                     const bodyReq = {
                         template: winningRule[0],
                         sessionId: cxs.sessionId,
@@ -342,6 +347,9 @@ export class BlocksService {
                     });
 
                 }
+            },
+            async function(res) {
+              req${id} = true;
             }
         );
     }
@@ -353,6 +361,7 @@ export class BlocksService {
   writeLazyLoading() {
     return `
     async function sendContextLazyLoading(personalization, successCallback, errorCallback) {
+      try {
     var sessionId = cxs?.sessionId || generateUUID();
     var contextPayload = {
       source: {
@@ -402,6 +411,9 @@ export class BlocksService {
     };
 
     xhr.send(JSON.stringify(contextPayload));
+    } catch (error) {
+      errorCallback(error);
+    }
   }
 
   function generateUUID() {
