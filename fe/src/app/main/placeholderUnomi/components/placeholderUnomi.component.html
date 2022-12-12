@@ -197,12 +197,12 @@
       <label for="name" class="col-12 md:col-4">Valor por defecto:</label>
       <div class="col-12 md:col-8">
         <p-dropdown
-          [options]="unomiFields"
+          [options]="propertiesUnomi"
           formControlName="valueDefault"
-          optionLabel="name"
-          optionValue="value"
+          optionLabel="label"
+          optionValue="valueDefault"
           [filter]="true"
-          filterBy="name"
+          filterBy="label"
           [showClear]="true"
           placeholder="Seleccione un valor"
         ></p-dropdown>

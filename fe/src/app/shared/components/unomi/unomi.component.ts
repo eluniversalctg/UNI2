@@ -693,6 +693,7 @@ export class UnomiComponent implements OnInit {
     this.unomiDatasource = this.unomi.filter(
       (x) => x['enabled'] === this.optionsSelected
     );
+    this.dt.reset();
   }
 
   /**

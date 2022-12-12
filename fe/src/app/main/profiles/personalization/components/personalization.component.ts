@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import {
+  Pages,
   ParentCondition,
   Personalization,
   TemplatePersonalization,
@@ -7,6 +8,7 @@ import {
 import { forkJoin } from 'rxjs';
 import {
   RuleService,
+  PagesService,
   VariableService,
   TemplateService,
   ConditionsService,
@@ -42,9 +44,12 @@ export class PersonalizationComponent {
   operators: any[] = [];
   response: object = {};
 
+  pages: Pages[];
+
   constructor(
     private msg: MessageService,
     private ruleSrv: RuleService,
+    private pagesService: PagesService,
     private conditionSrv: ConditionsService,
     private variableService: VariableService,
     private confirmationService: ConfirmationService,
@@ -54,6 +59,7 @@ export class PersonalizationComponent {
   ) {
     this.getAllTemplates();
     this.getAllScriptPersonalization();
+    this.getAllPages();
 
     this.personalizationForm = new FormGroup({
       name: new FormControl('', [Validators.required]),
@@ -84,6 +90,20 @@ export class PersonalizationComponent {
           summary: MessagesTst.NODATAERROR,
         }),
     });
+  }
+
+  getAllPages() {
+    this.pagesService.getList().subscribe(
+      (response) => {
+        this.pages = response;
+      },
+      () => {
+        this.msg.add({
+          severity: MessagesTst.ERROR,
+          summary: MessagesTst.ERRORLIST,
+        });
+      }
+    );
   }
 
   getAllTemplates() {
@@ -248,6 +268,7 @@ export class PersonalizationComponent {
               summary: MessagesTst.UPDATESUCCESS,
             });
             this.updateTemplates(personalization);
+            this.updatePage(personalization);
             personalization = new Personalization();
             this.reset();
             this.addNew = false;
@@ -391,5 +412,38 @@ export class PersonalizationComponent {
    */
   emmit(val) {
     this.conditionSchema = JSON.parse(val);
+  }
+
+  updatePage(ruleEdit) {
+    let pageEdit: any[] = [];
+    this.pages.forEach((page) => {
+      if (page.wizardModel) {
+        page.wizardModel.forEach((wizard) => {
+          if (wizard.stepsData) {
+            wizard.stepsData.forEach((step) => {
+              if (step.rule) {
+                if (step.rule['_id'] === ruleEdit._id) {
+                  step.rule = ruleEdit;
+                  pageEdit.push(page);
+                }
+              }
+            });
+          }
+        });
+      }
+    });
+    if (pageEdit.length > 0) {
+      this.pagesService.updateMany(pageEdit, 'updateMany').subscribe(
+        () => {
+          this.getAllPages();
+        },
+        () => {
+          this.msg.add({
+            severity: MessagesTst.ERROR,
+            summary: MessagesTst.UPDATEERROR,
+          });
+        }
+      );
+    }
   }
 }

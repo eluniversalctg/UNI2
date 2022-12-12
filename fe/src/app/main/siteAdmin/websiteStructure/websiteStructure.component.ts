@@ -296,18 +296,12 @@ export class WebsiteStructureComponent implements OnChanges {
     this.templates = [];
     this.templatesTemp.forEach((template) => {
       let found = block.sizes.find(
-        (x) => x === `${template.high}x${template.width}`
+        (x) => x.trim() === `${template.high}x${template.width}`
       );
       if (found) {
         this.templates.push(JSON.parse(JSON.stringify(template)));
       }
     });
-    if (this.pageAddBlock.typeSection === MessagesTst.PAGESECTION) {
-      this.templates = _.filter(this.templates, [
-        'typeTemplate',
-        MessagesTst.PERSONALIZATION,
-      ]);
-    }
   }
 
   validRule(next) {

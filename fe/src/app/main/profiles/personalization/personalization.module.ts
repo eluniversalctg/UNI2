@@ -1,5 +1,6 @@
 import {
   RuleService,
+  PagesService,
   VariableService,
   TemplateService,
   ConditionsService,
@@ -24,6 +25,7 @@ const modules = [SharedModule];
 @NgModule({
   providers: [
     RuleService,
+    PagesService,
     TemplateService,
     VariableService,
     ConditionsService,

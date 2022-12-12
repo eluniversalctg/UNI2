@@ -352,7 +352,11 @@ export class PagesComponent {
   getAllPages() {
     this.pagesService.getList().subscribe(
       (response) => {
-        response = response.filter((x) => x.site._id.toString() === this.utilitiesSrv.decryptSite()._id.toString());
+        response = response.filter(
+          (x) =>
+            x.site._id.toString() ===
+            this.utilitiesSrv.decryptSite()._id.toString()
+        );
         this.pages = response;
         this.pagesActive = _.filter(response, ['isActive', true]);
         this.pagesActive = _.filter(response, ['typeSection', 'Sección']);
@@ -368,10 +372,12 @@ export class PagesComponent {
   }
 
   changeState(page: Pages) {
-    let message = `¿Está seguro que desea ${page.isActive ? 'inactivar' : 'activar'
-      } la página <b>
+    let message = `¿Está seguro que desea ${
+      page.isActive ? 'inactivar' : 'activar'
+    } la página <b>
       ${page.name}
-      </b>? <br/>La página seleccionada quedará ${page.isActive ? 'sin' : 'con'
+      </b>? <br/>La página seleccionada quedará ${
+        page.isActive ? 'sin' : 'con'
       } función en la plataforma.`;
 
     this.confirmationService.confirm({
@@ -678,5 +684,36 @@ export class PagesComponent {
     this.selectEditBlock = block;
     this.viewBlockDialog = false;
     this.addBlock = true;
+  }
+
+  deleteBlock(block) {
+    if (this.selectPageEditBlock.wizardModel) {
+      const found = this.selectPageEditBlock.wizardModel.find(
+        (x) => x.block._id === block._id
+      );
+      if (found) {
+        const indexTable = this.selectPageEditBlock.wizardModel.findIndex(
+          (x) => x.block._id === block._id
+        );
+        this.selectPageEditBlock.wizardModel.splice(indexTable, 1);
+      }
+    }
+    this.pagesService.update(this.selectPageEditBlock).subscribe(
+      () => {
+        this.msg.add({
+          severity: MessagesTst.SUCCESS,
+          summary: MessagesTst.UPDATESUCCESS,
+        });
+
+        this.getAllPages();
+        this.viewBlockDialog = false;
+      },
+      () => {
+        this.msg.add({
+          severity: MessagesTst.ERROR,
+          summary: MessagesTst.UPDATEERROR,
+        });
+      }
+    );
   }
 }

@@ -308,6 +308,9 @@ export class TemplatesPersonalizationComponent {
     this.reset();
     if (this.selectedTemplates) {
       this.template = { ...this.selectedTemplates };
+      if (this.template.typeTemplate === 'Editorial') {
+        this.typePersonalization = true;
+      }
       this.addTempate = false;
       this.onChange();
     } else {

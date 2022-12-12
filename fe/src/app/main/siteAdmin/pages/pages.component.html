@@ -556,7 +556,7 @@
   [maximizable]="true"
 >
   <ng-template pTemplate="header">
-    <p>{{ isEditing ? 'Editar página': 'Crear nueva página' }} </p>
+    <p>{{ isEditing ? "Editar página" : "Crear nueva página" }}</p>
   </ng-template>
   <form [formGroup]="pagesForm" class="mt-2">
     <div class="field grid">
@@ -754,6 +754,14 @@
             (click)="editBlock(wizardModel.block)"
             pTooltip="Editar bloque"
             class="p-button-rounded p-button-warning p-mr-2"
+          ></button>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-times"
+            (click)="deleteBlock(wizardModel.block)"
+            pTooltip="Desasignar bloque"
+            class="p-button-rounded p-button-danger p-mr-2"
           ></button>
         </td>
       </tr>
