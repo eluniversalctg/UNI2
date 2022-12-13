@@ -129,6 +129,7 @@ export class PagesComponent {
   }
 
   filterDataSource() {
+    this.dt.reset();
     this.pagesDataSource = this.pages.filter(
       (x) => x.isActive === this.optionsSelected
     );

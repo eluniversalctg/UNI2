@@ -234,6 +234,7 @@ export class BlockComponent {
   }
 
   filterDataSource() {
+    this.dt.reset();
     this.blocksDataSource = this.blocks.filter(
       (x) => x.isActive === this.optionsSelected
     );

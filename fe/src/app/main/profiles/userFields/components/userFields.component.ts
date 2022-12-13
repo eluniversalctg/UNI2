@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
-import { Component } from '@angular/core';
 import { MessagesTst } from 'src/app/shared/enums';
 import { UserFields } from 'src/app/shared/models';
+import { Component, ViewChild } from '@angular/core';
 import { UserFieldsService } from 'src/app/shared/services';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
@@ -30,6 +30,8 @@ export class UserFieldsComponent {
   typeOfData: string[] = ['boolean', 'email', 'date', 'number', 'string'];
   optionsSelected: boolean = true;
   options: any[];
+
+  @ViewChild('dt') dt;
   constructor(
     private msg: MessageService,
     private userFSrv: UserFieldsService,
@@ -67,6 +69,7 @@ export class UserFieldsComponent {
   }
 
   filterDataSource() {
+    this.dt.reset();
     this.userFieldsDataSource = this.userFields.filter(
       (x) => x.isActive === this.optionsSelected
     );

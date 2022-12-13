@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { PropertiesUnomi } from 'src/app/shared/models';
 import { MessagesTst } from 'src/app/shared/enums/enumMessage';
 import { PropertiesUnomiService } from 'src/app/shared/services';
@@ -19,6 +19,7 @@ export class PropertiesUnomiComponent {
   optionsSelected: boolean = true;
   options: any[];
   isSystem: boolean = false;
+  @ViewChild('dt') dt;
 
   constructor(
     private msg: MessageService,
@@ -109,6 +110,7 @@ export class PropertiesUnomiComponent {
   }
 
   filterDataSource() {
+    this.dt.reset();
     this.propertiesUnomiDataSource = this.propertiesUnomi.filter(
       (x) => x.isActive === this.optionsSelected
     );

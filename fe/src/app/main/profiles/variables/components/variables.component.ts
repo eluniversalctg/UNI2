@@ -5,8 +5,8 @@ import {
   FormBuilder,
   FormControl,
 } from '@angular/forms';
-import { Component } from '@angular/core';
 import { Variable } from 'src/app/shared/models';
+import { Component, ViewChild } from '@angular/core';
 import { MessagesTst } from 'src/app/shared/enums/enumMessage';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { VariableService } from 'src/app/shared/services/variable.service';
@@ -32,6 +32,8 @@ export class VariablesComponent {
 
   // options values form
   optionValuesForm: FormGroup;
+
+  @ViewChild('dt') dt;
 
   constructor(
     private fb: FormBuilder,
@@ -72,6 +74,7 @@ export class VariablesComponent {
   }
 
   filterTable() {
+    this.dt.reset();
     this.variablesBck = [
       ...this.variables.filter((x) => x.isActive === this.optionsSelected),
     ];
@@ -135,7 +138,7 @@ export class VariablesComponent {
     });
 
     variable.optionValues?.forEach((value) => {
-      if(value.options.length !== 0){
+      if (value.options.length !== 0) {
         value.options = value.options.map((obj) => {
           return obj.value ? obj.value : obj;
         });
@@ -243,7 +246,7 @@ export class VariablesComponent {
       }
 
       if (Array.isArray(option.options)) {
-        if(option.options.length === 0) {
+        if (option.options.length === 0) {
           option.options = [];
         } else {
           option.options = option.options.map((obj) => {
@@ -255,7 +258,6 @@ export class VariablesComponent {
             }
             return newObj;
           });
-
         }
       }
     });

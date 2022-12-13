@@ -15,7 +15,7 @@ import {
   PersonalizationService,
   TemplatePersonalizationService,
 } from 'src/app/shared/services';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { MessagesTst } from 'src/app/shared/enums/enumMessage';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -45,6 +45,8 @@ export class PersonalizationComponent {
   response: object = {};
 
   pages: Pages[];
+
+  @ViewChild('dt') dt;
 
   constructor(
     private msg: MessageService,
@@ -145,6 +147,7 @@ export class PersonalizationComponent {
     });
   }
   filterDataSource() {
+    this.dt.reset();
     this.personalizationsDataSource = this.personalizations.filter(
       (x) => x.isActive === this.optionsSelected
     );

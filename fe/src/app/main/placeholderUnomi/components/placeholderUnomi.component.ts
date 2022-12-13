@@ -3,7 +3,7 @@ import {
   PlaceholderUnomiService,
   UserFieldsService,
 } from 'src/app/shared/services';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { MessagesTst, html } from 'src/app/shared/enums';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -26,6 +26,8 @@ export class PlaceholderUnomiComponent {
   unomi: any[];
   isSystem: boolean = false;
   unomiFields: any[] = [];
+
+  @ViewChild('dt') dt;
 
   constructor(
     private msg: MessageService,
@@ -173,6 +175,7 @@ export class PlaceholderUnomiComponent {
     this.placeholdersDataSource = this.placeholders.filter(
       (x) => x.isActive === this.optionsSelected
     );
+    this.dt.reset();
   }
   changeState(placeholder: PlaceholderUnomi) {
     let message = `¿Está seguro que desea ${
