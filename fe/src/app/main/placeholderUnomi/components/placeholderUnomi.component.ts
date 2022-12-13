@@ -68,7 +68,7 @@ export class PlaceholderUnomiComponent {
   getAllProperties() {
     this.propertiesUnomiService.getList().subscribe(
       (response) => {
-        this.propertiesUnomi = response;
+        this.propertiesUnomi = response.filter((x) => x.isActive === true);
       },
       () => {
         this.msg.add({
