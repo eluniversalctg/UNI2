@@ -126,7 +126,7 @@ export class BlocksService {
       const lazyLoading = await this.writeLazyLoading();
       const scriptJsonld = this.crearMetadataJson();
       const loadScript = `
-              document.addEventListener("DOMContentLoaded", () => {
+              document.addEventListener("DOMContentLoaded", async() => {
 
               var currentIframes = [];
               var iframes = document.getElementsByTagName("iframe");
@@ -362,6 +362,13 @@ export class BlocksService {
     return `
     async function sendContextLazyLoading(personalization, successCallback, errorCallback) {
       try {
+        for (let i = 0; i < personalization.contents.length; i++) {
+
+          const element = personalization.contents[i];
+    
+          element.id = element.id + "," + window.location.host;
+    
+        }
     var sessionId = cxs?.sessionId || generateUUID();
     var contextPayload = {
       source: {

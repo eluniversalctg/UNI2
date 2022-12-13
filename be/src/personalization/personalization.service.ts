@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import * as moment from 'moment';
 import { Injectable } from '@nestjs/common';
 import { RuleService } from 'src/rule/rule.service';
 import { Page } from 'src/pages/entities/page.entity';
@@ -123,12 +124,24 @@ export class PersonalizationService {
 
     const data = renderizationDto.template.split(',');
 
+    let domainURL;
+    if (!data[6].includes('http')) {
+      domainURL = `https://${data[6]}`;
+    } else {
+      domainURL = data[6];
+    }
+    const domain = new URL(domainURL);
+    const domainName = domain.hostname;
+
+    const link = await this.domainService.findOne(domainName);
+
     const idTemplateRender = data[0];
     const typeTemplate = data[1];
     const idPage = data[2];
     const idBlock = data[3];
     const level = data[4];
     const idRule = data[5];
+    const siteID = link[0].id;
 
     let template = this.templatesPersonalization.find(
       (x) => x._id === idTemplateRender,
@@ -328,13 +341,20 @@ export class PersonalizationService {
               renderizationDto.OpenGraph,
             );
 
+            const date = moment().format('YYYY-MM-DD');
             //get the articles with respect to the winning metadata
-            const articles = await this.cromaService.analyzer_text(finMetadata);
+            const articles = await this.cromaService.analyzer_text(
+              finMetadata,
+              'Actions.getPageUrl&',
+              'year',
+              date,
+              siteID,
+            );
             const articlesSelect: any[] = [];
 
             //use the number of items needed for the template
             for (let i = 0; i < template.numNews; i++) {
-              articlesSelect.push(articles[0].related_articles[i]);
+              articlesSelect.push(articles[i]);
             }
 
             /**
