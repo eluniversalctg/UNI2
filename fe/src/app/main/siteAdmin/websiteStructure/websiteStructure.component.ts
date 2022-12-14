@@ -135,7 +135,7 @@ export class WebsiteStructureComponent implements OnChanges {
         this.blocksTemp = _.filter(response[0], 'isActive');
         this.templatesTemp = [...response[1]];
         this.templatesTemp = _.filter(this.templatesTemp, 'state');
-        this.rules = response[2];
+        this.rules = _.filter(response[2], 'isActive');
         this.placehoPersona = response[3];
         this.weighing = response[4][0];
         this.weighingTemp = response[4][0];

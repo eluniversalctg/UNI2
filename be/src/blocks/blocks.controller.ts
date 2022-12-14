@@ -41,6 +41,11 @@ export class BlocksController {
     return this.blocksService.update(updateBlockDto);
   }
 
+  @Post('/updateMany')
+  updateManyPages(@Body() updatePage) {
+    return this.blocksService.updateManyPages(updatePage);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.blocksService.remove(id);

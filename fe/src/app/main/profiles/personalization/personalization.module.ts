@@ -1,6 +1,7 @@
 import {
   RuleService,
   PagesService,
+  BlockService,
   VariableService,
   TemplateService,
   ConditionsService,
@@ -26,6 +27,7 @@ const modules = [SharedModule];
   providers: [
     RuleService,
     PagesService,
+    BlockService,
     TemplateService,
     VariableService,
     ConditionsService,

@@ -306,6 +306,7 @@ export class TemplatesPersonalizationComponent {
 
   loadTemplates() {
     this.reset();
+    this.typePersonalization = false;
     if (this.selectedTemplates) {
       this.template = { ...this.selectedTemplates };
       if (this.template.typeTemplate === 'Editorial') {

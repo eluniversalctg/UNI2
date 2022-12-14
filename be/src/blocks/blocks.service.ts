@@ -35,6 +35,16 @@ export class BlocksService {
     }
   }
 
+  async updateManyPages(updatePage) {
+    try {
+      const create = await this.pagesService.updateMany(updatePage);
+      this.createRules();
+      return create;
+    } catch (error) {
+      return undefined;
+    }
+  }
+
   async findAll() {
     try {
       return await this.blockRepository.find({});

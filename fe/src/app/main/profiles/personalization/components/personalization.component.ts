@@ -9,6 +9,7 @@ import { forkJoin } from 'rxjs';
 import {
   RuleService,
   PagesService,
+  BlockService,
   VariableService,
   TemplateService,
   ConditionsService,
@@ -52,6 +53,7 @@ export class PersonalizationComponent {
     private msg: MessageService,
     private ruleSrv: RuleService,
     private pagesService: PagesService,
+    private blockService: BlockService,
     private conditionSrv: ConditionsService,
     private variableService: VariableService,
     private confirmationService: ConfirmationService,
@@ -436,7 +438,7 @@ export class PersonalizationComponent {
       }
     });
     if (pageEdit.length > 0) {
-      this.pagesService.updateMany(pageEdit, 'updateMany').subscribe(
+      this.blockService.updateMany(pageEdit, 'updateMany').subscribe(
         () => {
           this.getAllPages();
         },
