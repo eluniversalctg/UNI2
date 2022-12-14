@@ -296,7 +296,9 @@ export class WebsiteStructureComponent implements OnChanges {
     this.templates = [];
     this.templatesTemp.forEach((template) => {
       let found = block.sizes.find(
-        (x) => x.trim() === `${template.high}x${template.width}`
+        (x) =>
+          x.trim() === `${template.high}x${template.width}` ||
+          x.trim() === `${template.high}X${template.width}`
       );
       if (found) {
         this.templates.push(JSON.parse(JSON.stringify(template)));
