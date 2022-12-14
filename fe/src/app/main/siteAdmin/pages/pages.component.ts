@@ -688,33 +688,44 @@ export class PagesComponent {
   }
 
   deleteBlock(block) {
-    if (this.selectPageEditBlock.wizardModel) {
-      const found = this.selectPageEditBlock.wizardModel.find(
-        (x) => x.block._id === block._id
-      );
-      if (found) {
-        const indexTable = this.selectPageEditBlock.wizardModel.findIndex(
-          (x) => x.block._id === block._id
-        );
-        this.selectPageEditBlock.wizardModel.splice(indexTable, 1);
-      }
-    }
-    this.pagesService.update(this.selectPageEditBlock).subscribe(
-      () => {
-        this.msg.add({
-          severity: MessagesTst.SUCCESS,
-          summary: MessagesTst.UPDATESUCCESS,
-        });
+    this.confirmationService.confirm({
+      message:
+        '¿Está seguro que desea eliminar el bloque? Si lo elimina no tendrá manera de recuperar la información.',
+      header: 'Confirmar',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí',
+      accept: () => {
+        if (this.selectPageEditBlock.wizardModel) {
+          const found = this.selectPageEditBlock.wizardModel.find(
+            (x) => x.block._id === block._id
+          );
+          if (found) {
+            const indexTable = this.selectPageEditBlock.wizardModel.findIndex(
+              (x) => x.block._id === block._id
+            );
+            this.selectPageEditBlock.wizardModel.splice(indexTable, 1);
+          }
+        }
+        const pagesToUpdate: any[] = [this.selectPageEditBlock];
 
-        this.getAllPages();
-        this.viewBlockDialog = false;
+        this.blockService.updateMany(pagesToUpdate, 'updateMany').subscribe(
+          () => {
+            this.msg.add({
+              severity: MessagesTst.SUCCESS,
+              summary: MessagesTst.UPDATESUCCESS,
+            });
+
+            this.getAllPages();
+            this.viewBlockDialog = false;
+          },
+          () => {
+            this.msg.add({
+              severity: MessagesTst.ERROR,
+              summary: MessagesTst.UPDATEERROR,
+            });
+          }
+        );
       },
-      () => {
-        this.msg.add({
-          severity: MessagesTst.ERROR,
-          summary: MessagesTst.UPDATEERROR,
-        });
-      }
-    );
+    });
   }
 }
