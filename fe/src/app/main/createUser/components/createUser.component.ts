@@ -1,5 +1,5 @@
 import { forkJoin } from 'rxjs';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Roles, User } from 'src/app/shared/models';
 import { UserService } from 'src/app/shared/services';
 import { MessagesTst } from 'src/app/shared/enums/enumMessage';
@@ -32,6 +32,8 @@ export class CreateUserComponent {
   confirmPassword: boolean = false;
   firtSurnameForm: boolean = false;
   secondSurnameForm: boolean = false;
+
+  @ViewChild('dt') userTable;
 
   constructor(
     private msg: MessageService,
@@ -158,6 +160,7 @@ export class CreateUserComponent {
   }
 
   filterDataTable() {
+    this.userTable.reset();
     this.usersDataSource = this.users.filter(
       (x) => x.isActive === this.optionsSelected
     );
