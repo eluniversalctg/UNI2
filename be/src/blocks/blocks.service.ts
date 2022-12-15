@@ -24,7 +24,7 @@ export class BlocksService {
     private readonly config: ConfigService,
     private pagesService: PagesService,
     private weighingService: WeighingService,
-  ) {}
+  ) {this.createRules();}
 
   async create(createBlockDto: CreateBlockDto) {
     try {
@@ -176,10 +176,14 @@ export class BlocksService {
                   }, 30);
               }
 
-                await lazyload();
-                document.addEventListener("scroll", lazyload);
-                window.addEventListener("resize", lazyload);
-                window.addEventListener("orientationChange", lazyload);
+              setInterval(async function () {
+                if (cxs) {
+                  await lazyload();
+                  document.addEventListener("scroll", lazyload);
+                  window.addEventListener("resize", lazyload);
+                  window.addEventListener("orientationChange", lazyload);
+                }
+              }, 1000);
           });
  
             ${this.finalScript}
