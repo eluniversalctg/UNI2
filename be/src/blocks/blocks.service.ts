@@ -24,7 +24,7 @@ export class BlocksService {
     private readonly config: ConfigService,
     private pagesService: PagesService,
     private weighingService: WeighingService,
-  ) {this.createRules();}
+  ) {}
 
   async create(createBlockDto: CreateBlockDto) {
     try {
