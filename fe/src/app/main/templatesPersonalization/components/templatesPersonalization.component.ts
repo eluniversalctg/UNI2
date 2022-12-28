@@ -97,6 +97,38 @@ export class TemplatesPersonalizationComponent {
     this.templatesService.getList().subscribe(
       (response) => {
         this.templates = response;
+        let updatePlaceholders: any[] = [];
+        this.templates.forEach((template) => {
+          this.placeholders.forEach((placeholder) => {
+            if (
+              template.htmlContent.includes(`[$$${placeholder.name}$$]`) ||
+              template.htmlContent.includes(`$$${placeholder.name}$$`)
+            ) {
+              const found = updatePlaceholders.find(
+                (x) => x._id === placeholder._id
+              );
+              if (!found) {
+                updatePlaceholders.push(placeholder);
+              }
+            }
+          });
+        });
+
+        this.placeholders.forEach((place) => {
+          const found = updatePlaceholders.find((x) => x._id === place._id);
+          if (!found) {
+            const foundDupl = this.placeholderUpdate.find(
+              (x) => x._id === place._id
+            );
+            if (!foundDupl) {
+              place.isInUse = false;
+              this.placeholderUpdate.push(place);
+            }
+          }
+        });
+        if (this.placeholderUpdate.length > 0) {
+          this.updatePlaceholders();
+        }
       },
       () => {
         this.msg.add({
@@ -193,7 +225,9 @@ export class TemplatesPersonalizationComponent {
     this.placeholdersService
       .updateMany(this.placeholderUpdate, 'updateMany')
       .subscribe(
-        (response) => {},
+        (response) => {
+          this.placeholderUpdate = [];
+        },
         () => {
           this.msg.add({
             severity: MessagesTst.ERROR,
@@ -392,7 +426,7 @@ export class TemplatesPersonalizationComponent {
     }
 
     let found = this.placeholderUpdate.find((x) => x._id === placeholder._id);
-    if (!found) {
+    if (!found && (!newDefault || newDefault === '')) {
       placeholder.isInUse = true;
       if (placeholder.typeUpdate) {
         this.placeholderUpdate.push(placeholder);

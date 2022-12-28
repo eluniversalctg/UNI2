@@ -97,6 +97,7 @@ export enum MessagesTst {
   PERSONALIZATION = 'Personalización',
   RECOMENDATION = 'Recomendación',
   EDITORIAL = 'Editorial',
+  UNOMI = 'UNOMI',
 
   ERROWEIGHING = 'La ponderación debe de sumar 100',
   TYPECROMA = 'Croma',
