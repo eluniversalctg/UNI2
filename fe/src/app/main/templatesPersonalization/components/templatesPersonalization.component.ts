@@ -101,7 +101,7 @@ export class TemplatesPersonalizationComponent {
         this.templates.forEach((template) => {
           this.placeholders.forEach((placeholder) => {
             if (
-              template.htmlContent.includes(`[$$${placeholder.name}$$]`) ||
+              template.htmlContent.includes(`[$$${placeholder.name}`) ||
               template.htmlContent.includes(`$$${placeholder.name}$$`)
             ) {
               const found = updatePlaceholders.find(
