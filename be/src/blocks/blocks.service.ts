@@ -248,9 +248,15 @@ export class BlocksService {
     }
 
     return `function getMetadataGraph(){
-
+      const CromaId = document
+      .querySelector(
+        'meta[property="og:CromaId"]'
+      ) ? document
+      .querySelector(
+        'meta[property="og:CromaId"]'
+      ) .getAttribute('content') : "" ;
       ${graphQl}
-      return {${variable}}
+      return {CromaId, ${variable}}
     }`;
   }
 

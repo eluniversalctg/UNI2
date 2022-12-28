@@ -402,7 +402,7 @@ export class PersonalizationService {
                 years: cromaPeriod.year,
                 months: cromaPeriod.month,
                 days: cromaPeriod.day,
-                radius: Number(`0.${cromaPeriod.radius}`),
+                radius: cromaPeriod.radius,
               };
 
               //get the articles with respect to id
