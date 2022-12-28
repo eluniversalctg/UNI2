@@ -435,19 +435,23 @@ export class CromaService {
                 }
               }
 
-              forkJoin(...matomoReq).subscribe({
-                next: (analitic) => {
-                  const results = [];
-                  for (let i = 0; i < analitic.length; i++) {
-                    analitic[i][1].matomo = analitic[i][0];
-                    results.push(analitic[i][1]);
-                  }
-                  resolve(results);
-                },
-                error: (err) => {
-                  reject(err);
-                },
-              });
+              if (matomoReq.length === 0) {
+                resolve([data]);
+              } else {
+                forkJoin(...matomoReq).subscribe({
+                  next: (analitic) => {
+                    const results = [];
+                    for (let i = 0; i < analitic.length; i++) {
+                      analitic[i][1].matomo = analitic[i][0];
+                      results.push(analitic[i][1]);
+                    }
+                    resolve(results);
+                  },
+                  error: (err) => {
+                    reject(err);
+                  },
+                });
+              }
             },
             error: (err) => {
               reject(err);
