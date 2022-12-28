@@ -847,6 +847,7 @@ export class PersonalizationService {
 
   isJsonString(str) {
     try {
+      str = str.toString();
       JSON.parse(str);
     } catch (e) {
       return false;

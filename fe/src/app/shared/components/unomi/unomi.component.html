@@ -435,8 +435,8 @@
   </div>
 
   <div class="field grid" *ngIf="selectedOption.value === 'campaigns'">
-    <label for="primaryGoal" class="col-12 md:col-4">PrimaryGoal:</label>
-    <div class="col-12 md:col-8">
+    <label for="primaryGoal" class="col-12 md:col-3">PrimaryGoal:</label>
+    <div class="col-12 md:col-9">
       <input
         [(ngModel)]="newUnomi.primaryGoal"
         class="fill-available input inputfield"
@@ -449,8 +449,8 @@
   </div>
 
   <div class="field grid" *ngIf="selectedOption.value === 'campaigns'">
-    <label for="timezone" class="col-12 md:col-4">Timezone:</label>
-    <div class="col-12 md:col-8">
+    <label for="timezone" class="col-12 md:col-3">Timezone:</label>
+    <div class="col-12 md:col-9">
       <input
         [(ngModel)]="newUnomi.timezone"
         class="fill-available input inputfield"
@@ -526,8 +526,8 @@
 
     <div *ngFor="let item of elements; let i = index" style="margin-top: 2rem">
       <div class="field grid" *ngIf="selectedOption.value === 'scoring'">
-        <label for="value" class="col-12 md:col-4">Valor:</label>
-        <div class="col-12 md:col-8">
+        <label for="value" class="col-12 md:col-3">Valor:</label>
+        <div class="col-12 md:col-9">
           <input
             [(ngModel)]="item.value"
             class="fill-available input inputfield"

@@ -381,6 +381,8 @@ export class BlocksService {
                         doc.body.innerHTML = data.template;
                         iframe.style.height = data.height.toString() + "px";
                         iframe.style.width = data.width.toString() + "px";
+                    }).catch((err)=> {
+                      req${id} = true;
                     });
 
                 }
