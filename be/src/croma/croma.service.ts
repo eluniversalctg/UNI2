@@ -610,6 +610,7 @@ export class CromaService {
         const jsonLD = this.isJsonString(script)
           ? JSON.parse(script)
           : JSON.parse(script.slice(0, 1259) + script.slice(1261));
+
         const replace = this.searchPlaceholder(jsonLD, placeholder.name);
 
         //find matches

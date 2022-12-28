@@ -436,6 +436,71 @@ export class PersonalizationComponent {
           }
         });
       }
+      if (page.children && page.children.length > 0) {
+        //go through each child
+        page.children.forEach((children1) => {
+          if (children1.wizardModel) {
+            children1.wizardModel.forEach((wizard) => {
+              if (wizard.stepsData) {
+                wizard.stepsData.forEach((step) => {
+                  if (step.rule) {
+                    if (step.rule['_id'] === ruleEdit._id) {
+                      step.rule = ruleEdit;
+                      pageEdit.push(children1);
+                    }
+                  }
+                });
+              }
+            });
+          }
+
+          //inspect each child of the children1
+          if (children1.children) {
+            //go through each children1
+            children1.children.forEach((children2) => {
+              if (children2.wizardModel) {
+                children2.wizardModel.forEach((wizard) => {
+                  if (wizard.stepsData) {
+                    wizard.stepsData.forEach((step) => {
+                      if (step.rule) {
+                        if (step.rule['_id'] === ruleEdit._id) {
+                          step.rule = ruleEdit;
+                          pageEdit.push(children2);
+                        }
+                      }
+                    });
+                  }
+                });
+              }
+
+              //inspect each child of the children2
+              if (children2.children) {
+                //inspect each child of the children2
+                children2.children.forEach((children3) => {
+                  if (children3.wizardModel) {
+                    children3.wizardModel.forEach((wizard) => {
+                      if (children3.wizardModel) {
+                        children3.wizardModel.forEach((wizard) => {
+                          if (wizard.stepsData) {
+                            wizard.stepsData.forEach((step) => {
+                              if (step.rule) {
+                                if (step.rule['_id'] === ruleEdit._id) {
+                                  step.rule = ruleEdit;
+                                  pageEdit.push(children3);
+                                }
+                              }
+                            });
+                          }
+                        });
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
     });
     if (pageEdit.length > 0) {
       this.blockService.updateMany(pageEdit, 'updateMany').subscribe(

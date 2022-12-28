@@ -125,15 +125,18 @@ export class PersonalizationService {
     const data = renderizationDto.template.split(',');
 
     let domainURL;
-    if (!data[6].includes('http')) {
-      domainURL = `https://${data[6]}`;
-    } else {
-      domainURL = data[6];
-    }
-    const domain = new URL(domainURL);
-    const domainName = domain.hostname;
+    let link;
+    if (data[6] !== '') {
+      if (!data[6].includes('http')) {
+        domainURL = `https://${data[6]}`;
+      } else {
+        domainURL = data[6];
+      }
+      const domain = new URL(domainURL);
+      const domainName = domain.hostname;
 
-    const link = await this.domainService.findOne(domainName);
+      link = await this.domainService.findOne(domainName);
+    }
 
     const idTemplateRender = data[0];
     const typeTemplate = data[1];
@@ -141,7 +144,7 @@ export class PersonalizationService {
     const idBlock = data[3];
     const level = data[4];
     const idRule = data[5];
-    const siteID = link[0].id;
+    const siteID = link ? link[0].id : '';
 
     let template = this.templatesPersonalization.find(
       (x) => x._id === idTemplateRender,
@@ -163,26 +166,28 @@ export class PersonalizationService {
 
     //level 0
     if (Number(level) === 0) {
-      page.wizardModel.forEach((wizard) => {
-        //inspect each block
-        if (wizard.block._id === idBlock) {
-          wizard.stepsData.forEach((step) => {
-            //inspect each rules
-            if (step.rule._id === idRule) {
-              //get info about croma and matomo
-              newPlaceholder = step.newPlaceholder;
-              cromaPeriod = step.cromaPeriod;
-              matomoPeriod = step.matomoPeriod;
-              matomoMetaData = step.matomoMetaData;
-              typeMetaData = step.typeMetaData;
-              matomoTags = step.matomoTags;
-              weighing = step.weighing;
-              cromaType = step.cromaType;
-              typeTags = step.typeTags;
-            }
-          });
-        }
-      });
+      if (page.wizardModel) {
+        page.wizardModel.forEach((wizard) => {
+          //inspect each block
+          if (wizard.block._id === idBlock) {
+            wizard.stepsData.forEach((step) => {
+              //inspect each rules
+              if (step.rule._id === idRule) {
+                //get info about croma and matomo
+                newPlaceholder = step.newPlaceholder;
+                cromaPeriod = step.cromaPeriod;
+                matomoPeriod = step.matomoPeriod;
+                matomoMetaData = step.matomoMetaData;
+                typeMetaData = step.typeMetaData;
+                matomoTags = step.matomoTags;
+                weighing = step.weighing;
+                cromaType = step.cromaType;
+                typeTags = step.typeTags;
+              }
+            });
+          }
+        });
+      }
     }
 
     //level 1
@@ -191,26 +196,28 @@ export class PersonalizationService {
       if (page.children) {
         //go through each child
         page.children.forEach((children1) => {
-          children1.wizardModel.forEach((wizard) => {
-            //inspect each block
-            if (wizard.block._id === idBlock) {
-              wizard.stepsData.forEach((step) => {
-                //inspect each rules
-                if (step.rule._id === idRule) {
-                  //get info about croma and matomo
-                  newPlaceholder = step.newPlaceholder;
-                  cromaPeriod = step.cromaPeriod;
-                  matomoPeriod = step.matomoPeriod;
-                  matomoMetaData = step.matomoMetaData;
-                  typeMetaData = step.typeMetaData;
-                  matomoTags = step.matomoTags;
-                  weighing = step.weighing;
-                  cromaType = step.cromaType;
-                  typeTags = step.typeTags;
-                }
-              });
-            }
-          });
+          if (children1.wizardModel) {
+            children1.wizardModel.forEach((wizard) => {
+              //inspect each block
+              if (wizard.block._id === idBlock) {
+                wizard.stepsData.forEach((step) => {
+                  //inspect each rules
+                  if (step.rule._id === idRule) {
+                    //get info about croma and matomo
+                    newPlaceholder = step.newPlaceholder;
+                    cromaPeriod = step.cromaPeriod;
+                    matomoPeriod = step.matomoPeriod;
+                    matomoMetaData = step.matomoMetaData;
+                    typeMetaData = step.typeMetaData;
+                    matomoTags = step.matomoTags;
+                    weighing = step.weighing;
+                    cromaType = step.cromaType;
+                    typeTags = step.typeTags;
+                  }
+                });
+              }
+            });
+          }
         });
       }
     }
@@ -224,26 +231,28 @@ export class PersonalizationService {
           if (children1.children) {
             //go through each child
             children1.children.forEach((children2) => {
-              children2.wizardModel.forEach((wizard) => {
-                //inspect each block
-                if (wizard.block._id === idBlock) {
-                  wizard.stepsData.forEach((step) => {
-                    //inspect each rules
-                    if (step.rule._id === idRule) {
-                      //get info about croma and matomo
-                      newPlaceholder = step.newPlaceholder;
-                      cromaPeriod = step.cromaPeriod;
-                      matomoPeriod = step.matomoPeriod;
-                      matomoMetaData = step.matomoMetaData;
-                      typeMetaData = step.typeMetaData;
-                      matomoTags = step.matomoTags;
-                      weighing = step.weighing;
-                      cromaType = step.cromaType;
-                      typeTags = step.typeTags;
-                    }
-                  });
-                }
-              });
+              if (children2.wizardModel) {
+                children2.wizardModel.forEach((wizard) => {
+                  //inspect each block
+                  if (wizard.block._id === idBlock) {
+                    wizard.stepsData.forEach((step) => {
+                      //inspect each rules
+                      if (step.rule._id === idRule) {
+                        //get info about croma and matomo
+                        newPlaceholder = step.newPlaceholder;
+                        cromaPeriod = step.cromaPeriod;
+                        matomoPeriod = step.matomoPeriod;
+                        matomoMetaData = step.matomoMetaData;
+                        typeMetaData = step.typeMetaData;
+                        matomoTags = step.matomoTags;
+                        weighing = step.weighing;
+                        cromaType = step.cromaType;
+                        typeTags = step.typeTags;
+                      }
+                    });
+                  }
+                });
+              }
             });
           }
         });
@@ -264,26 +273,28 @@ export class PersonalizationService {
               if (children2.children) {
                 //inspect each child of the children2
                 children2.children.forEach((children3) => {
-                  children3.wizardModel.forEach((wizard) => {
-                    //inspect each block
-                    if (wizard.block._id === idBlock) {
-                      wizard.stepsData.forEach((step) => {
-                        //inspect each rules
-                        if (step.rule._id === idRule) {
-                          //get info about croma and matomo
-                          newPlaceholder = step.newPlaceholder;
-                          cromaPeriod = step.cromaPeriod;
-                          matomoPeriod = step.matomoPeriod;
-                          matomoMetaData = step.matomoMetaData;
-                          typeMetaData = step.typeMetaData;
-                          matomoTags = step.matomoTags;
-                          weighing = step.weighing;
-                          cromaType = step.cromaType;
-                          typeTags = step.typeTags;
-                        }
-                      });
-                    }
-                  });
+                  if (children3.wizardModel) {
+                    children3.wizardModel.forEach((wizard) => {
+                      //inspect each block
+                      if (wizard.block._id === idBlock) {
+                        wizard.stepsData.forEach((step) => {
+                          //inspect each rules
+                          if (step.rule._id === idRule) {
+                            //get info about croma and matomo
+                            newPlaceholder = step.newPlaceholder;
+                            cromaPeriod = step.cromaPeriod;
+                            matomoPeriod = step.matomoPeriod;
+                            matomoMetaData = step.matomoMetaData;
+                            typeMetaData = step.typeMetaData;
+                            matomoTags = step.matomoTags;
+                            weighing = step.weighing;
+                            cromaType = step.cromaType;
+                            typeTags = step.typeTags;
+                          }
+                        });
+                      }
+                    });
+                  }
                 });
               }
             });

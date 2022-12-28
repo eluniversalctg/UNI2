@@ -160,7 +160,7 @@ export class BlocksService {
                   lazyloadThrottleTimeout = setTimeout(function () {
                       var scrollTop = window.pageYOffset;
                       currentIframes.forEach(function (ifm) {
-                          if (ifm.offsetTop < window.innerHeight + scrollTop) {
+                          if (ifm.offsetTop - 150 < window.innerHeight + scrollTop) {
                               const name = ifm.attributes["uni2id"].value + '()';
                               const validate = 'req' + ifm.attributes["uni2id"].value;
                               if(eval(validate)){
@@ -176,14 +176,37 @@ export class BlocksService {
                   }, 30);
               }
 
-              setInterval(async function () {
-                if (cxs) {
-                  await lazyload();
-                  document.addEventListener("scroll", lazyload);
-                  window.addEventListener("resize", lazyload);
-                  window.addEventListener("orientationChange", lazyload);
+              function contextcargado (callback) {
+                let procesar = false;
+                if (typeof cxs === 'undefined') {
+                  if (typeof unomiWebTracker === 'object') {
+                    if (typeof unomiWebTracker.cxs === 'object') {
+                      procesar = true;
+                    }
+                  }
+                } else {
+                  procesar = true;
                 }
-              }, 1000);
+
+                if (procesar) {
+                  callback();
+                } else { 
+                  
+                  setTimeout (function () {
+                    contextcargado(callback);
+                  }, 100);
+                }
+              }
+
+              contextcargado (async function () {
+                if (typeof cxs === 'undefined') {
+                  cxs = unomiWebTracker.cxs;
+                }
+                await lazyload();
+                document.addEventListener("scroll", lazyload);
+                 window.addEventListener("resize", lazyload);
+                window.addEventListener("orientationChange", lazyload);
+              });
           });
  
             ${this.finalScript}
