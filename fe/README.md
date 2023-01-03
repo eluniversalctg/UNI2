@@ -1,27 +1,16 @@
 # Uni2Fe
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.1.3.
+Este proyecto fue generado en la versión 13.1.3.
 
-## Development server
+## Configuración necesaria
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Para poder conectar nuestra interfaz con el api debemos agregar las siguientes configuraciones en el archivo `enviroment`. Dicho archivo lo encontramos en la siguiente ruta: `src/environments/environment`, vamos a encontrar el archivo `.ts` o `.prod.ts`. Acá vamos a agregar lo siguiente:
 
-## Code scaffolding
+1. production: Por defecto Angular nos genera esta variable la cual nos indica si es producción o si nos encontramos en desarrollo. Ej: `true/false`,
+2. localStorageItem: Vamos a definir el nombre de la variable que se generará en el localStorage. Ej: `'uni2'`,
+3. basePath: Esta será la dirección IP de nuestro BackEnd. Ej: `'http://localhost:3000/uni2api'`,
+4. captcha: Para un método de seguridad tenemos implementado el captcha de Google, el cuál deberá ser generado. Ej: `'6Lcm6boiAAAAAAZY8fwCa9eYraRFC369sdeFdONe'`,
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Compilar el proyecto
 
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Ejecutamos el comando `npm run build` para compilar el proyecto. Esto nos genera la carpeta `dist/` acá vamos a encontrar todo lo necesario para poder servir nuestro sitio web. Contamos con el archivo principal el cual es `index.html`.
