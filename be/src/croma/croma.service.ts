@@ -92,74 +92,78 @@ export class CromaService {
     period?: string,
     date?: string,
   ) {
-    let response;
-    let searchParams = '';
-    const domain = await this.domainService.find(site);
-    if (relatedCromaDto && relatedCromaDto.years) {
-      searchParams = `&years=${relatedCromaDto.years}&months=${relatedCromaDto.months}&days=${relatedCromaDto.days}&radius=${relatedCromaDto.radius}`;
-    }
-    let result;
-    await lastValueFrom(
-      this.httpService
-        .get(
-          `${domain[0].cromaUrl}/related?cmsid=${relatedCromaDto.id}${searchParams}`,
-        )
-        .pipe(
-          map((response) => (result = response)),
-          catchError((e) => {
-            return this.searchArticles(
-              {
-                related_articles: [
-                  {
-                    cms_id: relatedCromaDto.id,
-                    similarity: 1,
-                    url: relatedCromaDto['url'],
-                  },
-                ],
-              },
-              tags,
-              period,
-              date,
-              site,
-              true,
-            );
-          }),
-        ),
-    );
-
-    if (result !== undefined) {
-      const found = result.data.related_articles.find(
-        (x) => x.cms_id === relatedCromaDto.id,
-      );
-
-      if (!found) {
-        result.data.related_articles = [
-          { cms_id: relatedCromaDto.id, similarity: 1 },
-          ...result.data.related_articles,
-        ];
+    try {
+      let response;
+      let searchParams = '';
+      const domain = await this.domainService.find(site);
+      if (relatedCromaDto && relatedCromaDto.years) {
+        searchParams = `&years=${relatedCromaDto.years}&months=${relatedCromaDto.months}&days=${relatedCromaDto.days}&radius=${relatedCromaDto.radius}`;
       }
-      response = this.searchArticles(result.data, tags, period, date, site);
-    } else {
-      const article = await this.searchArticles(
-        {
-          related_articles: [
-            {
-              cms_id: relatedCromaDto.id,
-              similarity: 1,
-              url: relatedCromaDto['url'],
-            },
-          ],
-        },
-        tags,
-        period,
-        date,
-        site,
-        true,
+      let result;
+      await lastValueFrom(
+        this.httpService
+          .get(
+            `${domain[0].cromaUrl}/related?cmsid=${relatedCromaDto.id}${searchParams}`,
+          )
+          .pipe(
+            map((response) => (result = response)),
+            catchError(() => {
+              return this.searchArticles(
+                {
+                  related_articles: [
+                    {
+                      cms_id: relatedCromaDto.id,
+                      similarity: 1,
+                      url: relatedCromaDto['url'],
+                    },
+                  ],
+                },
+                tags,
+                period,
+                date,
+                site,
+                true,
+              );
+            }),
+          ),
       );
-      response = this.extractText(article[0]);
-    }
 
-    return response;
+      if (result !== undefined) {
+        const found = result.data.related_articles.find(
+          (x) => x.cms_id === relatedCromaDto.id,
+        );
+
+        if (!found) {
+          result.data.related_articles = [
+            { cms_id: relatedCromaDto.id, similarity: 1 },
+            ...result.data.related_articles,
+          ];
+        }
+        response = this.searchArticles(result.data, tags, period, date, site);
+      } else {
+        const article = await this.searchArticles(
+          {
+            related_articles: [
+              {
+                cms_id: relatedCromaDto.id,
+                similarity: 1,
+                url: relatedCromaDto['url'],
+              },
+            ],
+          },
+          tags,
+          period,
+          date,
+          site,
+          true,
+        );
+        response = this.extractText(article[0]);
+      }
+
+      return response;
+    } catch (e) {
+      throw new HttpException(e, 400);
+    }
   }
 
   async extractText(article) {
@@ -708,7 +712,7 @@ export class CromaService {
       const doc = new JSDOM(getHTML.html);
       const cmsid = {
         id: doc.window.document
-          .querySelector('meta[name="cmsid"]')
+          .querySelector('meta[name="CromaId"]')
           .getAttribute('content'),
         url: url,
       };

@@ -1,10 +1,10 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { Injectable } from '@nestjs/common';
 import { RuleService } from 'src/rule/rule.service';
 import { Page } from 'src/pages/entities/page.entity';
 import { PagesService } from 'src/pages/pages.service';
 import { CromaService } from 'src/croma/croma.service';
+import { HttpException, Injectable } from '@nestjs/common';
 import { RenderizationDto } from './dto/renderization.dto';
 import { DomainsService } from 'src/domains/domains.service';
 import { RelatedCromaDto } from 'src/croma/dto/related-croma.dto';
@@ -109,312 +109,264 @@ export class PersonalizationService {
    * renderization template
    */
   async renderization(renderizationDto: RenderizationDto) {
-    let infoSesion = {};
-    if (renderizationDto.sessionId != null) {
-      infoSesion = await this.ruleService.getSessionId(
-        renderizationDto.sessionId,
-      );
-    }
-
-    //get all templates and placeholders the personalization
-    await this.getPlaceholdersUnomi();
-    await this.getTemplatesPerso();
-    await this.getPages();
-    await this.getPlaceholdersSystem();
-
-    const data = renderizationDto.template.split(',');
-
-    let domainURL;
-    let link;
-    if (data[6] !== '') {
-      if (!data[6].includes('http')) {
-        domainURL = `https://${data[6]}`;
-      } else {
-        domainURL = data[6];
-      }
-      const domain = new URL(domainURL);
-      const domainName = domain.hostname;
-
-      link = await this.domainService.findOne(domainName);
-    }
-
-    const idTemplateRender = data[0];
-    const typeTemplate = data[1];
-    const idPage = data[2];
-    const idBlock = data[3];
-    const level = data[4];
-    const idRule = data[5];
-    const siteID = link ? link[0].id : '';
-
-    let template = this.templatesPersonalization.find(
-      (x) => x._id === idTemplateRender,
-    );
-
-    template = JSON.parse(JSON.stringify(template));
-
-    const page = this.pages.find((x) => x._id === idPage);
-
-    let newPlaceholder: any[] = [];
-    let cromaPeriod;
-    let matomoPeriod;
-    let matomoMetaData;
-    let typeMetaData;
-    let matomoTags;
-    let weighing;
-    let typeTags;
-    let cromaType;
-
-    //level 0
-    if (Number(level) === 0) {
-      if (page.wizardModel) {
-        page.wizardModel.forEach((wizard) => {
-          //inspect each block
-          if (wizard.block._id === idBlock) {
-            wizard.stepsData.forEach((step) => {
-              //inspect each rules
-              if (step.rule._id === idRule) {
-                //get info about croma and matomo
-                newPlaceholder = step.newPlaceholder;
-                cromaPeriod = step.cromaPeriod;
-                matomoPeriod = step.matomoPeriod;
-                matomoMetaData = step.matomoMetaData;
-                typeMetaData = step.typeMetaData;
-                matomoTags = step.matomoTags;
-                weighing = step.weighing;
-                cromaType = step.cromaType;
-                typeTags = step.typeTags;
-              }
-            });
-          }
-        });
-      }
-    }
-
-    //level 1
-    if (Number(level) === 1) {
-      //inspect each children of the page
-      if (page.children) {
-        //go through each child
-        page.children.forEach((children1) => {
-          if (children1.wizardModel) {
-            children1.wizardModel.forEach((wizard) => {
-              //inspect each block
-              if (wizard.block._id === idBlock) {
-                wizard.stepsData.forEach((step) => {
-                  //inspect each rules
-                  if (step.rule._id === idRule) {
-                    //get info about croma and matomo
-                    newPlaceholder = step.newPlaceholder;
-                    cromaPeriod = step.cromaPeriod;
-                    matomoPeriod = step.matomoPeriod;
-                    matomoMetaData = step.matomoMetaData;
-                    typeMetaData = step.typeMetaData;
-                    matomoTags = step.matomoTags;
-                    weighing = step.weighing;
-                    cromaType = step.cromaType;
-                    typeTags = step.typeTags;
-                  }
-                });
-              }
-            });
-          }
-        });
-      }
-    }
-
-    //level 2
-    if (Number(level) === 2) {
-      //inspect each children of the page
-      if (page.children) {
-        //go through each child
-        page.children.forEach((children1) => {
-          if (children1.children) {
-            //go through each child
-            children1.children.forEach((children2) => {
-              if (children2.wizardModel) {
-                children2.wizardModel.forEach((wizard) => {
-                  //inspect each block
-                  if (wizard.block._id === idBlock) {
-                    wizard.stepsData.forEach((step) => {
-                      //inspect each rules
-                      if (step.rule._id === idRule) {
-                        //get info about croma and matomo
-                        newPlaceholder = step.newPlaceholder;
-                        cromaPeriod = step.cromaPeriod;
-                        matomoPeriod = step.matomoPeriod;
-                        matomoMetaData = step.matomoMetaData;
-                        typeMetaData = step.typeMetaData;
-                        matomoTags = step.matomoTags;
-                        weighing = step.weighing;
-                        cromaType = step.cromaType;
-                        typeTags = step.typeTags;
-                      }
-                    });
-                  }
-                });
-              }
-            });
-          }
-        });
-      }
-    }
-
-    //level 3
-    if (Number(level) === 3) {
-      //inspect each children of the page
-      if (page.children) {
-        //go through each child
-        page.children.forEach((children1) => {
-          //inspect each child of the children1
-          if (children1.children) {
-            //go through each children1
-            children1.children.forEach((children2) => {
-              //inspect each child of the children2
-              if (children2.children) {
-                //inspect each child of the children2
-                children2.children.forEach((children3) => {
-                  if (children3.wizardModel) {
-                    children3.wizardModel.forEach((wizard) => {
-                      //inspect each block
-                      if (wizard.block._id === idBlock) {
-                        wizard.stepsData.forEach((step) => {
-                          //inspect each rules
-                          if (step.rule._id === idRule) {
-                            //get info about croma and matomo
-                            newPlaceholder = step.newPlaceholder;
-                            cromaPeriod = step.cromaPeriod;
-                            matomoPeriod = step.matomoPeriod;
-                            matomoMetaData = step.matomoMetaData;
-                            typeMetaData = step.typeMetaData;
-                            matomoTags = step.matomoTags;
-                            weighing = step.weighing;
-                            cromaType = step.cromaType;
-                            typeTags = step.typeTags;
-                          }
-                        });
-                      }
-                    });
-                  }
-                });
-              }
-            });
-          }
-        });
-      }
-    }
-
     try {
-      //case template editorial
-      if (typeTemplate === 'Editorial') {
-        //the random is created to define the winning weight
-        const random = Math.floor(Math.random() * (100 - 1) + 1);
+      let infoSesion = {};
+      if (renderizationDto.sessionId != null) {
+        infoSesion = await this.ruleService.getSessionId(
+          renderizationDto.sessionId,
+        );
+      }
 
-        // search croma
-        if (typeTags === 'Croma') {
-          //croma with text
-          if (cromaType === 'Texto') {
-            //the weights established by the user are obtained
-            const arrayWeighing: any[] = [];
-            arrayWeighing.push(
-              weighing.title,
-              weighing.summary,
-              weighing.body,
-              weighing.altPhoto,
-              weighing.topic,
-              weighing.url,
-            );
+      //get all templates and placeholders the personalization
+      await this.getPlaceholdersUnomi();
+      await this.getTemplatesPerso();
+      await this.getPages();
+      await this.getPlaceholdersSystem();
 
-            /* Creating a min and max value for each object in the array. */
-            for (let i = 0; i < arrayWeighing.length; i++) {
-              //only for the first weighing
-              if (i === 0) {
-                arrayWeighing[i]['min'] = 1;
-                arrayWeighing[i]['max'] = arrayWeighing[i].luck;
-              }
+      const data = renderizationDto.template.split(',');
 
-              //in case there is more than one weighting
-              if (i > 0) {
-                arrayWeighing[i]['min'] = arrayWeighing[i - 1].max + 1;
-                arrayWeighing[i]['max'] =
-                  arrayWeighing[i].min + arrayWeighing[i].luck - 1;
-              }
+      let domainURL;
+      let link;
+      if (data[6] !== '') {
+        if (!data[6].includes('http')) {
+          domainURL = `https://${data[6]}`;
+        } else {
+          domainURL = data[6];
+        }
+        const domain = new URL(domainURL);
+        const domainName = domain.hostname;
+
+        link = await this.domainService.findOne(domainName);
+      }
+
+      const idTemplateRender = data[0];
+      const typeTemplate = data[1];
+      const idPage = data[2];
+      const idBlock = data[3];
+      const level = data[4];
+      const idRule = data[5];
+      const siteID = link ? link[0].id : '';
+
+      let template = this.templatesPersonalization.find(
+        (x) => x._id === idTemplateRender,
+      );
+
+      template = JSON.parse(JSON.stringify(template));
+
+      const page = this.pages.find((x) => x._id === idPage);
+
+      let newPlaceholder: any[] = [];
+      let cromaPeriod;
+      let matomoPeriod;
+      let matomoMetaData;
+      let typeMetaData;
+      let matomoTags;
+      let weighing;
+      let typeTags;
+      let cromaType;
+
+      //level 0
+      if (Number(level) === 0) {
+        if (page.wizardModel) {
+          page.wizardModel.forEach((wizard) => {
+            //inspect each block
+            if (wizard.block._id === idBlock) {
+              wizard.stepsData.forEach((step) => {
+                //inspect each rules
+                if (step.rule._id === idRule) {
+                  //get info about croma and matomo
+                  newPlaceholder = step.newPlaceholder;
+                  cromaPeriod = step.cromaPeriod;
+                  matomoPeriod = step.matomoPeriod;
+                  matomoMetaData = step.matomoMetaData;
+                  typeMetaData = step.typeMetaData;
+                  matomoTags = step.matomoTags;
+                  weighing = step.weighing;
+                  cromaType = step.cromaType;
+                  typeTags = step.typeTags;
+                }
+              });
             }
+          });
+        }
+      }
 
-            //the weight that is between the range of the random is obtained
-            const weighingWins = arrayWeighing.find(
-              (x) => x.min <= random && x.max >= random,
-            );
-
-            //find in the JsonLD OR OpenGraph
-            const finMetadata = this.findMeta(
-              weighingWins,
-              renderizationDto.JSONLD,
-              renderizationDto.OpenGraph,
-            );
-
-            const date = moment().format('YYYY-MM-DD');
-            //get the articles with respect to the winning metadata
-            const articles = await this.cromaService.analyzer_text(
-              finMetadata,
-              'Actions.getPageUrl&',
-              'year',
-              date,
-              siteID,
-            );
-            const articlesSelect: any[] = [];
-
-            //use the number of items needed for the template
-            for (let i = 0; i < template.numNews; i++) {
-              articlesSelect.push(articles[i]);
+      //level 1
+      if (Number(level) === 1) {
+        //inspect each children of the page
+        if (page.children) {
+          //go through each child
+          page.children.forEach((children1) => {
+            if (children1.wizardModel) {
+              children1.wizardModel.forEach((wizard) => {
+                //inspect each block
+                if (wizard.block._id === idBlock) {
+                  wizard.stepsData.forEach((step) => {
+                    //inspect each rules
+                    if (step.rule._id === idRule) {
+                      //get info about croma and matomo
+                      newPlaceholder = step.newPlaceholder;
+                      cromaPeriod = step.cromaPeriod;
+                      matomoPeriod = step.matomoPeriod;
+                      matomoMetaData = step.matomoMetaData;
+                      typeMetaData = step.typeMetaData;
+                      matomoTags = step.matomoTags;
+                      weighing = step.weighing;
+                      cromaType = step.cromaType;
+                      typeTags = step.typeTags;
+                    }
+                  });
+                }
+              });
             }
+          });
+        }
+      }
 
-            /**
-             * render the template with the most similar articles
-             */
-            template.htmlContent = this.replaceFinally(
-              template.htmlContent,
-              this.placeholdersSystem,
-              articlesSelect,
-              newPlaceholder,
-              infoSesion,
-            );
-          }
+      //level 2
+      if (Number(level) === 2) {
+        //inspect each children of the page
+        if (page.children) {
+          //go through each child
+          page.children.forEach((children1) => {
+            if (children1.children) {
+              //go through each child
+              children1.children.forEach((children2) => {
+                if (children2.wizardModel) {
+                  children2.wizardModel.forEach((wizard) => {
+                    //inspect each block
+                    if (wizard.block._id === idBlock) {
+                      wizard.stepsData.forEach((step) => {
+                        //inspect each rules
+                        if (step.rule._id === idRule) {
+                          //get info about croma and matomo
+                          newPlaceholder = step.newPlaceholder;
+                          cromaPeriod = step.cromaPeriod;
+                          matomoPeriod = step.matomoPeriod;
+                          matomoMetaData = step.matomoMetaData;
+                          typeMetaData = step.typeMetaData;
+                          matomoTags = step.matomoTags;
+                          weighing = step.weighing;
+                          cromaType = step.cromaType;
+                          typeTags = step.typeTags;
+                        }
+                      });
+                    }
+                  });
+                }
+              });
+            }
+          });
+        }
+      }
 
-          // croma with ID
-          if (cromaType === 'ID') {
-            if (cromaPeriod) {
-              //extract ID in the metadata
-              let CromaId;
+      //level 3
+      if (Number(level) === 3) {
+        //inspect each children of the page
+        if (page.children) {
+          //go through each child
+          page.children.forEach((children1) => {
+            //inspect each child of the children1
+            if (children1.children) {
+              //go through each children1
+              children1.children.forEach((children2) => {
+                //inspect each child of the children2
+                if (children2.children) {
+                  //inspect each child of the children2
+                  children2.children.forEach((children3) => {
+                    if (children3.wizardModel) {
+                      children3.wizardModel.forEach((wizard) => {
+                        //inspect each block
+                        if (wizard.block._id === idBlock) {
+                          wizard.stepsData.forEach((step) => {
+                            //inspect each rules
+                            if (step.rule._id === idRule) {
+                              //get info about croma and matomo
+                              newPlaceholder = step.newPlaceholder;
+                              cromaPeriod = step.cromaPeriod;
+                              matomoPeriod = step.matomoPeriod;
+                              matomoMetaData = step.matomoMetaData;
+                              typeMetaData = step.typeMetaData;
+                              matomoTags = step.matomoTags;
+                              weighing = step.weighing;
+                              cromaType = step.cromaType;
+                              typeTags = step.typeTags;
+                            }
+                          });
+                        }
+                      });
+                    }
+                  });
+                }
+              });
+            }
+          });
+        }
+      }
 
-              //extract the jsonld
-              if (renderizationDto.JSONLD['CromaId']) {
-                CromaId = renderizationDto.JSONLD['CromaId'];
+      try {
+        //case template editorial
+        if (typeTemplate === 'Editorial') {
+          //the random is created to define the winning weight
+          const random = Math.floor(Math.random() * (100 - 1) + 1);
+
+          // search croma
+          if (typeTags === 'Croma') {
+            //croma with text
+            if (cromaType === 'Texto') {
+              //the weights established by the user are obtained
+              const arrayWeighing: any[] = [];
+              arrayWeighing.push(
+                weighing.title,
+                weighing.summary,
+                weighing.body,
+                weighing.altPhoto,
+                weighing.topic,
+                weighing.url,
+              );
+
+              /* Creating a min and max value for each object in the array. */
+              for (let i = 0; i < arrayWeighing.length; i++) {
+                //only for the first weighing
+                if (i === 0) {
+                  arrayWeighing[i]['min'] = 1;
+                  arrayWeighing[i]['max'] = arrayWeighing[i].luck;
+                }
+
+                //in case there is more than one weighting
+                if (i > 0) {
+                  arrayWeighing[i]['min'] = arrayWeighing[i - 1].max + 1;
+                  arrayWeighing[i]['max'] =
+                    arrayWeighing[i].min + arrayWeighing[i].luck - 1;
+                }
               }
 
-              //extract the metadata graph QL
-              if (renderizationDto.OpenGraph['CromaId']) {
-                CromaId = renderizationDto.OpenGraph['CromaId'];
-              }
+              //the weight that is between the range of the random is obtained
+              const weighingWins = arrayWeighing.find(
+                (x) => x.min <= random && x.max >= random,
+              );
 
-              //create the object needed to fetch the croma items
-              const relatedCromaDto: RelatedCromaDto = {
-                id: CromaId,
-                years: cromaPeriod.year,
-                months: cromaPeriod.month,
-                days: cromaPeriod.day,
-                radius: cromaPeriod.radius,
-              };
+              //find in the JsonLD OR OpenGraph
+              const finMetadata = this.findMeta(
+                weighingWins,
+                renderizationDto.JSONLD,
+                renderizationDto.OpenGraph,
+              );
 
-              //get the articles with respect to id
-              const articles = await this.cromaService.related(
-                relatedCromaDto,
-                page.site._id,
+              const date = moment().format('YYYY-MM-DD');
+              //get the articles with respect to the winning metadata
+              const articles = await this.cromaService.analyzer_text(
+                finMetadata,
+                'Actions.getPageUrl&',
+                'year',
+                date,
+                siteID,
               );
               const articlesSelect: any[] = [];
 
               //use the number of items needed for the template
               for (let i = 0; i < template.numNews; i++) {
-                articlesSelect.push(articles[0].related_articles[i]);
+                articlesSelect.push(articles[i]);
               }
 
               /**
@@ -428,160 +380,212 @@ export class PersonalizationService {
                 infoSesion,
               );
             }
+
+            // croma with ID
+            if (cromaType === 'ID') {
+              if (cromaPeriod) {
+                //extract ID in the metadata
+                let CromaId;
+
+                //extract the jsonld
+                if (renderizationDto.JSONLD['CromaId']) {
+                  CromaId = renderizationDto.JSONLD['CromaId'];
+                }
+
+                //extract the metadata graph QL
+                if (renderizationDto.OpenGraph['CromaId']) {
+                  CromaId = renderizationDto.OpenGraph['CromaId'];
+                }
+
+                //create the object needed to fetch the croma items
+                const relatedCromaDto: RelatedCromaDto = {
+                  id: CromaId,
+                  years: cromaPeriod.year,
+                  months: cromaPeriod.month,
+                  days: cromaPeriod.day,
+                  radius: cromaPeriod.radius,
+                };
+
+                //get the articles with respect to id
+                const articles = await this.cromaService.related(
+                  relatedCromaDto,
+                  page.site._id,
+                );
+                const articlesSelect: any[] = [];
+
+                //use the number of items needed for the template
+                for (let i = 0; i < template.numNews; i++) {
+                  articlesSelect.push(articles[0].related_articles[i]);
+                }
+
+                /**
+                 * render the template with the most similar articles
+                 */
+                template.htmlContent = this.replaceFinally(
+                  template.htmlContent,
+                  this.placeholdersSystem,
+                  articlesSelect,
+                  newPlaceholder,
+                  infoSesion,
+                );
+              }
+            }
+          }
+
+          // // search matomo
+          if (typeTags === 'Matomo') {
+            let params = '';
+
+            // add custom parameters to matomo URL
+            matomoTags.customParameters.forEach((param) => {
+              if (param.value.toString().includes('$$')) {
+                if (typeMetaData === 'Unomi') {
+                  const result = _.get(infoSesion, matomoMetaData);
+                  params += `${param.parameter}${result}&`;
+                }
+
+                if (typeMetaData === 'Open_Graph') {
+                  const result = _.get(
+                    renderizationDto.OpenGraph,
+                    matomoMetaData,
+                  );
+                  params += `${param.parameter}${result}&`;
+                }
+
+                if (typeMetaData === 'JSON-LD') {
+                  const result = _.get(renderizationDto.JSONLD, matomoMetaData);
+                  params += `${param.parameter}${result}&`;
+                }
+              } else {
+                params += `${param.parameter}=${param.value}&`;
+              }
+            });
+            // get matomo data
+            const matomoResponse = await this.cromaService.getInfoMatomo(
+              `method=${matomoTags.module}.${matomoTags.tag}&period=day&date=${matomoPeriod.year}-${matomoPeriod.month}-${matomoPeriod.day}&idSite=1&${params}`,
+              page.site.matomoUrl,
+              page.site.idSite,
+            );
+
+            // validate if get information
+            if (matomoResponse['length'] > 0) {
+              const articles = [];
+
+              for (let i = 0; i < matomoResponse['length']; i++) {
+                // if startsWith m means is an news
+                if (matomoResponse[i].url.split('//')[1].startsWith('m')) {
+                  const getHTML = await this.cromaService.getHTML(
+                    matomoResponse[i].url,
+                  );
+                  articles.push({ metadata: { html: getHTML.html } });
+                }
+
+                // if we get all news, for ends
+                if (articles.length === template.numNews) {
+                  i = matomoResponse['length'];
+                }
+              }
+
+              template.htmlContent = this.replaceFinally(
+                template.htmlContent,
+                this.placeholdersSystem,
+                articles,
+                newPlaceholder,
+                infoSesion,
+              );
+            }
           }
         }
 
-        // // search matomo
-        if (typeTags === 'Matomo') {
-          let params = '';
+        //should only render
+        if (typeTemplate === 'Personalización') {
+          //verify template exists
+          if (template) {
+            /**
+             * replace placeholders unomi
+             */
+            const systemPlaceholders = template.htmlContent.split('[$$');
+            const newSystemPlaceholders: any[] = [];
 
-          // add custom parameters to matomo URL
-          matomoTags.customParameters.forEach((param) => {
-            if (param.value.toString().includes('$$')) {
-              if (typeMetaData === 'Unomi') {
-                const result = _.get(infoSesion, matomoMetaData);
-                params += `${param.parameter}${result}&`;
-              }
+            //extract placeholders of the template
+            for (let i = 0; i < systemPlaceholders.length; i++) {
+              const indice = systemPlaceholders[i].indexOf('$$]');
 
-              if (typeMetaData === 'Open_Graph') {
-                const result = _.get(
-                  renderizationDto.OpenGraph,
-                  matomoMetaData,
-                );
-                params += `${param.parameter}${result}&`;
-              }
-
-              if (typeMetaData === 'JSON-LD') {
-                const result = _.get(renderizationDto.JSONLD, matomoMetaData);
-                params += `${param.parameter}${result}&`;
-              }
-            } else {
-              params += `${param.parameter}=${param.value}&`;
-            }
-          });
-          // get matomo data
-          const matomoResponse = await this.cromaService.getInfoMatomo(
-            `method=${matomoTags.module}.${matomoTags.tag}&period=day&date=${matomoPeriod.year}-${matomoPeriod.month}-${matomoPeriod.day}&idSite=1&${params}`,
-            page.site.matomoUrl,
-            page.site.idSite,
-          );
-
-          // validate if get information
-          if (matomoResponse['length'] > 0) {
-            const articles = [];
-
-            for (let i = 0; i < matomoResponse['length']; i++) {
-              // if startsWith m means is an news
-              if (matomoResponse[i].url.split('//')[1].startsWith('m')) {
-                const getHTML = await this.cromaService.getHTML(
-                  matomoResponse[i].url,
-                );
-                articles.push({ metadata: { html: getHTML.html } });
-              }
-
-              // if we get all news, for ends
-              if (articles.length === template.numNews) {
-                i = matomoResponse['length'];
-              }
-            }
-
-            template.htmlContent = this.replaceFinally(
-              template.htmlContent,
-              this.placeholdersSystem,
-              articles,
-              newPlaceholder,
-              infoSesion,
-            );
-          }
-        }
-      }
-
-      //should only render
-      if (typeTemplate === 'Personalización') {
-        //verify template exists
-        if (template) {
-          /**
-           * replace placeholders unomi
-           */
-          const systemPlaceholders = template.htmlContent.split('[$$');
-          const newSystemPlaceholders: any[] = [];
-
-          //extract placeholders of the template
-          for (let i = 0; i < systemPlaceholders.length; i++) {
-            const indice = systemPlaceholders[i].indexOf('$$]');
-
-            newSystemPlaceholders.push(
-              systemPlaceholders[i].substring(0, indice),
-            );
-          }
-
-          //replace the placeholders standard and unomi in the html
-          for (let i = 0; i < this.placeholdersUnomi.length; i++) {
-            //found new placeholders the unomi
-            const found = newPlaceholder.find(
-              (x) => x._id === this.placeholdersUnomi[i]._id,
-            );
-
-            //change the new values set by the user
-            if (found) {
-              //REPLACE PLACEHOLDERS STANDARD WITH NEW PLACEHOLDERS
-              template.htmlContent = template.htmlContent.replaceAll(
-                `$$${found.name}$$`,
-                found.valueDefault,
+              newSystemPlaceholders.push(
+                systemPlaceholders[i].substring(0, indice),
               );
             }
 
-            //change value default
-            if (!found) {
-              //REPLACE PLACEHOLDERS STANDARD WITH VALUE DEFAULT
-              template.htmlContent = template.htmlContent.replaceAll(
-                `$$${this.placeholdersUnomi[i].name}$$`,
+            //replace the placeholders standard and unomi in the html
+            for (let i = 0; i < this.placeholdersUnomi.length; i++) {
+              //found new placeholders the unomi
+              const found = newPlaceholder.find(
+                (x) => x._id === this.placeholdersUnomi[i]._id,
+              );
+
+              //change the new values set by the user
+              if (found) {
+                //REPLACE PLACEHOLDERS STANDARD WITH NEW PLACEHOLDERS
+                template.htmlContent = template.htmlContent.replaceAll(
+                  `$$${found.name}$$`,
+                  found.valueDefault,
+                );
+              }
+
+              //change value default
+              if (!found) {
+                //REPLACE PLACEHOLDERS STANDARD WITH VALUE DEFAULT
+                template.htmlContent = template.htmlContent.replaceAll(
+                  `$$${this.placeholdersUnomi[i].name}$$`,
+                  this.placeholdersUnomi[i].valueDefault,
+                );
+              }
+
+              //find placeholders the unomi
+              const replace = this.searchPlaceholder(
+                infoSesion,
                 this.placeholdersUnomi[i].valueDefault,
               );
-            }
 
-            //find placeholders the unomi
-            const replace = this.searchPlaceholder(
-              infoSesion,
-              this.placeholdersUnomi[i].valueDefault,
-            );
-
-            for (let j = 1; j <= newSystemPlaceholders.length; j++) {
-              //REPLACE PLACEHOLDER UNOMI
-              template.htmlContent = template.htmlContent.replaceAll(
-                `[$$${this.placeholdersUnomi[i].name}${j}$$]`,
-                replace,
-              );
-            }
-
-            for (let i = 0; i < this.placeholdersSystem.length; i++) {
               for (let j = 1; j <= newSystemPlaceholders.length; j++) {
-                //REPLACE OPEN FRAFT
+                //REPLACE PLACEHOLDER UNOMI
                 template.htmlContent = template.htmlContent.replaceAll(
-                  `[$$og:${this.placeholdersSystem[i].name}${j}$$]`,
-                  this.placeholdersSystem[i].valueDefault,
+                  `[$$${this.placeholdersUnomi[i].name}${j}$$]`,
+                  replace,
                 );
+              }
 
-                //REPLACE JSON-LD
-                template.htmlContent = template.htmlContent.replaceAll(
-                  `[$$ld:${this.placeholdersSystem[i].name}${j}$$]`,
-                  this.placeholdersSystem[i].valueDefault,
-                );
+              for (let i = 0; i < this.placeholdersSystem.length; i++) {
+                for (let j = 1; j <= newSystemPlaceholders.length; j++) {
+                  //REPLACE OPEN FRAFT
+                  template.htmlContent = template.htmlContent.replaceAll(
+                    `[$$og:${this.placeholdersSystem[i].name}${j}$$]`,
+                    this.placeholdersSystem[i].valueDefault,
+                  );
+
+                  //REPLACE JSON-LD
+                  template.htmlContent = template.htmlContent.replaceAll(
+                    `[$$ld:${this.placeholdersSystem[i].name}${j}$$]`,
+                    this.placeholdersSystem[i].valueDefault,
+                  );
+                }
               }
             }
           }
         }
-      }
 
-      const object = {
-        template: template.htmlContent,
-        height: template.high,
-        width: template.width,
-      };
-      //retunr template rendered
-      return object;
+        const object = {
+          template: template.htmlContent,
+          height: template.high,
+          width: template.width,
+        };
+        //retunr template rendered
+        return object;
+      } catch (error) {
+        return undefined;
+      }
     } catch (error) {
-      return undefined;
+      throw new HttpException(error, 400);
     }
   }
 

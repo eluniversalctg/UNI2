@@ -268,7 +268,7 @@ export class BlocksService {
     const data = `
     function getMetadataJSON() { 
       var jsonLd = document.querySelector('script[type="application/ld+json"]');
-      return JSON.parse(jsonLd.innerHTML);
+      return jsonLd ? JSON.parse(jsonLd.innerHTML) : {};
     }
     `;
     return data;

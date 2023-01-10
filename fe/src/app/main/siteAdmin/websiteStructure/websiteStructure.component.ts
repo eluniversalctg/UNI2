@@ -370,10 +370,13 @@ export class WebsiteStructureComponent implements OnChanges {
             } else if (this.wizardData.cromaType === 'ID') {
               //valid period croma
               if (
-                !this.wizardData.cromaPeriod.day ||
-                !this.wizardData.cromaPeriod.year ||
-                !this.wizardData.cromaPeriod.month ||
-                !this.wizardData.cromaPeriod.radius
+                isNaN(this.wizardData.cromaPeriod!.day) ||
+                this.wizardData.cromaPeriod!.day < 0 ||
+                isNaN(this.wizardData.cromaPeriod!.year) ||
+                this.wizardData.cromaPeriod!.year < 0 ||
+                isNaN(this.wizardData.cromaPeriod!.month) ||
+                this.wizardData.cromaPeriod!.month < 0 ||
+                (!this.wizardData.cromaPeriod!.radius)
               ) {
                 valid = false;
                 this.msg.add({
