@@ -410,7 +410,7 @@ export class CromaService {
                 const art = resp[i];
                 const doc = new JSDOM(art['html']);
                 const cmsid = doc.window.document
-                  .querySelector('meta[name="cmsid"]')
+                  .querySelector('meta[name="CromaId"]')
                   .getAttribute('content');
                 const find = data.related_articles.find(
                   (x) => x.pub_art_id === cmsid,
@@ -710,16 +710,53 @@ export class CromaService {
 
       const getHTML = await this.getHTML(url);
       const doc = new JSDOM(getHTML.html);
-      const cmsid = {
-        id: doc.window.document
-          .querySelector('meta[name="CromaId"]')
-          .getAttribute('content'),
-        url: url,
-      };
+      if (doc.window.document.querySelector('meta[name="CromaId"]')) {
+        const cmsid = {
+          id: doc.window.document
+            .querySelector('meta[name="CromaId"]')
+            .getAttribute('content'),
+          url: url,
+        };
 
-      // cmsid
-      const article = await this.related(cmsid, site, tags, period, date);
-      return article;
+        // cmsid
+        const article = await this.related(cmsid, site, tags, period, date);
+        return article;
+      } else {
+        const article = {
+          similarity: '100.00%',
+          url,
+          metadata: getHTML,
+          title: doc.window.document.querySelector('meta[property="og:title"]')
+            ? doc.window.document
+                .querySelector('meta[property="og:title"]')
+                .getAttribute('content')
+            : '',
+          text: doc.window.document.querySelector(
+            'meta[property="og:description"]',
+          )
+            ? doc.window.document
+                .querySelector('meta[property="og:description"]')
+                .getAttribute('content')
+            : '',
+          summary: doc.window.document.querySelector(
+            'meta[property="og:description"]',
+          )
+            ? doc.window.document
+                .querySelector('meta[property="og:description"]')
+                .getAttribute('content')
+            : '',
+        };
+        const value = await this.getMatomoTags(
+          tags,
+          period,
+          date,
+          article,
+          link[0].matomoUrl,
+          link[0].idSite,
+        );
+        article['matomo'] = value[0];
+        return [article];
+      }
     } else {
       return 'Dominio no valido.';
     }
