@@ -86,6 +86,7 @@ export class CromaService {
    * @returns related articles
    */
   async related(
+    cant?: number,
     relatedCromaDto?: RelatedCromaDto,
     site?: string,
     tags?: string,
@@ -128,6 +129,13 @@ export class CromaService {
           ),
       );
 
+      if (cant) {
+        const response = [];
+        for (let i = 0; i < cant; i++) {
+          response.push(result.data.related_articles[i]);
+        }
+        result.data.related_articles = response;
+      }
       if (result !== undefined) {
         const found = result.data.related_articles.find(
           (x) => x.cms_id === relatedCromaDto.id,
@@ -256,6 +264,7 @@ export class CromaService {
     period?: string,
     date?: string,
     site?: string,
+    cant?: number,
   ) {
     const domain = await this.domainService.find(site);
     const response = await lastValueFrom(
@@ -265,7 +274,15 @@ export class CromaService {
         })
         .pipe(
           map((response) =>
-            this.searchArticles(response.data, tags, period, date, site),
+            this.searchArticles(
+              response.data,
+              tags,
+              period,
+              date,
+              site,
+              false,
+              cant,
+            ),
           ),
           catchError((e) => {
             throw new HttpException(e.response.data, e.response.status);
@@ -361,11 +378,19 @@ export class CromaService {
     date?: string,
     site?: string,
     isError?: boolean,
+    cant?: number,
   ) {
     // get placeholders to database
     this.getPlaceholders();
     const domain = await this.domainService.find(site);
     const request = [];
+    if (cant) {
+      const response = [];
+      for (let i = 0; i < cant; i++) {
+        response.push(data.related_articles[i]);
+      }
+      data.related_articles = response;
+    }
     // search for article on CromaAI DB.
     for (let i = 0; i < data.related_articles.length; i++) {
       const element = data.related_articles[i];
@@ -719,7 +744,7 @@ export class CromaService {
         };
 
         // cmsid
-        const article = await this.related(cmsid, site, tags, period, date);
+        const article = await this.related(0, cmsid, site, tags, period, date);
         return article;
       } else {
         const article = {

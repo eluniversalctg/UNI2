@@ -361,6 +361,7 @@ export class PersonalizationService {
                 'year',
                 date,
                 siteID,
+                template.numNews,
               );
               const articlesSelect: any[] = [];
 
@@ -408,6 +409,7 @@ export class PersonalizationService {
 
                 //get the articles with respect to id
                 const articles = await this.cromaService.related(
+                  template.numNews,
                   relatedCromaDto,
                   page.site._id,
                 );
