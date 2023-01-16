@@ -464,7 +464,7 @@ export class PersonalizationService {
             });
             // get matomo data
             const matomoResponse = await this.cromaService.getInfoMatomo(
-              `method=${matomoTags.module}.${matomoTags.tag}&period=day&date=${matomoPeriod.year}-${matomoPeriod.month}-${matomoPeriod.day}&idSite=1&${params}`,
+              `method=${matomoTags.module}.${matomoTags.tag}&period=day&date=${matomoPeriod.year}-${matomoPeriod.month}-${matomoPeriod.day}&${params}`,
               page.site.matomoUrl,
               page.site.idSite,
             );
@@ -475,7 +475,10 @@ export class PersonalizationService {
 
               for (let i = 0; i < matomoResponse['length']; i++) {
                 // if startsWith m means is an news
-                if (matomoResponse[i].url.split('//')[1].startsWith('m')) {
+                if (
+                  matomoResponse[i].url &&
+                  matomoResponse[i].label.split('/').length > 2
+                ) {
                   const getHTML = await this.cromaService.getHTML(
                     matomoResponse[i].url,
                   );
