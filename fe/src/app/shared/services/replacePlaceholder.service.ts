@@ -77,9 +77,7 @@ export class ReplacePlaceholderService extends ResourceService<any> {
               let newsystemPlaceholdersOG: any[] = [];
 
               for (let p = 1; p < systemPlaceholdersOG.length; p++) {
-                let indiceOP = systemPlaceholdersOG[p].includes('" />')
-                  ? systemPlaceholdersOG[p].indexOf('" />')
-                  : systemPlaceholdersOG[p].indexOf('">');
+                let indiceOP = systemPlaceholdersOG[p].indexOf('">');
 
                 newsystemPlaceholdersOG.push(
                   systemPlaceholdersOG[p].substring(0, indiceOP)
