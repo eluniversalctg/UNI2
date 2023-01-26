@@ -374,7 +374,9 @@ export class BlocksService {
                     });
 
                     response.json().then((data) => {
-
+                        if(!data) {
+                          return req${id} = true;
+                        }
                         var iframe = document.getElementById('${id}');
                         var doc;
 
