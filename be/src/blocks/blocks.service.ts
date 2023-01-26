@@ -355,7 +355,7 @@ export class BlocksService {
                 if (winningRule && winningRule[0] !== "noMatchFound") {
                     const bodyReq = {
                         template: winningRule[0],
-                        sessionId: cxs.sessionId,
+                        sessionId: cxs.profileId,
                         OpenGraph: getMetadataGraph(),
                         JSONLD: getMetadataJSON(),
                     };

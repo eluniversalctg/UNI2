@@ -1,14 +1,7 @@
-import { UNOMI } from '../models';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from "rxjs";
-import { catchError, map } from "rxjs/operators";
-import { HttpClient } from '@angular/common/http';
 import { ResourceService } from './resource.service';
 @Injectable()
 export class RuleService extends ResourceService<any> {
-  constructor(protected override httpClient: HttpClient) {
-    super(httpClient);
-  }
 
   getResourceUrl(): string {
     return 'rule';

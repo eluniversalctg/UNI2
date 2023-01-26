@@ -303,6 +303,33 @@ export class RuleService {
     return response;
   }
 
+  async getProfile(profileID) {
+    //create configuration and autorization to access server
+    const configuration = {
+      headers: {
+        Authorization: `Basic ${this.credentialUnomi}`,
+      },
+    };
+
+    //create request object
+    const response = await lastValueFrom(
+      this.httpService
+        .get(
+          `${this.config.get<string>('UNOMI_URL')}/cxs/profiles/${profileID}`,
+          configuration,
+        )
+        .pipe(
+          map((response) => {
+            return response.data;
+          }),
+          catchError((e) => {
+            throw new HttpException(e.response.data, e.response.status);
+          }),
+        ),
+    );
+    return response;
+  }
+
   /**
    *
    * @param segmentsID id the session

@@ -112,7 +112,7 @@ export class PersonalizationService {
     try {
       let infoSesion = {};
       if (renderizationDto.sessionId != null) {
-        infoSesion = await this.ruleService.getSessionId(
+        infoSesion = await this.ruleService.getProfile(
           renderizationDto.sessionId,
         );
       }
