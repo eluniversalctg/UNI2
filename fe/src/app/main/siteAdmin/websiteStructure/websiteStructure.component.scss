@@ -31,3 +31,9 @@
   margin-left: 0.5rem;
   margin-right: 1rem;
 }
+
+::ng-deep .p-card-body {
+  overflow: auto;
+  max-height: 65vh;
+  min-height: 40vh;
+}

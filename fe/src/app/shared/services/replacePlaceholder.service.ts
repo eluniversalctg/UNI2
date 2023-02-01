@@ -71,16 +71,28 @@ export class ReplacePlaceholderService extends ResourceService<any> {
           //Open Graft
           if (placeholders[i].required) {
             for (let j = 0; j < articles.length; j++) {
+              const tags: Element[] = [];
+              let parser = new DOMParser();
+              let parsedHtml = parser.parseFromString(
+                articles[j].metadata.html,
+                'text/html'
+              );
+              let listEls = parsedHtml.all;
+              for (let i = 0; i < listEls.length; i++) {
+                if (listEls[i].tagName.toLowerCase() == 'meta') {
+                  tags.push(listEls[i]);
+                }
+              }
               let systemPlaceholdersOG = articles[j].metadata.html.split(
-                `="og:${placeholders[i].name}" content="`
+                `="og:${placeholders[i].name}"`
               );
               let newsystemPlaceholdersOG: any[] = [];
 
               for (let p = 1; p < systemPlaceholdersOG.length; p++) {
-                let indiceOP = systemPlaceholdersOG[p].indexOf('">');
-
                 newsystemPlaceholdersOG.push(
-                  systemPlaceholdersOG[p].substring(0, indiceOP)
+                  tags.filter((x) =>
+                    x.outerHTML.includes(`og:${placeholders[i].name}`)
+                  )[0]['content']
                 );
                 let index = j + 1;
                 htmlContentPlaceholder = htmlContentPlaceholder.replaceAll(

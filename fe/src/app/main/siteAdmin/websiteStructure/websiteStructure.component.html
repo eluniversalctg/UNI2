@@ -148,7 +148,7 @@
                   <input
                     id="luck"
                     type="text"
-                    class="input inputfield p-ml-2"
+                    class="input inputfield"
                     pInputText
                     [(ngModel)]="wizardData.template['numNews']"
                     autocomplete="off"
@@ -353,7 +353,7 @@
                   type="number"
                   class="input inputfield p-ml-2"
                   pInputText
-                  [(ngModel)]="wizardData.cromaPeriod.year"
+                  [(ngModel)]="wizardData.cromaPeriod!.year"
                   autocomplete="off"
                   [style]="{ width: '100%' }"
                 />
@@ -376,7 +376,7 @@
                   type="number"
                   class="input inputfield p-ml-2"
                   pInputText
-                  [(ngModel)]="wizardData.cromaPeriod.month"
+                  [(ngModel)]="wizardData.cromaPeriod!.month"
                   autocomplete="off"
                   [style]="{ width: '100%' }"
                 />
@@ -399,7 +399,7 @@
                   type="number"
                   class="input inputfield p-ml-2"
                   pInputText
-                  [(ngModel)]="wizardData.cromaPeriod.day"
+                  [(ngModel)]="wizardData.cromaPeriod!.day"
                   autocomplete="off"
                   [style]="{ width: '100%' }"
                 />
@@ -422,7 +422,7 @@
                   type="number"
                   class="input inputfield p-ml-2"
                   pInputText
-                  [(ngModel)]="wizardData.cromaPeriod.radius"
+                  [(ngModel)]="wizardData.cromaPeriod!.radius"
                   autocomplete="off"
                   [style]="{ width: '100%' }"
                   max="1"
@@ -489,7 +489,10 @@
                 <label for="text" class="p-ml-2">JSON-LD</label>
               </div>
             </div>
-
+            <!-- ************************************** -->
+            <!-- ************************************** -->
+            <!-- ************************************** -->
+            <!-- ************************************** -->
             <div
               class="field grid"
               *ngIf="typeTemplate && wizardData.typeTags === 'Matomo'"
@@ -502,7 +505,7 @@
                   autocomplete="off"
                   [style]="{ width: '100%' }"
                   pInputText
-                  class="input inputfield p-ml-2"
+                  class="input inputfield"
                   [(ngModel)]="wizardData.matomoMetaData"
                   placeholder="Ingrese el metadato"
                 />
@@ -510,66 +513,101 @@
             </div>
 
             <div
-              class="field grid"
+              class="field p-grid"
               *ngIf="typeTemplate && wizardData.typeTags === 'Matomo'"
             >
-              <label for="name" class="col-12 md:col-4">Año:</label>
-              <div class="col-12 md:col-8">
-                <span class="p-float-label">
-                  <input
-                    id="year"
-                    type="number"
-                    class="input inputfield p-ml-2"
-                    pInputText
-                    [(ngModel)]="wizardData.matomoPeriod.year"
-                    autocomplete="off"
-                    [style]="{ width: '100%' }"
-                  />
-                  <label for="inputtext">Año</label>
-                </span>
+              <div class="col-4">
+                <p>Periodo:</p>
+              </div>
+              <div class="col-7" style="margin-left: 2%">
+                <div class="p-grid">
+                  <div
+                    class="col-2"
+                    [style]="{ display: 'flex', 'flex-direction': 'column' }"
+                  >
+                    <div class="field-radiobutton">
+                      <p-radioButton
+                        name="day"
+                        value="day"
+                        inputId="day"
+                        [(ngModel)]="periodSelected"
+                      ></p-radioButton>
+                      <label for="day">Día</label>
+                    </div>
+
+                    <div class="field-radiobutton">
+                      <p-radioButton
+                        name="week"
+                        value="week"
+                        inputId="week"
+                        [(ngModel)]="periodSelected"
+                      ></p-radioButton>
+                      <label for="week">Semana</label>
+                    </div>
+
+                    <div class="field-radiobutton">
+                      <p-radioButton
+                        name="month"
+                        value="month"
+                        inputId="month"
+                        [(ngModel)]="periodSelected"
+                      ></p-radioButton>
+                      <label for="month">Mes</label>
+                    </div>
+
+                    <div class="field-radiobutton">
+                      <p-radioButton
+                        name="year"
+                        value="year"
+                        inputId="year"
+                        [(ngModel)]="periodSelected"
+                      ></p-radioButton>
+                      <label for="year">Año</label>
+                    </div>
+                  </div>
+
+                  <div class="col-8">
+                    <!-- day or week picker -->
+                    <p-calendar
+                      (onSelect)="formatDate()"
+                      *ngIf="
+                        periodSelected === 'day' || periodSelected === 'week'
+                      "
+                      [inline]="true"
+                      dateFormat="yyyy-mm-dd"
+                      [(ngModel)]="dateSelected"
+                    ></p-calendar>
+
+                    <!-- month picker -->
+                    <p-calendar
+                      (onSelect)="formatDate()"
+                      *ngIf="periodSelected === 'month'"
+                      view="month"
+                      [inline]="true"
+                      [readonlyInput]="true"
+                      dateFormat="yyyy-mm-dd"
+                      [(ngModel)]="dateSelected"
+                    ></p-calendar>
+
+                    <!-- year picker -->
+                    <p-calendar
+                      (onSelect)="formatDate()"
+                      *ngIf="periodSelected === 'year'"
+                      view="year"
+                      [inline]="true"
+                      dateFormat="yy"
+                      inputId="yearpicker"
+                      [(ngModel)]="dateSelected"
+                    ></p-calendar>
+                  </div>
+                </div>
               </div>
             </div>
-            <div
-              class="field grid"
-              *ngIf="typeTemplate && wizardData.typeTags === 'Matomo'"
-            >
-              <label for="name" class="col-12 md:col-4">Mes:</label>
-              <div class="col-12 md:col-8">
-                <span class="p-float-label">
-                  <input
-                    id="month"
-                    type="number"
-                    class="input inputfield p-ml-2"
-                    pInputText
-                    [(ngModel)]="wizardData.matomoPeriod.month"
-                    autocomplete="off"
-                    [style]="{ width: '100%' }"
-                  />
-                  <label for="inputtext">Mes</label>
-                </span>
-              </div>
-            </div>
-            <div
-              class="field grid"
-              *ngIf="typeTemplate && wizardData.typeTags === 'Matomo'"
-            >
-              <label for="name" class="col-12 md:col-4">Día:</label>
-              <div class="col-12 md:col-8">
-                <span class="p-float-label">
-                  <input
-                    id="day"
-                    type="number"
-                    class="input inputfield p-ml-2"
-                    pInputText
-                    [(ngModel)]="wizardData.matomoPeriod.day"
-                    autocomplete="off"
-                    [style]="{ width: '100%' }"
-                  />
-                  <label for="inputtext">Día</label>
-                </span>
-              </div>
-            </div>
-            <!-- end matomo -->
+            <!-- ************************************** -->
+            <!-- ************************************** -->
+            <!--              end matomo                -->
+            <!-- ************************************** -->
+            <!-- ************************************** -->
           </div>
           <!-- fifth Step
           ============================================================== -->

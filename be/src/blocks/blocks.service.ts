@@ -24,7 +24,7 @@ export class BlocksService {
     private readonly config: ConfigService,
     private pagesService: PagesService,
     private weighingService: WeighingService,
-  ) {}
+  ) {this.createRules();}
 
   async create(createBlockDto: CreateBlockDto) {
     try {
@@ -130,9 +130,7 @@ export class BlocksService {
       for (let i = 0; i < element.length; i++) {
         await this.readAllPages([element[i]], element[i]._id);
       }
-      const scriptGraphQl = await this.crearMetadataGraphql(
-        element[0].site._id,
-      );
+      const scriptGraphQl = await this.crearMetadataGraphql();
       const lazyLoading = await this.writeLazyLoading();
       const scriptJsonld = this.crearMetadataJson();
       const loadScript = `
@@ -223,41 +221,20 @@ export class BlocksService {
    * greater than 0
    * @returns an object with the metadata of the page.
    */
-  async crearMetadataGraphql(site) {
-    let weighing = await this.weighingService.findSite(site);
-    weighing = JSON.parse(JSON.stringify(weighing));
-
-    const keys = Object.keys(weighing);
-    let graphQl = '';
-    let variable = '';
-
-    for (let i = 0; i < keys.length; i++) {
-      if (weighing[keys[i]] && weighing[keys[i]].luck) {
-        if (weighing[keys[i]].luck > 0) {
-          graphQl = `${graphQl}
-         const ${weighing[keys[i]].grapgQL} = document
-            .querySelector(
-              'meta[property="og:${weighing[keys[i]].grapgQL}"]'
-            ) ? document
-            .querySelector(
-              'meta[property="og:${weighing[keys[i]].grapgQL}"]'
-            ) .getAttribute('content') : "" ;`;
-          variable = `${variable} ${weighing[keys[i]].grapgQL},`;
+  async crearMetadataGraphql() {
+    return `
+    function getMetadataGraph() {
+      var metaTags = document.getElementsByTagName('meta');
+      var obj = {};
+      for (let i = 0; i < metaTags.length; i++) {
+        const prop = metaTags[i].getAttribute('property');
+        if (prop && prop.includes('og:')) {
+          obj[prop.split(":")[1]] = metaTags[i].content;
         }
       }
+      return obj;
     }
-
-    return `function getMetadataGraph(){
-      const CromaId = document
-      .querySelector(
-        'meta[property="og:CromaId"]'
-      ) ? document
-      .querySelector(
-        'meta[property="og:CromaId"]'
-      ) .getAttribute('content') : "" ;
-      ${graphQl}
-      return {CromaId, ${variable}}
-    }`;
+    `;
   }
 
   /**

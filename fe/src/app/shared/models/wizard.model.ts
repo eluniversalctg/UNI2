@@ -28,4 +28,5 @@ export class Period {
   month: number;
   day: number;
   radius?: number;
+  period?: string;
 }

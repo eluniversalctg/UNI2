@@ -3,4 +3,5 @@ export class Period {
   readonly month: number;
   readonly day: number;
   readonly radius?: number;
+  readonly period?: string;
 }

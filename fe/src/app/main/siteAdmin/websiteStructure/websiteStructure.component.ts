@@ -7,6 +7,7 @@ import {
   EventEmitter,
 } from '@angular/core';
 import * as _ from 'lodash';
+import moment from 'moment';
 import { forkJoin } from 'rxjs';
 import {
   Pages,
@@ -69,6 +70,10 @@ export class WebsiteStructureComponent implements OnChanges {
 
   @ViewChild('tableRules') tableRules;
 
+  periodSelected: string = 'day';
+  dateSelected: Date = new Date();
+  dateSelectedFormted: string = '';
+
   constructor(
     private msg: MessageService,
     private blockService: BlockService,
@@ -105,6 +110,16 @@ export class WebsiteStructureComponent implements OnChanges {
     ];
     this.wizardData.cromaPeriod = new Period();
     this.wizardData.matomoPeriod = new Period();
+  }
+
+  formatDate() {
+    const dateSplited = moment(this.dateSelected)
+      .format('YYYY-MM-DD')
+      .split('-');
+    this.wizardData.matomoPeriod!.period = this.periodSelected;
+    this.wizardData.matomoPeriod!.day = Number(dateSplited[2]);
+    this.wizardData.matomoPeriod!.month = Number(dateSplited[1]);
+    this.wizardData.matomoPeriod!.year = Number(dateSplited[0]);
   }
 
   loadData() {
@@ -219,7 +234,7 @@ export class WebsiteStructureComponent implements OnChanges {
       if (found) {
         if (placeholder.valueDefault === found.valueDefault) {
           let index = newPlaceholderTemp.findIndex(
-            (x) => x.name === found.name
+            (x) => x.name === found!.name
           );
           newPlaceholderTemp.splice(index, 1);
         }
@@ -376,7 +391,7 @@ export class WebsiteStructureComponent implements OnChanges {
                 this.wizardData.cromaPeriod!.year < 0 ||
                 isNaN(this.wizardData.cromaPeriod!.month) ||
                 this.wizardData.cromaPeriod!.month < 0 ||
-                (!this.wizardData.cromaPeriod!.radius)
+                !this.wizardData.cromaPeriod!.radius
               ) {
                 valid = false;
                 this.msg.add({
@@ -389,9 +404,9 @@ export class WebsiteStructureComponent implements OnChanges {
         } else if (this.wizardData.typeTags === MessagesTst.TYPEMATOMO) {
           //valid period matomo
           if (
-            !this.wizardData.matomoPeriod.day ||
-            !this.wizardData.matomoPeriod.year ||
-            !this.wizardData.matomoPeriod.month
+            !this.wizardData.matomoPeriod!.day ||
+            !this.wizardData.matomoPeriod!.year ||
+            !this.wizardData.matomoPeriod!.month
           ) {
             valid = false;
             this.msg.add({
@@ -576,7 +591,7 @@ export class WebsiteStructureComponent implements OnChanges {
 
         if (found) {
           let indexTable = this.wizard.stepsData.findIndex(
-            (x) => x.rule['_id'] === found.rule['_id']
+            (x) => x.rule['_id'] === found!.rule['_id']
           );
           this.wizard.stepsData.splice(indexTable, 1);
           this.tableRules.reset();

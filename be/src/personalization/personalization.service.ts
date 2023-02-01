@@ -464,7 +464,7 @@ export class PersonalizationService {
             });
             // get matomo data
             const matomoResponse = await this.cromaService.getInfoMatomo(
-              `method=${matomoTags.module}.${matomoTags.tag}&period=day&date=${matomoPeriod.year}-${matomoPeriod.month}-${matomoPeriod.day}&${params}`,
+              `method=${matomoTags.module}.${matomoTags.tag}&period=${matomoPeriod.period}&date=${matomoPeriod.year}-${matomoPeriod.month}-${matomoPeriod.day}&${params}`,
               page.site.matomoUrl,
               page.site.idSite,
             );
