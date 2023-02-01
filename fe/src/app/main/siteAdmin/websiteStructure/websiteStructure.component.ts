@@ -285,6 +285,9 @@ export class WebsiteStructureComponent implements OnChanges {
           this.typeTemplate = false;
           this.validTypeTemplate(next);
         }
+        this.periodSelected = 'day';
+        this.dateSelected = new Date();
+        this.formatDate();
         break;
       }
       case 3: {
@@ -292,7 +295,9 @@ export class WebsiteStructureComponent implements OnChanges {
         this.stepsMove(next);
         //add placeholder to the model
         this.addNewPlaceholder();
-
+        this.periodSelected = 'day';
+        this.dateSelected = new Date();
+        this.formatDate();
         break;
       }
       case 5: {
@@ -577,8 +582,6 @@ export class WebsiteStructureComponent implements OnChanges {
     this.validateNewRule = false;
     this.stepPage = 0;
     this.pageAddBlock = new Pages();
-    this.periodSelected = 'day';
-    this.dateSelected = new Date();
   }
 
   /**
