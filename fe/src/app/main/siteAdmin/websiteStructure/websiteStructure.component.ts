@@ -110,6 +110,7 @@ export class WebsiteStructureComponent implements OnChanges {
     ];
     this.wizardData.cromaPeriod = new Period();
     this.wizardData.matomoPeriod = new Period();
+    this.formatDate();
   }
 
   formatDate() {
@@ -576,6 +577,8 @@ export class WebsiteStructureComponent implements OnChanges {
     this.validateNewRule = false;
     this.stepPage = 0;
     this.pageAddBlock = new Pages();
+    this.periodSelected = 'day';
+    this.dateSelected = new Date();
   }
 
   /**
