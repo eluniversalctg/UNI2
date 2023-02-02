@@ -273,7 +273,7 @@ export class WebsiteStructureComponent implements OnChanges {
         if (this.wizardData.template) {
           this.stepsMove(next);
 
-          //activate the chroma and matomo part for the recommendation templates
+          //activate the croma and matomo part for the recommendation templates
           this.typeTemplate = false;
           this.validTypeTemplate(next);
         } else if (next) {
@@ -297,7 +297,6 @@ export class WebsiteStructureComponent implements OnChanges {
         this.addNewPlaceholder();
         this.periodSelected = 'day';
         this.dateSelected = new Date();
-        this.formatDate();
         break;
       }
       case 5: {
