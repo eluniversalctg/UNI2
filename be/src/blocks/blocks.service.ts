@@ -24,7 +24,9 @@ export class BlocksService {
     private readonly config: ConfigService,
     private pagesService: PagesService,
     private weighingService: WeighingService,
-  ) {this.createRules();}
+  ) {
+    this.createRules();
+  }
 
   async create(createBlockDto: CreateBlockDto) {
     try {
@@ -134,10 +136,10 @@ export class BlocksService {
       const lazyLoading = await this.writeLazyLoading();
       const scriptJsonld = this.crearMetadataJson();
       const loadScript = `
-              document.addEventListener("DOMContentLoaded", async() => {
-
               var currentIframes = [];
+              var lazyloadThrottleTimeout;
               var iframes = document.getElementsByTagName("iframe");
+              document.addEventListener("DOMContentLoaded", async() => {
 
               for (let i = 0; i < iframes.length; i++) {
                   const element = iframes[i];
@@ -148,31 +150,8 @@ export class BlocksService {
                   }
 
               }
-              var lazyloadThrottleTimeout;
 
-              function lazyload() {
-                  if (lazyloadThrottleTimeout) {
-                      clearTimeout(lazyloadThrottleTimeout);
-                  }
-
-                  lazyloadThrottleTimeout = setTimeout(function () {
-                      var scrollTop = window.pageYOffset;
-                      currentIframes.forEach(function (ifm) {
-                          if (ifm.offsetTop - 150 < window.innerHeight + scrollTop) {
-                              const name = ifm.attributes["uni2id"].value + '()';
-                              const validate = 'req' + ifm.attributes["uni2id"].value;
-                              if(eval(validate)){
-                                eval(name);
-                              }
-                          }
-                      });
-                      if (currentIframes.length == 0) {
-                          document.removeEventListener("scroll", lazyload);
-                          window.removeEventListener("resize", lazyload);
-                          window.removeEventListener("orientationChange", lazyload);
-                      }
-                  }, 30);
-              }
+              lazyload();
 
               function contextcargado (callback) {
                 let procesar = false;
@@ -201,11 +180,35 @@ export class BlocksService {
                   cxs = unomiWebTracker.cxs;
                 }
                 await lazyload();
-                document.addEventListener("scroll", lazyload);
-                 window.addEventListener("resize", lazyload);
-                window.addEventListener("orientationChange", lazyload);
+                document.addEventListener("scroll", lazyload());
+                 window.addEventListener("resize", lazyload());
+                window.addEventListener("orientationChange", lazyload());
               });
           });
+
+          function lazyload() {
+            if (lazyloadThrottleTimeout) {
+                clearTimeout(lazyloadThrottleTimeout);
+            }
+
+            lazyloadThrottleTimeout = setTimeout(function () {
+                var scrollTop = window.pageYOffset;
+                currentIframes.forEach(function (ifm) {
+                    if (ifm.offsetTop - 150 < window.innerHeight + scrollTop) {
+                        const name = ifm.attributes["uni2id"].value + '()';
+                        const validate = 'req' + ifm.attributes["uni2id"].value;
+                        if(eval(validate)){
+                          eval(name);
+                        }
+                    }
+                });
+                if (currentIframes.length == 0) {
+                    document.removeEventListener("scroll", lazyload);
+                    window.removeEventListener("resize", lazyload);
+                    window.removeEventListener("orientationChange", lazyload);
+                }
+            }, 30);
+        }
  
             ${this.finalScript}
             ${scriptGraphQl}
@@ -352,7 +355,9 @@ export class BlocksService {
 
                     response.json().then((data) => {
                         if(!data.template) {
-                          return req${id} = true;
+                          req${id} = true;
+                          lazyload();
+                          return 
                         }
                         var iframe = document.getElementById('${id}');
                         var doc;
