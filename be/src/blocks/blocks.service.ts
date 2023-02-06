@@ -351,7 +351,7 @@ export class BlocksService {
                     });
 
                     response.json().then((data) => {
-                        if(!data) {
+                        if(!data.template) {
                           return req${id} = true;
                         }
                         var iframe = document.getElementById('${id}');
