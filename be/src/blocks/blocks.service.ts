@@ -136,85 +136,79 @@ export class BlocksService {
       const lazyLoading = await this.writeLazyLoading();
       const scriptJsonld = this.crearMetadataJson();
       const loadScript = `
-              var currentIframes = [];
-              var lazyloadThrottleTimeout;
-              var iframes = document.getElementsByTagName("iframe");
-              document.addEventListener("DOMContentLoaded", async() => {
-
-              for (let i = 0; i < iframes.length; i++) {
-                  const element = iframes[i];
-                  const findUni2Id = element.attributes["uni2id"];
-
-                  if (findUni2Id) {
-                      currentIframes.push(element);
-                  }
-
-              }
-
-              lazyload();
-
-              function contextcargado (callback) {
-                let procesar = false;
-                if (typeof cxs === 'undefined') {
-                  if (typeof unomiWebTracker === 'object') {
-                    if (typeof unomiWebTracker.cxs === 'object') {
-                      procesar = true;
-                    }
-                  }
-                } else {
-                  procesar = true;
-                }
-
-                if (procesar) {
-                  callback();
-                } else { 
-                  
-                  setTimeout (function () {
-                    contextcargado(callback);
-                  }, 100);
-                }
-              }
-
-              contextcargado (async function () {
-                if (typeof cxs === 'undefined') {
-                  cxs = unomiWebTracker.cxs;
-                }
-                await lazyload();
-                document.addEventListener("scroll", lazyload());
-                 window.addEventListener("resize", lazyload());
-                window.addEventListener("orientationChange", lazyload());
-              });
-          });
-
-          function lazyload() {
-            if (lazyloadThrottleTimeout) {
-                clearTimeout(lazyloadThrottleTimeout);
-            }
-
-            lazyloadThrottleTimeout = setTimeout(function () {
-                var scrollTop = window.pageYOffset;
-                currentIframes.forEach(function (ifm) {
-                    if (ifm.offsetTop - 150 < window.innerHeight + scrollTop) {
-                        const name = ifm.attributes["uni2id"].value + '()';
-                        const validate = 'req' + ifm.attributes["uni2id"].value;
-                        if(eval(validate)){
-                          eval(name);
-                        }
-                    }
-                });
-                if (currentIframes.length == 0) {
-                    document.removeEventListener("scroll", lazyload);
-                    window.removeEventListener("resize", lazyload);
-                    window.removeEventListener("orientationChange", lazyload);
-                }
-            }, 30);
+      document.addEventListener("DOMContentLoaded", async () => {
+        var currentIframes = [];
+        var lazyloadThrottleTimeout;
+        var iframes = document.getElementsByTagName("iframe");
+        for (let i = 0; i < iframes.length; i++) {
+          const element = iframes[i];
+          const findUni2Id = element.attributes["uni2id"];
+      
+          if (findUni2Id) {
+            currentIframes.push(element);
+          }
         }
- 
-            ${this.finalScript}
-            ${scriptGraphQl}
-            ${scriptJsonld}
-            ${lazyLoading}
-            `;
+      
+        function lazyload() {
+          if (lazyloadThrottleTimeout) {
+            clearTimeout(lazyloadThrottleTimeout);
+          }
+      
+          lazyloadThrottleTimeout = setTimeout(function () {
+            var scrollTop = window.pageYOffset;
+            currentIframes.forEach(function (ifm) {
+              if (ifm.offsetTop - 150 < window.innerHeight + scrollTop) {
+                const name = ifm.attributes["uni2id"].value + "()";
+                const validate = "req" + ifm.attributes["uni2id"].value;
+                if (eval(validate)) {
+                  eval(name);
+                }
+              }
+            });
+            if (currentIframes.length == 0) {
+              document.removeEventListener("scroll", lazyload);
+              window.removeEventListener("resize", lazyload);
+              window.removeEventListener("orientationChange", lazyload);
+            }
+          }, 30);
+        }
+      
+        function contextcargado(callback) {
+          let procesar = false;
+          if (typeof cxs === "undefined") {
+            if (typeof unomiWebTracker === "object") {
+              if (typeof unomiWebTracker.cxs === "object") {
+                procesar = true;
+              }
+            }
+          } else {
+            procesar = true;
+          }
+      
+          if (procesar) {
+            callback();
+          } else {
+            setTimeout(function () {
+              contextcargado(callback);
+            }, 100);
+          }
+        }
+      
+        contextcargado(async function () {
+          if (typeof cxs === "undefined") {
+            cxs = unomiWebTracker.cxs;
+          }
+          await lazyload();
+          document.addEventListener("scroll", lazyload);
+          window.addEventListener("resize", lazyload);
+          window.addEventListener("orientationChange", lazyload);
+        });      
+        ${this.finalScript}
+        ${scriptGraphQl}
+        ${scriptJsonld}
+        ${lazyLoading}
+      });
+`;
       await this.createFile(loadScript, element[0].site.name);
     }
   }
