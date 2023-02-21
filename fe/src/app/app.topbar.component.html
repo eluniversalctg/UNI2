@@ -14,16 +14,17 @@
     <ul class="layout-topbar-main-menu">
       <li>
         <a
-          [routerLink]="['/']"
+          [routerLink]="['/main/dashboard']"
           [routerLinkActiveOptions]="{ exact: true }"
           routerLinkActive="topbar-active-menuitem-routerlink"
-          >Sales
+          >Dashboard
           <span class="active-bottom"></span>
         </a>
       </li>
       <li>
         <a
-          [routerLink]="['/analytics']"
+          href='https://stats.eluniversal.com.co/'
+          target='_blank'
           routerLinkActive="topbar-active-menuitem-routerlink"
           >Analytics
           <span class="active-bottom"></span>
@@ -31,12 +32,21 @@
       </li>
       <li>
         <a
-          [routerLink]="['/utilities/widgets']"
+          [routerLink]="['/main/croma/cromatags']"
           routerLinkActive="topbar-active-menuitem-routerlink"
-          >Widgets
+          >Croma
           <span class="active-bottom"></span>
         </a>
       </li>
+      <li>
+        <a
+          [routerLink]="['/main/profiles/unomiProfiles']"
+          routerLinkActive="topbar-active-menuitem-routerlink"
+          >Perfiles
+          <span class="active-bottom"></span>
+        </a>
+      </li>
+
       <li
         app-topmenu
         *ngFor="let item of menu; let i = index"
@@ -44,7 +54,7 @@
         [index]="i"
         [root]="true"
         class="layout-topbar-menu"
-        (click)="appMain.onTopbarMenuClick()"
+        (click)="appMain.onTopbarMenuClick()" style="display:none ;"
       ></li>
     </ul>
     <a href="#" class="menu-button" (click)="appMain.onMenuButtonClick($event)">

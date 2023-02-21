@@ -36,7 +36,7 @@ import { TopbarMenuService } from './app.topbarmenu.service';
         pRipple
       >
         <i [ngClass]="item.icon" class="layout-topbar-menuitem-icon"></i>
-        <span class="layout-topbar-menuitem-text">{{ item.label }}</span>
+        <span class="layout-topbar-menuitem-text">{{ item.label }}x</span>
         <i
           class="pi pi-fw pi-angle-down layout-topbar-submenu-toggler"
           *ngIf="item.children"
