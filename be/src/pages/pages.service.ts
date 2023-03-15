@@ -35,8 +35,9 @@ export class PagesService {
    */
   async findAllReplace(): Promise<Page[]> {
     try {
-      const response = await new Promise<any[]>((resolve) => {
-        resolve(this.pageRepository.find({}));
+      const response = await new Promise<any[]>(async (resolve) => {
+        const pages = await this.pageRepository.find({});
+        resolve(pages);
       });
       return JSON.parse(JSON.stringify(response));
     } catch (error) {

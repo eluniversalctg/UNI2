@@ -103,8 +103,8 @@ export class PlaceholderUnomiService {
    */
   async findAllReplace() {
     try {
-      const response = await new Promise<any[]>((resolve) => {
-        resolve(this.placeholderUnomiRepository.find({}));
+      const response = await new Promise<any[]>(async (resolve) => {
+        resolve(await this.placeholderUnomiRepository.find({}));
       });
       return JSON.parse(JSON.stringify(response));
     } catch (error) {
