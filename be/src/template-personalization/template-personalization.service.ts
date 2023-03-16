@@ -63,8 +63,8 @@ export class TemplatePersonalizationService {
 
   async findAllReplace() {
     try {
-      const response = await new Promise<any[]>((resolve) => {
-        resolve(this.templatePersonalizationRepository.find({}));
+      const response = await new Promise<any[]>(async (resolve) => {
+        resolve(await this.templatePersonalizationRepository.find({}));
       });
       return JSON.parse(JSON.stringify(response));
     } catch (error) {

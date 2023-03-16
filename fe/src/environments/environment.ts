@@ -5,10 +5,10 @@
 export const environment = {
   production: false,
   localStorageItem: 'uni2',
-  basePath: 'http://172.17.200.102:3000/uni2api',
-  captcha: '6Lcm6boiAAAAAAZY8fwCa9eYr52eTiopMLUFdONe',//'6LemZVAeAAAAAMDCVw5KhKSwvp0DfzrGu9tUcFC2',
+  basePath: '',
+  captcha: '',
   matomoAuthToken: '',
-  matomoURL: 'https://172.17.200.102/',
+  matomoURL: '',
 };
 
 /*

@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { RuleService } from 'src/rule/rule.service';
-import { Page } from 'src/pages/entities/page.entity';
 import { PagesService } from 'src/pages/pages.service';
 import { CromaService } from 'src/croma/croma.service';
 import { HttpException, Injectable } from '@nestjs/common';
@@ -10,20 +9,14 @@ import { DomainsService } from 'src/domains/domains.service';
 import { RelatedCromaDto } from 'src/croma/dto/related-croma.dto';
 import { Personalization } from './entities/personalization.entity';
 import { PersonalizationRepository } from './personalization.repository';
-import { Placeholder } from 'src/placeholders/entities/placeholder.entity';
 import { CreatePersonalizationDto } from './dto/create-personalization.dto';
 import { UpdatePersonalizationDto } from './dto/update-personalization.dto';
 import { PlaceholdersService } from 'src/placeholders/placeholders.service';
 import { PlaceholderUnomiService } from 'src/placeholder-unomi/placeholder-unomi.service';
-import { PlaceholderUnomi } from 'src/placeholder-unomi/entities/placeholder-unomi.entity';
 import { TemplatePersonalizationService } from 'src/template-personalization/template-personalization.service';
 
 @Injectable()
 export class PersonalizationService {
-  placeholdersUnomi: PlaceholderUnomi[] = [];
-  placeholdersSystem: Placeholder[] = [];
-  pages: Page[] = [];
-  templatesPersonalization: any[] = [];
   constructor(
     private ruleService: RuleService,
     private pagesService: PagesService,
@@ -118,10 +111,10 @@ export class PersonalizationService {
       }
 
       //get all templates and placeholders the personalization
-      await this.getPlaceholdersUnomi();
-      await this.getTemplatesPerso();
-      await this.getPages();
-      await this.getPlaceholdersSystem();
+      const placeholdersUnomi = await this.getPlaceholdersUnomi();
+      const templatesPersonalization = await this.getTemplatesPerso();
+      const pages = await this.getPages();
+      const placeholdersSystem = await this.getPlaceholdersSystem();
 
       const data = renderizationDto.template.split(',');
 
@@ -147,13 +140,13 @@ export class PersonalizationService {
       const idRule = data[5];
       const siteID = link ? link[0].id : '';
 
-      let template = this.templatesPersonalization.find(
+      let template = templatesPersonalization.find(
         (x) => x._id === idTemplateRender,
       );
 
       template = JSON.parse(JSON.stringify(template));
 
-      const page = this.pages.find((x) => x._id === idPage);
+      const page = await pages.find((x) => x._id === idPage);
 
       let newPlaceholder: any[] = [];
       let cromaPeriod;
@@ -375,7 +368,8 @@ export class PersonalizationService {
                */
               template.htmlContent = this.replaceFinally(
                 template.htmlContent,
-                this.placeholdersSystem,
+                placeholdersSystem,
+                placeholdersUnomi,
                 articlesSelect,
                 newPlaceholder,
                 infoSesion,
@@ -425,7 +419,8 @@ export class PersonalizationService {
                  */
                 template.htmlContent = this.replaceFinally(
                   template.htmlContent,
-                  this.placeholdersSystem,
+                  placeholdersSystem,
+                  placeholdersUnomi,
                   articlesSelect,
                   newPlaceholder,
                   infoSesion,
@@ -493,7 +488,8 @@ export class PersonalizationService {
 
               template.htmlContent = this.replaceFinally(
                 template.htmlContent,
-                this.placeholdersSystem,
+                placeholdersSystem,
+                placeholdersUnomi,
                 articles,
                 newPlaceholder,
                 infoSesion,
@@ -522,10 +518,10 @@ export class PersonalizationService {
             }
 
             //replace the placeholders standard and unomi in the html
-            for (let i = 0; i < this.placeholdersUnomi.length; i++) {
+            for (let i = 0; i < placeholdersUnomi.length; i++) {
               //found new placeholders the unomi
               const found = newPlaceholder.find(
-                (x) => x._id === this.placeholdersUnomi[i]._id,
+                (x) => x._id === placeholdersUnomi[i]._id,
               );
 
               //change the new values set by the user
@@ -541,37 +537,37 @@ export class PersonalizationService {
               if (!found) {
                 //REPLACE PLACEHOLDERS STANDARD WITH VALUE DEFAULT
                 template.htmlContent = template.htmlContent.replaceAll(
-                  `$$${this.placeholdersUnomi[i].name}$$`,
-                  this.placeholdersUnomi[i].valueDefault,
+                  `$$${placeholdersUnomi[i].name}$$`,
+                  placeholdersUnomi[i].valueDefault,
                 );
               }
 
               //find placeholders the unomi
               const replace = this.searchPlaceholder(
                 infoSesion,
-                this.placeholdersUnomi[i].valueDefault,
+                placeholdersUnomi[i].valueDefault,
               );
 
               for (let j = 1; j <= newSystemPlaceholders.length; j++) {
                 //REPLACE PLACEHOLDER UNOMI
                 template.htmlContent = template.htmlContent.replaceAll(
-                  `[$$${this.placeholdersUnomi[i].name}${j}$$]`,
+                  `[$$${placeholdersUnomi[i].name}${j}$$]`,
                   replace,
                 );
               }
 
-              for (let i = 0; i < this.placeholdersSystem.length; i++) {
+              for (let i = 0; i < placeholdersSystem.length; i++) {
                 for (let j = 1; j <= newSystemPlaceholders.length; j++) {
                   //REPLACE OPEN FRAFT
                   template.htmlContent = template.htmlContent.replaceAll(
-                    `[$$og:${this.placeholdersSystem[i].name}${j}$$]`,
-                    this.placeholdersSystem[i].valueDefault,
+                    `[$$og:${placeholdersSystem[i].name}${j}$$]`,
+                    placeholdersSystem[i].valueDefault,
                   );
 
                   //REPLACE JSON-LD
                   template.htmlContent = template.htmlContent.replaceAll(
-                    `[$$ld:${this.placeholdersSystem[i].name}${j}$$]`,
-                    this.placeholdersSystem[i].valueDefault,
+                    `[$$ld:${placeholdersSystem[i].name}${j}$$]`,
+                    placeholdersSystem[i].valueDefault,
                   );
                 }
               }
@@ -652,52 +648,44 @@ export class PersonalizationService {
    * get all placeholders the unomid
    */
   async getPlaceholdersUnomi() {
-    this.placeholdersUnomi = [];
-
-    const response = await new Promise<any[]>((resolve) => {
-      resolve(this.placeholderUnomiService.findAllReplace());
+    const response = await new Promise<any[]>(async (resolve) => {
+      resolve(await this.placeholderUnomiService.findAllReplace());
     });
 
-    this.placeholdersUnomi = response;
+    return response;
   }
 
   /**
    * get all placeholders the system
    */
   async getPlaceholdersSystem() {
-    this.placeholdersSystem = [];
-
-    const response = await new Promise<any[]>((resolve) => {
-      resolve(this.placeholderSystemService.findSystem());
+    const response = await new Promise<any[]>(async (resolve) => {
+      resolve(await this.placeholderSystemService.findSystem());
     });
 
-    this.placeholdersSystem = _.filter(response, { type: 'Sistema' });
+    return _.filter(response, { type: 'Sistema' });
   }
 
   /**
    * get all pages
    */
   async getPages() {
-    this.pages = [];
-
-    const response = await new Promise<any[]>((resolve) => {
-      resolve(this.pagesService.findAllReplace());
+    const response = await new Promise<any[]>(async (resolve) => {
+      resolve(await this.pagesService.findAllReplace());
     });
 
-    this.pages = response;
+    return response;
   }
 
   /**
    * get all templates the personalization
    */
   async getTemplatesPerso() {
-    this.templatesPersonalization = [];
-
-    const response = await new Promise<any[]>((resolve) => {
-      resolve(this.templatePersonalizationService.findAllReplace());
+    const response = await new Promise<any[]>(async (resolve) => {
+      resolve(await this.templatePersonalizationService.findAllReplace());
     });
 
-    this.templatesPersonalization = response;
+    return response;
   }
 
   /**
@@ -710,7 +698,8 @@ export class PersonalizationService {
    */
   replaceFinally(
     htmlContentPlaceholder,
-    placeholders,
+    placeholdersSystem,
+    placeholdersUnomi,
     articles,
     newPlaceholder,
     infoSesion,
@@ -724,9 +713,9 @@ export class PersonalizationService {
     }
 
     //placeholders unomi
-    for (let i = 0; i < this.placeholdersUnomi.length; i++) {
+    for (let i = 0; i < placeholdersUnomi.length; i++) {
       const found = newPlaceholder.find(
-        (x) => x._id === this.placeholdersUnomi[i]._id,
+        (x) => x._id === placeholdersUnomi[i]._id,
       );
 
       if (found) {
@@ -740,36 +729,36 @@ export class PersonalizationService {
       if (!found) {
         //REPLACE PLACEHOLDERS STANDARD WITH VALUE DEFAULT
         htmlContentPlaceholder = htmlContentPlaceholder.replaceAll(
-          `$$${this.placeholdersUnomi[i].name}$$`,
-          this.placeholdersUnomi[i].valueDefault,
+          `$$${placeholdersUnomi[i].name}$$`,
+          placeholdersUnomi[i].valueDefault,
         );
       }
 
       //find placeholders the unomi
       const replace = this.searchPlaceholder(
         infoSesion,
-        this.placeholdersUnomi[i].valueDefault,
+        placeholdersUnomi[i].valueDefault,
       );
 
       for (let j = 1; j <= newSystemPlaceholders.length; j++) {
         //REPLACE PLACEHOLDER UNOMI
 
         htmlContentPlaceholder = htmlContentPlaceholder.replaceAll(
-          `[$$${this.placeholdersUnomi[i].name}${j}$$]`,
+          `[$$${placeholdersUnomi[i].name}${j}$$]`,
           replace,
         );
       }
     }
 
-    for (let i = 0; i < placeholders.length; i++) {
+    for (let i = 0; i < placeholdersSystem.length; i++) {
       // placeholder system
 
-      if (placeholders[i].typesMetaData === 'Open Graph') {
+      if (placeholdersSystem[i].typesMetaData === 'Open Graph') {
         //Open Graft
-        if (placeholders[i].required) {
+        if (placeholdersSystem[i].required) {
           for (let j = 0; j < articles.length; j++) {
             const systemPlaceholdersOG = articles[j].metadata.html.split(
-              `="og:${placeholders[i].name}" content="`,
+              `="og:${placeholdersSystem[i].name}" content="`,
             );
             const newsystemPlaceholdersOG: any[] = [];
 
@@ -784,7 +773,7 @@ export class PersonalizationService {
 
               const index = j + 1;
               htmlContentPlaceholder = htmlContentPlaceholder.replaceAll(
-                `[$$og:${placeholders[i].name}${index}$$]`,
+                `[$$og:${placeholdersSystem[i].name}${index}$$]`,
                 newsystemPlaceholdersOG[0],
               );
             }
@@ -792,7 +781,7 @@ export class PersonalizationService {
         }
       } else {
         //JSON-LD
-        if (placeholders[i].required) {
+        if (placeholdersSystem[i].required) {
           let systemPlaceholdersOG;
           const scripJsonLd = '<script type="application/ld+json"';
 
@@ -839,11 +828,11 @@ export class PersonalizationService {
                 : JSON.parse(script.slice(0, 1259) + script.slice(1261));
               const replace = this.searchPlaceholderJsonLd(
                 jsonLD,
-                placeholders[i].name,
+                placeholdersSystem[i].name,
               );
               const index = j + 1;
               htmlContentPlaceholder = htmlContentPlaceholder.replaceAll(
-                `[$$ld:${placeholders[i].name}${index}$$]`,
+                `[$$ld:${placeholdersSystem[i].name}${index}$$]`,
                 replace,
               );
             }

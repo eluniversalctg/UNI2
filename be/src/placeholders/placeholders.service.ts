@@ -76,8 +76,8 @@ export class PlaceholdersService {
    */
   async findSystem() {
     try {
-      const response = await new Promise<any[]>((resolve) => {
-        resolve(this.placeholderRepository.find({ type: 'Sistema' }));
+      const response = await new Promise<any[]>(async (resolve) => {
+        resolve(await this.placeholderRepository.find({ type: 'Sistema' }));
       });
       return JSON.parse(JSON.stringify(response));
     } catch (error) {
