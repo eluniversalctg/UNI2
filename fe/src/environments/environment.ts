@@ -6,7 +6,7 @@ export const environment = {
   production: false,
   localStorageItem: 'uni2',
   basePath: '',
-  captcha: ''
+  captcha: '',
   matomoAuthToken: '',
   matomoURL: '',
 };
